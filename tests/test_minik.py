@@ -17,7 +17,6 @@
 
 import json
 import requests
-from unittest.mock import MagicMock
 from minik.constants import CONFIG_ERROR_MSG
 from minik.core import Minik, BadRequestError, ConfigurationError
 
@@ -37,12 +36,12 @@ def bad_request_view():
 
 
 @sample_app.route('/echo')
-def echo():
+def echo_view():
     return sample_app.current_request.json_body
 
 
 @sample_app.route('/aws_context')
-def echo():
+def aws_ctx_view():
     ctx = sample_app.current_request.aws_context
     return {
         'aws_request_id': ctx.aws_request_id,
@@ -193,7 +192,7 @@ def test_event_without_resoure_raises_error(create_router_event):
     del event['resource']
 
     try:
-        response = sample_app(event, context)
+        sample_app(event, context)
     except ConfigurationError as ce:
         assert CONFIG_ERROR_MSG in str(ce)
 
