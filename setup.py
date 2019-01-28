@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
 
-__author__ = 'Pedro Diaz'
 
 setup(name='minik',
       version='0.1',
