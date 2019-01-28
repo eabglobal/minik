@@ -42,10 +42,10 @@ jobs:
             coverage report --fail-under=90
 
       - run:
-        name: linting
-        command: |
-          . venv/bin/activate
-          flake8 --exclude .egg,.eggs --ignore E501,E127
+          name: run linting
+          command: |
+            . venv/bin/activate
+            flake8 --exclude .egg,.eggs --ignore E501,E127
 
       - store_artifacts:
           path: test-reports
