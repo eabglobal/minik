@@ -1,5 +1,4 @@
-
-#!/usr/bin/env python
+# !/usr/bin/env python
 # Taken from https://github.com/pallets/flask/blob/master/scripts/make-release.py
 from __future__ import print_function
 
