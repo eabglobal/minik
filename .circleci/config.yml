@@ -45,7 +45,7 @@ jobs:
           name: run linting
           command: |
             . venv/bin/activate
-            flake8 --exclude .egg,.eggs --ignore E501,E127
+            flake8 --exclude venv,.egg,.eggs --ignore E501,E127
 
       - store_artifacts:
           path: test-reports
