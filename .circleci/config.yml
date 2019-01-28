@@ -1,31 +1,52 @@
+# Python CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-python/ for more details
+#
 version: 2
-
 jobs:
-
   build:
-    working_directory: ~/.
     docker:
-      - image: circleci/python:3.6.4
-        environment:
-          PIPENV_VENV_IN_PROJECT: true
+      # specify the version you desire here
+      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
+      - image: circleci/python:3.6.1
 
-    steps: &steps
-        - checkout
-        - run: sudo pip install -r requirements/dev.txt
-        - run: python --version ; pip --version ; pwd ; ls
-        # stop the build if there are Python syntax errors or undefined names
-        - run: flake8 --exclude .egg,.eggs --ignore E501,E127
-        - run: python -m pytest --cov .
-        - run: coverage report --fail-under=90
+    working_directory: ~/repo
 
-    Python_3.6:
-      docker:
-        - image: circleci/python:3.6
-      steps: *steps
+    steps:
+      - checkout
 
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "requirements.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v1-dependencies-
 
-workflows:
-  version: 2
-  build:
-    jobs:
-      - Python_3.6
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -r requirements.txt
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-dependencies-{{ checksum "requirements.txt" }}
+
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            python -m pytest --cov .
+            coverage report --fail-under=90
+
+      - run:
+        name: linting
+        command: |
+          . venv/bin/activate
+          flake8 --exclude .egg,.eggs --ignore E501,E127
+
+      - store_artifacts:
+          path: test-reports
+          destination: test-reports
