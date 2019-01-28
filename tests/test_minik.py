@@ -17,6 +17,7 @@
 
 import json
 import requests
+from unittest.mock import MagicMock
 from minik.constants import CONFIG_ERROR_MSG
 from minik.core import Minik, BadRequestError, ConfigurationError
 
