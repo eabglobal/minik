@@ -4,27 +4,25 @@
 
 Time to move on from our ASGI based frameworks. These few lines of code will get you
 started with a serverless microframework in production. Using AWS lambda functions
-and API Gateway, minik will server as the framework that knows how to translate messages
-between these two services.
+and API Gateway, minik will server as the framework the web framework that facilitates
+development in the serverless space.
 
 # Installing minik
 
 Install the latest release:
 
-    >>> git clone git@github.com:eabglobal/minik.git
-    >>> cd minik
-    >>> pip install -e .
+    >>> pip install git+https://github.com/eabglobal/minik.git
     ✨🍰✨
 
 Only **Python 3.6+** is supported.
 
 # The Basic Idea
 
-The primary concept here is to bring the niceties that are brought forth a minimal
-web framework to a cloud native domain. Borrowing from the syntax adopted by
-Flask using minik should give any developer a very familiar feeling. The only
-difference is that instead of dealing with WSGI and web servers in the conventioal
-sense of the word, we're now dealing with two AWS services.
+The primary concept here is to bring the niceties web developers are familiar with
+to a cloud native domain. Borrowing from the syntax adopted by `Flask` using minik
+should give any developer a very familiar feeling. The only difference is that
+instead of dealing with WSGI and web servers in the conventioal sense of the word,
+we're now dealing with two AWS services.
 
 Conceptually, the idea of having a request/response objects encapsulated by a nice
 framework apply here.
@@ -37,9 +35,9 @@ framework apply here.
 ## Why?
 
 It was time to build Yet Another Web Framework YAWF. This time, the team is adopting
-a very minial set of features to provide our API builders and consumers value. The
-scope of this framework is limited in scope to receive json requests from an API
-Gateway endpoint and it will respond using json. That's it!
+a very minimal set of features to enhance and streamline web development in the
+serverless space. The scope of this framework is limited in scope to receive json
+requests from an API Gateway endpoint and it will respond using json. That's it!
 
 The features of this library should be absolutely driven by a very specific
 business need. So far, the minimal approach has been sufficient for our team to
@@ -51,8 +49,8 @@ A web framework built out of the frustrations and roadblocks the team encountere
 while working with `Chalice`. The main advantages of this implementation over the
 current frameworks in this domain are the following:
 
-- Batteries not included! This is just the framework, nothing more, nothing else.
-- Ability to leverage the domain knowledge of working with flask or django.
+- Batteries **not** included! This is just the framework, nothing more, nothing else.
+- Ability to leverage the domain knowledge of working with Flask or Django.
 - Minimal set of features driven to solve a very specific problem.
 
 ## Show me the $$
@@ -85,10 +83,11 @@ as such, it implements a very minimal set of features.
 Things to be aware of when working with this library:
 
 - When used in your lambda function, you're responsible of including the source
-  code of minik in your .zip artifact.
+  code of minik in your .zip artifact. For packaging purposes we recommend using
+  [juniper](https://github.com/eabglobal/juniper)
 - Unlike other frameworks like `Flask` or `Django` where using the decorator is
   sufficient to define the routes of the web app. In minik, you're responsible for
-  linking a lambda function to a the API gateway.
+  linking a lambda function to a the API gateway. We recommend using a SAM template.
 - There is not local development server! For testing purposes, deploy the lambda
   in AWS! There's no excuse not to.
 
@@ -101,18 +100,18 @@ For a new project, when making a decision as to what 'web framework' to adopt fo
 a given use case. Working with AWS resources, there are two main components that
 a developer must have certain familiarity with:
 
-- API Gateway
-- Lambda function
+- [API Gateway](https://aws.amazon.com/api-gateway/)
+- [AWS Lambda function](https://aws.amazon.com/lambda/)
 
 In this domain, API gateway serves as the proxy that receives a request from the
 internet, validates it and sends the request to the associated function or view
 for processing. The lambda function encapsulates the business logic that must
 be executed when a request is received.
 
-In the serverless domain, it is best practice to use `CloudFormation` a template
-or blueprint of the resources your app will be using. When working with serverless
-resources, mainly API Gateway, lambda functions and dynamo tables a SAM template
-is use. Sam is just an extension to cloudformation that facilitates the definition
+In the serverless domain, it is best practice to use a `CloudFormation` template
+as the blueprint of the resources your app will be using. When working with serverless
+resources (API Gateway, lambda functions and dynamo tables) using a SAM template
+is best practice. SAM is just an extension to cloudformation that facilitates the definition
 and wiring of these resources.
 
 ### Sam template
@@ -161,4 +160,5 @@ endpoint. Where the `hello_view` is the function that will be called when the ro
 is executed.
 
 Building the SAM template is a responsibility of the developer. This tool does not
-manipulate the template at all.
+manipulate the template at all. The template is what links an API Gateway endpoint
+to a lambda function.
