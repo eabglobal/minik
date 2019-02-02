@@ -91,7 +91,7 @@ Things to be aware of when working with this library:
 
 - When used in your lambda function, you're responsible of including the source
   code of minik in your .zip artifact. For packaging purposes we recommend using
-  [juniper](https://github.com/eabglobal/juniper)
+  `juniper <https://github.com/eabglobal/juniper>`_.
 - Unlike other frameworks like `Flask` or `Django` where using the decorator is
   sufficient to define the routes of the web app. In minik, you're responsible for
   linking a lambda function to a the API gateway. We recommend using a SAM template.
