@@ -64,22 +64,22 @@ Simple Example
 In it's most basic form; quite honestly, it's only form. This is how your lambda
 function should look like:
 
-```python
-from minik.core import Minik, BadRequestError
+.. code-block:: python
 
-app = Minik()
+    from minik.core import Minik, BadRequestError
 
-@app.route('/hello/{name}')
-def hello_view(name):
+    app = Minik()
 
-    if name == 'FINDME':
-        # Returns a 400 status code with the message as the body.
-        raise BadRequestError(msg='This is not a supported name.')
+    @app.route('/hello/{name}')
+    def hello_view(name):
 
-    # A simple way of getting the current request as json.
-    request_payload = app.current_request.json_body
-    return {'hello': name}
-```
+        if name == 'FINDME':
+            # Returns a 400 status code with the message as the body.
+            raise BadRequestError(msg='This is not a supported name.')
+
+        # A simple way of getting the current request as json.
+        request_payload = app.current_request.json_body
+        return {'hello': name}
 
 Limitations!
 ************
@@ -127,7 +127,7 @@ Sam template
 
 This is what a sample SAM.yml template looks like:
 
-.. code-block: yaml
+.. code-block:: yaml
 
     Transform: 'AWS::Serverless-2016-10-31'
     Resources:
