@@ -13,7 +13,7 @@ Installing
 
 Install the latest release:
 
->>> pip install git+https://github.com/eabglobal/minik.git
+> pip install git+https://github.com/eabglobal/minik.git
 ✨🍰✨
 
 Only **Python 3.6+** is supported.
