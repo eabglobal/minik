@@ -1,5 +1,5 @@
-Minik
-=====
+Minik: Serverless Web Framework
+===============================
 
 .. image:: assets/minik_snip.png
 
