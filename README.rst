@@ -108,7 +108,7 @@ For a new project, when making a decision as to what 'web framework' to adopt fo
 a given use case. Working with AWS resources, there are two main components that
 a developer must have certain familiarity with:
 
-- `API Gateway <https://aws.amazon.com/api-gateway/`_
+- `API Gateway <https://aws.amazon.com/api-gateway/>`_
 - `AWS Lambda function <https://aws.amazon.com/lambda/>`_
 
 In this domain, API gateway serves as the proxy that receives a request from the
