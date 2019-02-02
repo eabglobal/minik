@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 
 with io.open('README.rst', 'rt', encoding='utf8') as f:
-    readme = f.read()
+    readme = [line for line in f.readlines() if '.. image::' not in line]
 
 # Make sure that the version of the package always matches the version of the
 # tool. The version of the __init__.py is updated with the make release command.
