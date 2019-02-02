@@ -1,13 +1,15 @@
-# MINIK: a familiar HTTP Framework for the serverless domain
+Minik
+=====
 
-![minik](assets/minik_snip.png)
+.. image:: assets/minik_snip.png
 
 Time to move on from our ASGI based frameworks. These few lines of code will get you
 started with a serverless microframework in production. Using AWS lambda functions
 and API Gateway, minik will server as the framework the web framework that facilitates
 development in the serverless space.
 
-# Installing minik
+Installing
+**********
 
 Install the latest release:
 
@@ -16,7 +18,8 @@ Install the latest release:
 
 Only **Python 3.6+** is supported.
 
-# The Basic Idea
+The Basic Idea
+**************
 
 The primary concept here is to bring the niceties web developers are familiar with
 to a cloud native domain. Borrowing from the syntax adopted by `Flask` using minik
@@ -32,7 +35,8 @@ framework apply here.
 - Case-insensitive `req.headers` dict (from Requests directly).
 - `resp.status_code`, `req.method`, `req.url`, and other familiar friends.
 
-## Why?
+Why?
+****
 
 It was time to build Yet Another Web Framework YAWF. This time, the team is adopting
 a very minimal set of features to enhance and streamline web development in the
@@ -43,7 +47,8 @@ The features of this library should be absolutely driven by a very specific
 business need. So far, the minimal approach has been sufficient for our team to
 write and expose and API using AWS services.
 
-## What?
+What?
+*****
 
 A web framework built out of the frustrations and roadblocks the team encountered
 while working with `Chalice`. The main advantages of this implementation over the
@@ -53,7 +58,8 @@ current frameworks in this domain are the following:
 - Ability to leverage the domain knowledge of working with Flask or Django.
 - Minimal set of features driven to solve a very specific problem.
 
-## Show me the $$
+Simple Example
+**************
 
 In it's most basic form; quite honestly, it's only form. This is how your lambda
 function should look like:
@@ -75,7 +81,8 @@ def hello_view(name):
     return {'hello': name}
 ```
 
-## Limitations!
+Limitations!
+************
 
 As previously stated, this framework was built as a way to replace `Chalice` and
 as such, it implements a very minimal set of features.
@@ -94,7 +101,8 @@ Things to be aware of when working with this library:
 - Only supports request response in json format!
 
 
-## Getting started
+Getting started
+===============
 
 For a new project, when making a decision as to what 'web framework' to adopt for
 a given use case. Working with AWS resources, there are two main components that
@@ -114,45 +122,48 @@ resources (API Gateway, lambda functions and dynamo tables) using a SAM template
 is best practice. SAM is just an extension to cloudformation that facilitates the definition
 and wiring of these resources.
 
-### Sam template
+Sam template
+************
+
 This is what a sample SAM.yml template looks like:
 
-```yml
-Transform: 'AWS::Serverless-2016-10-31'
-Resources:
+.. code-block: yaml
 
-  HelloHandler:
-    # This resource creates a Lambda function.
-    Type: 'AWS::Serverless::Function'
+    Transform: 'AWS::Serverless-2016-10-31'
+    Resources:
 
-    Properties:
+    HelloHandler:
+        # This resource creates a Lambda function.
+        Type: 'AWS::Serverless::Function'
 
-      # This function uses the python 3.6 runtime.
-      Runtime: python3.6
+        Properties:
 
-      # This is the Lambda function's handler.
-      Handler: app.app
+        # This function uses the python 3.6 runtime.
+        Runtime: python3.6
 
-      # The location of the Lambda function code.
-      CodeUri: ./src
+        # This is the Lambda function's handler.
+        Handler: app.app
 
-      # Event sources to attach to this function. In this case, we are attaching
-      # one API Gateway endpoint to the Lambda function. The function is
-      # called when a HTTP request is made to the API Gateway endpoint.
-      Events:
+        # The location of the Lambda function code.
+        CodeUri: ./src
 
-        ThumbnailApi:
-            # Define an API Gateway endpoint that responds to HTTP GET at /thumbnail
-            Type: Api
-            Properties:
-                Path: /hello/{name}
-                Method: GET
-```
+        # Event sources to attach to this function. In this case, we are attaching
+        # one API Gateway endpoint to the Lambda function. The function is
+        # called when a HTTP request is made to the API Gateway endpoint.
+        Events:
+
+            ThumbnailApi:
+                # Define an API Gateway endpoint that responds to HTTP GET at /thumbnail
+                Type: Api
+                Properties:
+                    Path: /hello/{name}
+                    Method: GET
+
 
 The very first line is the one that differentiates this template from a regular
 cloud formation definition. Specifically for using `minik`, the Handler field
 defines a file called `app.py` with a variable called app. Just as defined the
-`Show me the $$` section.
+`Simple Example` section.
 
 The last piece of the puzzle is encapsulated in the events section of the file.
 That section defines the API gateway endpoint that will be created for the `/hello`

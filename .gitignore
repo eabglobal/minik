@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+.pypirc
 build/
 develop-eggs/
 dist/
