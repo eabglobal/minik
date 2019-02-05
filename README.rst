@@ -1,7 +1,7 @@
 Minik: Serverless Web Framework
 ===============================
 
-.. image:: assets/minik_snip.png
+.. image:: assets/minik.png
 
 Time to move on from our ASGI based frameworks. These few lines of code will get you
 started with a serverless microframework in production. Using AWS lambda functions
