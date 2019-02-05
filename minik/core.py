@@ -139,9 +139,9 @@ class JsonResponse:
     The object encapsulates the headers, status code and body of a response.
     """
 
-    def __init__(self, body, headers={}, status_code=200):
+    def __init__(self, body, headers=None, status_code=200):
         self.body = body
-        self.headers = headers
+        self.headers = headers or {}
         self.status_code = status_code
 
     def to_dict(self, binary_types=None):
