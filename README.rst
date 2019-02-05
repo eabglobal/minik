@@ -94,12 +94,11 @@ Things to be aware of when working with this library:
   `juniper <https://github.com/eabglobal/juniper>`_.
 - Unlike other frameworks like `Flask` or `Django` where using the decorator is
   sufficient to define the routes of the web app. In minik, you're responsible for
-  linking a lambda function to a the API gateway. We recommend using a SAM template.
+  linking a lambda function to a the API gateway. We recommend using a `SAM template`_.
 - There is not local development server! For testing purposes, deploy the lambda
   in AWS! There's no excuse not to.
 
 - Only supports request response in json format!
-
 
 Getting started
 ===============
@@ -118,9 +117,11 @@ be executed when a request is received.
 
 In the serverless domain, it is best practice to use a `CloudFormation` template
 as the blueprint of the resources your app will be using. When working with serverless
-resources (API Gateway, lambda functions and dynamo tables) using a SAM template
+resources (API Gateway, lambda functions and dynamo tables) using a `SAM template`_
 is best practice. SAM is just an extension to cloudformation that facilitates the definition
 and wiring of these resources.
+
+.. _SAM template: https://github.com/awslabs/serverless-application-model
 
 Sam template
 ************
@@ -153,7 +154,7 @@ This is what a sample SAM.yml template looks like:
         Events:
 
             ThumbnailApi:
-                # Define an API Gateway endpoint that responds to HTTP GET at /thumbnail
+                # Define an API Gateway endpoint that responds to HTTP GET at /hello
                 Type: Api
                 Properties:
                     Path: /hello/{name}
