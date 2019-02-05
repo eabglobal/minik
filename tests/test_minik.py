@@ -223,7 +223,7 @@ def test_response_headers():
     """
     This test validates that the default value given to the headers of the json
     response does NOT have a default value. A default of a mutable object is
-    shared across.
+    shared across instances.
     """
 
     # No headers are passed in
