@@ -1,22 +1,45 @@
 Minik: Serverless Web Framework
 ===============================
 
-.. image:: assets/minik_snip.png
+.. image:: assets/minik.png
 
 Time to move on from our ASGI based frameworks. These few lines of code will get you
 started with a serverless microframework in production. Using AWS lambda functions
-and API Gateway, minik will server as the framework the web framework that facilitates
-development in the serverless space.
+and API Gateway, minik will serve as the framework that facilitates development
+in the serverless space.
 
 Installing
 **********
 
 Install the latest release:
 
->>> pip install git+https://github.com/eabglobal/minik.git
+>>> pip install minik
 ✨🍰✨
 
 Only **Python 3.6+** is supported.
+
+Simple Example
+**************
+
+In it's most basic form; quite honestly, it's only form. This is how your lambda
+function should look like:
+
+.. code-block:: python
+
+    from minik.core import Minik, BadRequestError
+
+    app = Minik()
+
+    @app.route('/hello/{name}')
+    def hello_view(name):
+
+        if name == 'FINDME':
+            # Returns a 400 status code with the message as the body.
+            raise BadRequestError(msg='This is not a supported name.')
+
+        # A simple way of getting the current request as json.
+        request_payload = app.current_request.json_body
+        return {'hello': name}
 
 The Basic Idea
 **************
@@ -58,29 +81,6 @@ current frameworks in this domain are the following:
 - Ability to leverage the domain knowledge of working with Flask or Django.
 - Minimal set of features driven to solve a very specific problem.
 
-Simple Example
-**************
-
-In it's most basic form; quite honestly, it's only form. This is how your lambda
-function should look like:
-
-.. code-block:: python
-
-    from minik.core import Minik, BadRequestError
-
-    app = Minik()
-
-    @app.route('/hello/{name}')
-    def hello_view(name):
-
-        if name == 'FINDME':
-            # Returns a 400 status code with the message as the body.
-            raise BadRequestError(msg='This is not a supported name.')
-
-        # A simple way of getting the current request as json.
-        request_payload = app.current_request.json_body
-        return {'hello': name}
-
 Limitations!
 ************
 
@@ -94,12 +94,11 @@ Things to be aware of when working with this library:
   `juniper <https://github.com/eabglobal/juniper>`_.
 - Unlike other frameworks like `Flask` or `Django` where using the decorator is
   sufficient to define the routes of the web app. In minik, you're responsible for
-  linking a lambda function to a the API gateway. We recommend using a SAM template.
+  linking a lambda function to a the API gateway. We recommend using a `SAM template`_.
 - There is not local development server! For testing purposes, deploy the lambda
   in AWS! There's no excuse not to.
 
 - Only supports request response in json format!
-
 
 Getting started
 ===============
@@ -118,9 +117,11 @@ be executed when a request is received.
 
 In the serverless domain, it is best practice to use a `CloudFormation` template
 as the blueprint of the resources your app will be using. When working with serverless
-resources (API Gateway, lambda functions and dynamo tables) using a SAM template
+resources (API Gateway, lambda functions and dynamo tables) using a `SAM template`_
 is best practice. SAM is just an extension to cloudformation that facilitates the definition
 and wiring of these resources.
+
+.. _SAM template: https://github.com/awslabs/serverless-application-model
 
 Sam template
 ************
@@ -153,7 +154,7 @@ This is what a sample SAM.yml template looks like:
         Events:
 
             ThumbnailApi:
-                # Define an API Gateway endpoint that responds to HTTP GET at /thumbnail
+                # Define an API Gateway endpoint that responds to HTTP GET at /hello
                 Type: Api
                 Properties:
                     Path: /hello/{name}
