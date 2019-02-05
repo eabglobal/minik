@@ -13,10 +13,33 @@ Installing
 
 Install the latest release:
 
->>> pip install git+https://github.com/eabglobal/minik.git
+>>> pip install minik
 ✨🍰✨
 
 Only **Python 3.6+** is supported.
+
+Simple Example
+**************
+
+In it's most basic form; quite honestly, it's only form. This is how your lambda
+function should look like:
+
+.. code-block:: python
+
+    from minik.core import Minik, BadRequestError
+
+    app = Minik()
+
+    @app.route('/hello/{name}')
+    def hello_view(name):
+
+        if name == 'FINDME':
+            # Returns a 400 status code with the message as the body.
+            raise BadRequestError(msg='This is not a supported name.')
+
+        # A simple way of getting the current request as json.
+        request_payload = app.current_request.json_body
+        return {'hello': name}
 
 The Basic Idea
 **************
@@ -57,29 +80,6 @@ current frameworks in this domain are the following:
 - Batteries **not** included! This is just the framework, nothing more, nothing else.
 - Ability to leverage the domain knowledge of working with Flask or Django.
 - Minimal set of features driven to solve a very specific problem.
-
-Simple Example
-**************
-
-In it's most basic form; quite honestly, it's only form. This is how your lambda
-function should look like:
-
-.. code-block:: python
-
-    from minik.core import Minik, BadRequestError
-
-    app = Minik()
-
-    @app.route('/hello/{name}')
-    def hello_view(name):
-
-        if name == 'FINDME':
-            # Returns a 400 status code with the message as the body.
-            raise BadRequestError(msg='This is not a supported name.')
-
-        # A simple way of getting the current request as json.
-        request_payload = app.current_request.json_body
-        return {'hello': name}
 
 Limitations!
 ************
