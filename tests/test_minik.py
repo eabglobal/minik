@@ -19,7 +19,7 @@ import json
 import requests
 from unittest.mock import MagicMock
 from minik.constants import CONFIG_ERROR_MSG
-from minik.core import Minik, BadRequestError, ConfigurationError
+from minik.core import Minik, BadRequestError, ConfigurationError, JsonResponse
 
 
 sample_app = Minik()
@@ -217,3 +217,20 @@ def test_correctly_pass_aws_context_to_request(create_router_event):
 
     for key in response_body:
         assert response_body[key] == getattr(context, key)
+
+
+def test_response_headers():
+    """
+    This test validates that the default value given to the headers of the json
+    response does NOT have a default value. A default of a mutable object is
+    shared across instances.
+    """
+
+    # No headers are passed in
+    response1 = JsonResponse('sample body')
+    response1.headers['findme'] = 'Instance 1'
+
+    response2 = JsonResponse('other body')
+
+    assert response1.headers != response2.headers
+    assert 'findme' not in response2.headers
