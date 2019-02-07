@@ -14,13 +14,10 @@
     limitations under the License.
 """
 
-
 import json
 import pytest
-import requests
 from unittest.mock import MagicMock
-from minik.constants import CONFIG_ERROR_MSG
-from minik.core import Minik, BadRequestError, ConfigurationError, JsonResponse
+from minik.core import Minik
 
 
 sample_app = Minik()
