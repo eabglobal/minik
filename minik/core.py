@@ -40,12 +40,15 @@ class Minik:
     def __init__(self):
         self._routes = {}
 
-    def route(self, path):
+    def route(self, path, **kwargs):
         """
         The decorator function used to associate a given route with a view function.
         """
+        method = kwargs.get('method')
+        route_key = path if not method else f'{path}_{method.lower()}'
+
         def _register_view(view_func):
-            self._routes[path] = view_func
+            self._routes[route_key] = view_func
             return view_func
         return _register_view
 
@@ -63,15 +66,23 @@ class Minik:
         request = MinikRequest(event, context)
         self.current_request = request
 
-        if request.resource not in self._routes:
+        view = self._get_view(request)
+        if not view:
             response = JsonResponse({'error_message': f'No view function for {request.resource}'}, status_code=500)
             return response.to_dict()
-
-        view = self._routes.get(request.resource)
 
         response = self._execute_view(view, request)
 
         return response.to_dict()
+
+    def _get_view(self, request):
+
+        view = self._routes.get(f'{request.resource}_{request.method.lower()}')
+
+        if view:
+            return view
+
+        return self._routes.get(request.resource)
 
     def _execute_view(self, view, request):
         """

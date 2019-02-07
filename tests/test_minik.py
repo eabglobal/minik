@@ -54,10 +54,10 @@ def aws_ctx_view():
 def test_sample_view_with_path_params(create_router_event):
 
     event = create_router_event('/findme/{first}/{second}',
-                                pathParameters={'first': 'peoplesoft', 'second': 'adds'},
+                                pathParameters={'first': 'adventure', 'second': 'chile'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
-    view_body = sample_view('peoplesoft', 'adds')
+    view_body = sample_view('adventure', 'chile')
     response = sample_app(event, context)
 
     assert response['body'] == json.dumps(view_body)
@@ -67,11 +67,11 @@ def test_sample_view_with_path_params(create_router_event):
 def test_sample_view_without_query_params(create_router_event):
 
     event = create_router_event('/findme/{first}/{second}',
-                                pathParameters={'first': 'peoplesoft', 'second': 'adds'},
+                                pathParameters={'first': 'adventure', 'second': 'chile'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
     del event['queryStringParameters']
-    view_body = sample_view('peoplesoft', 'adds')
+    view_body = sample_view('adventure', 'chile')
     response = sample_app(event, context)
 
     assert response['body'] == json.dumps(view_body)
@@ -81,11 +81,11 @@ def test_sample_view_without_query_params(create_router_event):
 def test_sample_view_with_undefined_query_params(create_router_event):
 
     event = create_router_event('/findme/{first}/{second}',
-                                pathParameters={'first': 'peoplesoft', 'second': 'adds'},
+                                pathParameters={'first': 'adventure', 'second': 'chile'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
     event['queryStringParameters'] = None
-    view_body = sample_view('peoplesoft', 'adds')
+    view_body = sample_view('adventure', 'chile')
     response = sample_app(event, context)
 
     assert response['body'] == json.dumps(view_body)
@@ -95,7 +95,7 @@ def test_sample_view_with_undefined_query_params(create_router_event):
 def test_sample_view_without_headers(create_router_event):
 
     event = create_router_event('/findme/{first}/{second}',
-                                pathParameters={'first': 'peoplesoft', 'second': 'adds'},
+                                pathParameters={'first': 'adventure', 'second': 'chile'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
     del event['headers']
@@ -107,7 +107,7 @@ def test_sample_view_without_headers(create_router_event):
 def test_sample_view_with_undefined_headers(create_router_event):
 
     event = create_router_event('/findme/{first}/{second}',
-                                pathParameters={'first': 'peoplesoft', 'second': 'adds'},
+                                pathParameters={'first': 'adventure', 'second': 'chile'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
     event['headers'] = None
@@ -123,7 +123,7 @@ def test_sample_view_with_missing_path_params(create_router_event):
     """
 
     event = create_router_event('/findme/{first}/{second}',
-                                pathParameters={'first': 'peoplesoft'},
+                                pathParameters={'first': 'adventure'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
     response = sample_app(event, context)
@@ -134,7 +134,7 @@ def test_sample_view_with_missing_path_params(create_router_event):
 def test_sample_view_route_does_not_match(create_router_event):
 
     event = create_router_event('/router/mismatch',
-                                pathParameters={'first': 'peoplesoft'},
+                                pathParameters={'first': 'adventure'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
     response = sample_app(event, context)
