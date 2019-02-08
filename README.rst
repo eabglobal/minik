@@ -3,8 +3,7 @@ Minik: Serverless Web Framework
 
 .. image:: assets/minik.png
 
-Time to move on from our ASGI based frameworks. These few lines of code will get you
-started with a serverless microframework in production. Using AWS lambda functions
+Time to move on from our ASGI based frameworks. Using AWS lambda functions
 and API Gateway, minik will serve as the framework that facilitates development
 in the serverless space.
 
@@ -40,6 +39,29 @@ function should look like:
         # A simple way of getting the current request as json.
         request_payload = app.current_request.json_body
         return {'hello': name}
+
+HTTP Methods
+************
+
+With minik you can also specify the HTTP methods for a given view. If you don't
+define the methods, by default, every single HTTP method will be allowed.
+
+.. code-block:: python
+
+    from minik.core import Minik
+
+    app = Minik()
+
+    @app.route('/events/{location}')
+    def events_view(location):
+        # This route will be invoked for GET, POST, PUT, DELETE... Any request.
+        return {'data': ['granfondo MD', 'Silver Spring Century']}
+
+    @app.route('/events', methods=['POST', 'PUT'])
+    def create_event_view():
+        create_event(app.current_request.json_body)
+        return {'result': 'complete'}
+
 
 The Basic Idea
 **************
