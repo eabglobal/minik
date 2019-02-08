@@ -40,6 +40,28 @@ function should look like:
         request_payload = app.current_request.json_body
         return {'hello': name}
 
+HTTP Methods
+************
+
+With minik you can also specify the HTTP methods for a given view. If you don't
+define the methods, by default, every single HTTP method will be allowed.
+
+.. code-block:: python
+
+    from minik.core import Minik, BadRequestError
+
+    app = Minik()
+
+    @app.route('/events/{location}')
+    def events_view(location):
+        return {'data': ['granfondo MD', 'Silver Spring Century']}
+
+    @app.route('/events', methods=['POST', 'PUT'])
+    def create_event_view():
+        create_event(app.current_request.json_body)
+        return {'result': 'complete'}
+
+
 The Basic Idea
 **************
 
