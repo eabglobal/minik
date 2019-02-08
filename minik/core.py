@@ -44,11 +44,20 @@ class Minik:
         """
         The decorator function used to associate a given route with a view function.
         """
-        method = kwargs.get('method')
-        route_key = path if not method else f'{path}_{method.lower()}'
 
         def _register_view(view_func):
-            self._routes[route_key] = view_func
+
+            # The view is associated with a set of HTTP methods. Add the view for
+            # each one of the methods.
+            methods = kwargs.get('methods', [])
+            for method in methods:
+                self._routes[f'{path}_{method.lower()}'] = view_func
+
+            # When no method is specified, the route will be invoked for every
+            # single HTTP method type. I.e. GET, PUT, POST, DELETE...
+            if not methods:
+                self._routes[path] = view_func
+
             return view_func
         return _register_view
 
@@ -68,7 +77,10 @@ class Minik:
 
         view = self._get_view(request)
         if not view:
-            response = JsonResponse({'error_message': f'No view function for {request.resource}'}, status_code=500)
+            response = JsonResponse({
+                'error_message': f'No view function for {request.method} {request.resource}'},
+                status_code=500
+            )
             return response.to_dict()
 
         response = self._execute_view(view, request)
@@ -76,13 +88,12 @@ class Minik:
         return response.to_dict()
 
     def _get_view(self, request):
+        """
+        Look up the view associated with a route.
+        """
 
         view = self._routes.get(f'{request.resource}_{request.method.lower()}')
-
-        if view:
-            return view
-
-        return self._routes.get(request.resource)
+        return view if view else self._routes.get(request.resource)
 
     def _execute_view(self, view, request):
         """

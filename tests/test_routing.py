@@ -29,21 +29,25 @@ def no_method_view():
     return {'method': sample_app.current_request.method.lower()}
 
 
-@sample_app.route('/activity', method='POST')
+@sample_app.route('/activity', methods=['POST'])
 def post_view():
     return {'id': 2, 'message': 'success'}
 
 
-@sample_app.route('/activity/{activity_id}', method='GET')
+@sample_app.route('/activity/{activity_id}', methods=['GET'])
 def get_view(activity_id):
     return {'id': activity_id, 'type': 'cycling '}
+
+
+@sample_app.route('/activity_post_put', methods=['POST', 'PUT'])
+def post_put_view():
+    return {'method': sample_app.current_request.method.lower()}
 
 
 @pytest.mark.parametrize("http_method", ['POST', 'PUT', 'PATCH', 'DELETE'])
 def test_routing_no_method(create_router_event, http_method):
     """
-    Validate that if a view is defined without a specific method, ANY http method
-    should execute the view.
+    A route defined without a set of methods will be invoked for ANY HTTP method.
     """
 
     event = create_router_event('/activity_no_method',
@@ -52,6 +56,41 @@ def test_routing_no_method(create_router_event, http_method):
 
     response = sample_app(event, context)
     assert json.loads(response['body'])['method'] == http_method.lower()
+
+
+@pytest.mark.parametrize("http_method", ['POST', 'PUT'])
+def test_route_defined_for_post_put(create_router_event, http_method):
+    """
+    Using the activity_post_put view definition, validate that the view gets
+    correctly executed for the two methods it has in its definition.
+    """
+
+    event = create_router_event('/activity_post_put',
+                                method=http_method,
+                                body={'type': 'cycle', 'distance': 15})
+
+    response = sample_app(event, context)
+    expected_response = post_put_view()
+
+    assert response['body'] == json.dumps(expected_response)
+
+
+@pytest.mark.parametrize("http_method", ['GET', 'DELETE'])
+def test_route_defined_for_post_put_not_called(create_router_event, http_method):
+    """
+    Using the activity_post_put view definition, validate that the view gets
+    correctly executed for the two methods it has in its definition.
+    """
+
+    event = create_router_event('/activity_post_put',
+                                method=http_method,
+                                body={'type': 'cycle', 'distance': 15})
+
+    response = sample_app(event, context)
+    expected_response = post_put_view()
+
+    # The given view is not associated with the given HTTP method.
+    assert response['statusCode'] == 500
 
 
 def test_routing_for_http_post(create_router_event):
