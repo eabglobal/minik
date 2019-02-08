@@ -16,8 +16,9 @@
 
 
 import json
-import requests
 from unittest.mock import MagicMock
+
+from minik.status_codes import codes
 from minik.constants import CONFIG_ERROR_MSG
 from minik.core import Minik, BadRequestError, ConfigurationError, JsonResponse
 
@@ -61,7 +62,7 @@ def test_sample_view_with_path_params(create_router_event):
     response = sample_app(event, context)
 
     assert response['body'] == json.dumps(view_body)
-    assert response['statusCode'] == requests.codes.ok
+    assert response['statusCode'] == codes.ok
 
 
 def test_sample_view_without_query_params(create_router_event):
@@ -75,7 +76,7 @@ def test_sample_view_without_query_params(create_router_event):
     response = sample_app(event, context)
 
     assert response['body'] == json.dumps(view_body)
-    assert response['statusCode'] == requests.codes.ok
+    assert response['statusCode'] == codes.ok
 
 
 def test_sample_view_with_undefined_query_params(create_router_event):
@@ -89,7 +90,7 @@ def test_sample_view_with_undefined_query_params(create_router_event):
     response = sample_app(event, context)
 
     assert response['body'] == json.dumps(view_body)
-    assert response['statusCode'] == requests.codes.ok
+    assert response['statusCode'] == codes.ok
 
 
 def test_sample_view_without_headers(create_router_event):
@@ -101,7 +102,7 @@ def test_sample_view_without_headers(create_router_event):
     del event['headers']
     response = sample_app(event, context)
 
-    assert response['statusCode'] == requests.codes.ok
+    assert response['statusCode'] == codes.ok
 
 
 def test_sample_view_with_undefined_headers(create_router_event):
@@ -113,7 +114,7 @@ def test_sample_view_with_undefined_headers(create_router_event):
     event['headers'] = None
     response = sample_app(event, context)
 
-    assert response['statusCode'] == requests.codes.ok
+    assert response['statusCode'] == codes.ok
 
 
 def test_sample_view_with_missing_path_params(create_router_event):
@@ -128,7 +129,7 @@ def test_sample_view_with_missing_path_params(create_router_event):
 
     response = sample_app(event, context)
 
-    assert response['statusCode'] == requests.codes.server_error
+    assert response['statusCode'] == codes.server_error
 
 
 def test_sample_view_route_does_not_match(create_router_event):
@@ -139,7 +140,7 @@ def test_sample_view_route_does_not_match(create_router_event):
 
     response = sample_app(event, context)
 
-    assert response['statusCode'] == requests.codes.server_error
+    assert response['statusCode'] == codes.not_found
 
 
 def test_bad_request_correctly_handled(create_router_event):
@@ -148,7 +149,7 @@ def test_bad_request_correctly_handled(create_router_event):
 
     response = sample_app(event, context)
 
-    assert response['statusCode'] == requests.codes.bad_request
+    assert response['statusCode'] == codes.bad_request
     assert 'Not good mah friend. Something terrible has happened!' in response['body']
 
 
@@ -163,7 +164,7 @@ def test_json_body_in_view(create_router_event):
 
     response = sample_app(event, context)
 
-    assert response['statusCode'] == requests.codes.ok
+    assert response['statusCode'] == codes.ok
     assert json.loads(response['body']) == test_body
 
 
@@ -177,7 +178,7 @@ def test_view_without_path_parameters(create_router_event):
 
     response = sample_app(event, context)
 
-    assert response['statusCode'] == requests.codes.ok
+    assert response['statusCode'] == codes.ok
     assert json.loads(response['body']) == test_body
 
 

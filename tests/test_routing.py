@@ -18,6 +18,7 @@ import json
 import pytest
 from unittest.mock import MagicMock
 from minik.core import Minik
+from minik.status_codes import codes
 
 
 sample_app = Minik()
@@ -87,10 +88,26 @@ def test_route_defined_for_post_put_not_called(create_router_event, http_method)
                                 body={'type': 'cycle', 'distance': 15})
 
     response = sample_app(event, context)
-    expected_response = post_put_view()
 
     # The given view is not associated with the given HTTP method.
-    assert response['statusCode'] == 500
+    assert response['statusCode'] == codes.method_not_allowed
+
+
+@pytest.mark.parametrize("http_method", ['GET', 'DELETE'])
+def test_not_found_response(create_router_event, http_method):
+    """
+    Using the activity_post_put view definition, validate that the view gets
+    correctly executed for the two methods it has in its definition.
+    """
+
+    event = create_router_event('/not_found_route',
+                                method=http_method,
+                                body={'type': 'cycle', 'distance': 15})
+
+    response = sample_app(event, context)
+
+    # The given view is not associated with the given HTTP method.
+    assert response['statusCode'] == codes.not_found
 
 
 def test_routing_for_http_post(create_router_event):
