@@ -118,4 +118,5 @@ def _init():
                '\n'.join(doc(code) for code in sorted(_codes))
                if __doc__ is not None else None)
 
+
 _init()
