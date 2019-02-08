@@ -51,21 +51,11 @@ class Minik:
 
         def _register_view(view_func):
 
-            # # The view is associated with a set of HTTP methods. Add the view for
-            # # each one of the methods.
-            # methods = kwargs.get('methods', [])
-            # for method in methods:
-            #     self._routes[f'{path}_{method.lower()}'] = view_func
-
-            # # When no method is specified, the route will be invoked for every
-            # # single HTTP method type. I.e. GET, PUT, POST, DELETE...
-            # if not methods:
-            #     self._routes[path] = view_func
-
             methods = kwargs.get('methods', [])
             self._routes[path] = SimpleRoute(view_func, methods)
 
             return view_func
+
         return _register_view
 
     def __call__(self, event, context):
