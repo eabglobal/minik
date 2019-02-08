@@ -48,7 +48,7 @@ define the methods, by default, every single HTTP method will be allowed.
 
 .. code-block:: python
 
-    from minik.core import Minik, BadRequestError
+    from minik.core import Minik
 
     app = Minik()
 
