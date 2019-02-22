@@ -1,6 +1,6 @@
 
 S3_BUCKET=sam-artifacts-dev
-STACK_NAME ?= minik-api
+STACK_NAME ?= minik-auth
 SAM_TEMPLATE_BASE=sam
 SAM_TEMPLATE=$(SAM_TEMPLATE_BASE).yml
 SAM_OUTPUT=$(SAM_TEMPLATE_BASE)-new.yml

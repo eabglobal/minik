@@ -1,10 +1,33 @@
-Transform: 'AWS::Serverless-2016-10-31'
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: API Gateway with Lambda Token Authorizer
 Resources:
 
-  EventHandler:
-    # This resource creates a Lambda function.
-    Type: 'AWS::Serverless::Function'
+  EventsAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        DefaultAuthorizer: MyLambdaRequestAuthorizer
+        Authorizers:
+          MyLambdaRequestAuthorizer:
+            FunctionPayloadType: REQUEST
+            FunctionArn: !GetAtt MyAuthFunction.Arn
+            # FunctionInvokeRole: !Ref MyRole
+            Identity:
+              QueryStrings:
+                - auth
+              # NOTE: Additional options:
+              # Headers:
+              #   - Authorization
+              # StageVariables:
+              #   - AUTHORIZATION
+              # Context:
+              #   - authorization
+              # ReauthorizeEvery: 100 # seconds
 
+  EventsFunction:
+    Type: AWS::Serverless::Function
     Properties:
       # This function uses the python 3.6 runtime.
       Runtime: python3.6
@@ -14,21 +37,30 @@ Resources:
 
       # The location of the Lambda function code.
       CodeUri: ./dist/events.zip
-
-      # Event sources to attach to this function. In this case, we are attaching
-      # two API Gateway endpoint to the Lambda function. The function is
-      # called when a HTTP request is made to the API Gateway endpoint.
       Events:
-        GetEventsApi:
-          # Define an API Gateway endpoint that responds to HTTP GET at /events/20901
+        GetRoot:
           Type: Api
           Properties:
-            Path: /events/{zip_code}
-            Method: GET
+            RestApiId: !Ref EventsAPI
+            Path: /
+            Method: get
+            Auth:
+              Authorizer: NONE
+        GetUsers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref EventsAPI
+            Path: /users
+            Method: get
 
-        AddEventApi:
-          # Define an API Gateway endpoint that responds to HTTP POST at /events/20902
-          Type: Api
-          Properties:
-            Path: /events/{zip_code}
-            Method: POST
+  MyAuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/auth.zip
+      Handler: authorizer.handler
+      Runtime: python3.6
+
+Outputs:
+  ApiURL:
+    Description: "API URL"
+    Value: !Sub 'https://${EventsAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
