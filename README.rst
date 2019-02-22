@@ -196,3 +196,25 @@ is executed.
 Building the SAM template is a responsibility of the developer. This tool does not
 manipulate the template at all. The template is what links an API Gateway endpoint
 to a lambda function.
+
+Contributing
+************
+
+For guidance on setting up a development environment and how to make a
+contribution to Juniper, see the `contributing guidelines`_.
+
+.. _contributing guidelines: https://github.com/eabglobal/juniper/blob/master/CONTRIBUTING.rst
+
+Links
+*****
+
+* Documentation: https://eabglobal.github.io/minik/
+* License: `Apache Software License`_
+
+* Code: https://github.com/eabglobal/minik
+* Issue tracker: https://github.com/eabglobal/minik/issues
+* Test status:
+
+  * Linux, Mac: https://circleci.com/gh/eabglobal/juniper
+
+.. _Apache Software License: https://github.com/eabglobal/juniper/blob/master/LICENSE
