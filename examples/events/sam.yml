@@ -1,0 +1,34 @@
+Transform: 'AWS::Serverless-2016-10-31'
+Resources:
+
+  EventHandler:
+    # This resource creates a Lambda function.
+    Type: 'AWS::Serverless::Function'
+
+    Properties:
+      # This function uses the python 3.6 runtime.
+      Runtime: python3.6
+
+      # This is the Lambda function's handler.
+      Handler: lambda_handler.app
+
+      # The location of the Lambda function code.
+      CodeUri: ./dist/events.zip
+
+      # Event sources to attach to this function. In this case, we are attaching
+      # two API Gateway endpoint to the Lambda function. The function is
+      # called when a HTTP request is made to the API Gateway endpoint.
+      Events:
+        GetEventsApi:
+          # Define an API Gateway endpoint that responds to HTTP GET at /events/20901
+          Type: Api
+          Properties:
+            Path: /events/{zip_code}
+            Method: GET
+
+        AddEventApi:
+          # Define an API Gateway endpoint that responds to HTTP POST at /events/20902
+          Type: Api
+          Properties:
+            Path: /events/{zip_code}
+            Method: POST
