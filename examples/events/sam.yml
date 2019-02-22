@@ -6,25 +6,18 @@ Resources:
   EventsAPI:
     Type: AWS::Serverless::Api
     Properties:
+      EndpointConfiguration: REGIONAL
       StageName: Prod
       Auth:
         DefaultAuthorizer: MyLambdaRequestAuthorizer
         Authorizers:
           MyLambdaRequestAuthorizer:
-            FunctionPayloadType: REQUEST
+            FunctionPayloadType: TOKEN
             FunctionArn: !GetAtt MyAuthFunction.Arn
-            # FunctionInvokeRole: !Ref MyRole
             Identity:
-              QueryStrings:
-                - auth
-              # NOTE: Additional options:
-              # Headers:
-              #   - Authorization
-              # StageVariables:
-              #   - AUTHORIZATION
-              # Context:
-              #   - authorization
-              # ReauthorizeEvery: 100 # seconds
+              Headers:
+              - Authorization
+              ReauthorizeEvery: 300
 
   EventsFunction:
     Type: AWS::Serverless::Function
@@ -38,19 +31,17 @@ Resources:
       # The location of the Lambda function code.
       CodeUri: ./dist/events.zip
       Events:
-        GetRoot:
+        PostEvents:
           Type: Api
           Properties:
             RestApiId: !Ref EventsAPI
-            Path: /
-            Method: get
-            Auth:
-              Authorizer: NONE
-        GetUsers:
+            Path: /events
+            Method: post
+        GetEvents:
           Type: Api
           Properties:
             RestApiId: !Ref EventsAPI
-            Path: /users
+            Path: /events/{zip_code}
             Method: get
 
   MyAuthFunction:
@@ -58,7 +49,7 @@ Resources:
     Properties:
       CodeUri: ./dist/auth.zip
       Handler: authorizer.handler
-      Runtime: python3.6
+      Runtime: nodejs8.10
 
 Outputs:
   ApiURL:

@@ -6,4 +6,4 @@ functions:
 
   auth:
     include:
-    - ./auth_lambda/authorizer.py
+    - ./auth_lambda/authorizer.js
