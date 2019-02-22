@@ -1,0 +1,278 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>1. Getting started &#8212; minik  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to minik’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started">
+<h1>1. Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>As a web developer building serverless APIs in the AWS ecosystem, there are two
+core services that one must be familiar with:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://aws.amazon.com/api-gateway/">API Gateway</a></li>
+<li><a class="reference external" href="https://aws.amazon.com/lambda/">AWS Lambda function</a></li>
+</ul>
+<p>In this domain, API gateway serves as the proxy that receives a request from the
+internet, validates it and sends the request to the associated function or view
+for processing.</p>
+<div class="section" id="setup">
+<h2>1.1. Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pip</span> <span class="n">install</span> <span class="n">minik</span>
+</pre></div>
+</div>
+<p>After installing minik, you can write your lambda function handler using a familiar
+interface. Your <cite>lambda_function.py</cite> should look like:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">minik.core</span> <span class="k">import</span> <span class="n">Minik</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Minik</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/events/</span><span class="si">{zip_code}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_events</span><span class="p">(</span><span class="n">zip_code</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">zip_code</span> <span class="o">==</span> <span class="s1">&#39;20902&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;events&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MD Gran fondo&#39;</span><span class="p">,</span> <span class="s1">&#39;Old Busthead&#39;</span><span class="p">]}</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;events&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;other events&#39;</span><span class="p">]}</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/events&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">post_event</span><span class="p">():</span>
+
+    <span class="n">event_name</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">json_body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+    <span class="c1"># Save this event somewhere</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sam-template">
+<h2>1.2. SAM template<a class="headerlink" href="#sam-template" title="Permalink to this headline">¶</a></h2>
+<p>With the lambda function handler in place, the <cite>SAM</cite> template for our function
+would looke like:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">Transform</span><span class="p">:</span> <span class="s">&#39;AWS::Serverless-2016-10-31&#39;</span>
+<span class="nt">Resources</span><span class="p">:</span>
+
+<span class="nt">EventHandler</span><span class="p">:</span>
+    <span class="c1"># This resource creates a Lambda function.</span>
+    <span class="nt">Type</span><span class="p">:</span> <span class="s">&#39;AWS::Serverless::Function&#39;</span>
+
+    <span class="nt">Properties</span><span class="p">:</span>
+        <span class="c1"># This function uses the python 3.6 runtime.</span>
+        <span class="nt">Runtime</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python3.6</span>
+
+        <span class="c1"># This is the Lambda function&#39;s handler.</span>
+        <span class="nt">Handler</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">lambda_handler.app</span>
+
+        <span class="c1"># The location of the Lambda function code.</span>
+        <span class="nt">CodeUri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">./dist/events.zip</span>
+
+        <span class="c1"># Event sources to attach to this function. In this case, we are attaching</span>
+        <span class="c1"># one API Gateway endpoint to the Lambda function. The function is</span>
+        <span class="c1"># called when a HTTP request is made to the API Gateway endpoint.</span>
+        <span class="nt">Events</span><span class="p">:</span>
+
+            <span class="nt">GetEventsApi</span><span class="p">:</span>
+                <span class="c1"># Define an API Gateway endpoint that responds to HTTP GET at /events/20901</span>
+                <span class="nt">Type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Api</span>
+                <span class="nt">Properties</span><span class="p">:</span>
+                    <span class="nt">Path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/events/{zip_code}</span>
+                    <span class="nt">Method</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">GET</span>
+
+            <span class="nt">AddEventApi</span><span class="p">:</span>
+                <span class="c1"># Define an API Gateway endpoint that responds to HTTP POST at /events/20902</span>
+                <span class="nt">Type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Api</span>
+                <span class="nt">Properties</span><span class="p">:</span>
+                    <span class="nt">Path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/events/{zip_code}</span>
+                    <span class="nt">Method</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">POST</span>
+</pre></div>
+</div>
+<p>The very first line is the one that differentiates this template from a regular
+cloud formation definition. Specifically for using <cite>minik</cite>, the Handler field
+defines a file called <cite>app.py</cite> with a variable called app. Just as defined the
+lambda function.</p>
+<p>The Events section of the template defines the API Gateway endpoints. The entries
+in this sections are what link an API endpoint to a lambda function. In this case
+the template defines two endpoints linked to the same function.</p>
+</div>
+<div class="section" id="packaging">
+<h2>1.3. Packaging<a class="headerlink" href="#packaging" title="Permalink to this headline">¶</a></h2>
+<p>Our SAM template refers to the CodeUri: ./dist/events.zip, this is the artifact
+that will be deployed to AWS and it must contain the code dependencies as well
+as the lambda function definition. The AWS documentation describes the steps that
+a developer can take in order to create that artifact <a class="reference external" href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html">here</a></p>
+<p>We recomend a tool called <a class="reference external" href="https://github.com/eabglobal/juniper">Juniper</a> as a way to generate the .zip artifact. With
+Juniper you have to create a manifest file that defines your packaging structure.
+In this example that file would look like this:</p>
+<div class="code yaml highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">functions</span><span class="p">:</span>
+  <span class="n">events</span><span class="p">:</span>
+    <span class="n">requirements</span><span class="p">:</span> <span class="o">./</span><span class="n">src</span><span class="o">/</span><span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+    <span class="n">include</span><span class="p">:</span>
+    <span class="o">-</span> <span class="o">./</span><span class="n">src</span><span class="o">/</span><span class="n">lambda_function</span><span class="o">.</span><span class="n">py</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">juniper</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">juni</span> <span class="n">build</span>
+</pre></div>
+</div>
+<p>After running the juni build command, by default juniper creates a zip artifact
+in the dist directory. The zip file will contain the dependencies of the project
+which in this case, the only dependecy we have is <cite>minik</cite>.</p>
+</div>
+<div class="section" id="deployments">
+<h2>1.4. Deployments<a class="headerlink" href="#deployments" title="Permalink to this headline">¶</a></h2>
+<p>To deploy our function to AWS, make sure you have the the <a class="reference external" href="https://github.com/awslabs/aws-sam-cli">SAM cli</a> installed. Using
+SAM, we have two commands at our disposal, one for packaging and one for deployment.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sam</span> <span class="n">package</span> \
+    <span class="o">--</span><span class="n">s3</span><span class="o">-</span><span class="n">bucket</span> <span class="n">serverless</span><span class="o">-</span><span class="n">artifacts</span> \
+    <span class="o">--</span><span class="n">template</span><span class="o">-</span><span class="n">file</span> <span class="o">./</span><span class="n">sam</span><span class="o">.</span><span class="n">yml</span> \
+    <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">file</span> <span class="o">./</span><span class="n">dist</span><span class="o">/</span><span class="n">new_sam</span><span class="o">.</span><span class="n">yml</span>
+</pre></div>
+</div>
+<p>The sam package command will upload the .zip artifact to the bucket you specify
+as an input parameter and the command will generate an identical transformed verison
+of the template in the destination you identify.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sam</span> <span class="n">deploy</span> \
+    <span class="o">--</span><span class="n">template</span><span class="o">-</span><span class="n">file</span> <span class="o">./</span><span class="n">dist</span><span class="o">/</span><span class="n">new_sam</span><span class="o">.</span><span class="n">yml</span> \
+    <span class="o">--</span><span class="n">stack</span><span class="o">-</span><span class="n">name</span> <span class="n">minik</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">api</span> \
+    <span class="o">--</span><span class="n">capabilities</span> <span class="n">CAPABILITY_IAM</span> \
+    <span class="o">--</span><span class="n">region</span> <span class="n">us</span><span class="o">-</span><span class="n">east</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<p>The deploy command takes as an input the transformed version generated by the package
+command and it actually creates a new stack in your AWS domain.</p>
+</div>
+<div class="section" id="conclusion">
+<h2>1.5. Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h2>
+<p>The previous sections outlined the entire workflow a developer must follow in order
+to build APIs using AWS resources. The process outlined above gives the developer
+the flexibility to structure the project however he/she desires, also, the developer
+has full ownership of the packaging and deployment processes.</p>
+<p>Minik is a bridge between the API Gateway and the lambda function. The bridge gives
+the developer a familiar interface to streamline the development of serverless APIs.</p>
+</div>
+<div class="section" id="working-example">
+<h2>1.6. Working example<a class="headerlink" href="#working-example" title="Permalink to this headline">¶</a></h2>
+<p>The codebase for minik includes an examples directory. The snippets shown here
+have been tested and deployed using the services, tools and best practices defined
+in this page. To run the examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">eabglobal</span><span class="o">/</span><span class="n">minik</span><span class="o">.</span><span class="n">git</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cd</span> <span class="n">minik</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="n">venv</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source</span> <span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">/</span><span class="n">dev</span><span class="o">.</span><span class="n">txt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cd</span> <span class="n">examples</span><span class="o">/</span><span class="n">events</span>
+</pre></div>
+</div>
+<p>Once you’re in this folder, you can use the commands defined in the make file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make</span> <span class="n">build</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">make</span> <span class="n">package</span> <span class="n">AWS_PROFILE</span><span class="o">=&lt;</span><span class="n">your</span> <span class="n">profile</span><span class="o">&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">make</span> <span class="n">deploy</span> <span class="n">AWS_PROFILE</span><span class="o">=&lt;</span><span class="n">your</span> <span class="n">profile</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">minik</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">1. Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setup">1.1. Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sam-template">1.2. SAM template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#packaging">1.3. Packaging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#deployments">1.4. Deployments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#conclusion">1.5. Conclusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-example">1.6. Working example</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to minik’s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, EAB Tech Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/quickstart.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
