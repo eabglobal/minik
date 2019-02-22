@@ -17,4 +17,4 @@ def post_event():
     event_name = app.current_request.json_body.get('name')
     # Save this event somewhere
 
-    return {'id': 100}
+    return {'id': 100, 'name': event_name}
