@@ -215,6 +215,6 @@ Links
 * Issue tracker: https://github.com/eabglobal/minik/issues
 * Test status:
 
-  * Linux, Mac: https://circleci.com/gh/eabglobal/juniper
+  * Linux, Mac: https://circleci.com/gh/eabglobal/minik
 
-.. _Apache Software License: https://github.com/eabglobal/juniper/blob/master/LICENSE
+.. _Apache Software License: https://github.com/eabglobal/minik/blob/master/LICENSE
