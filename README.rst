@@ -37,7 +37,7 @@ function should look like:
             raise BadRequestError(msg='This is not a supported name.')
 
         # A simple way of getting the current request as json.
-        request_payload = app.current_request.json_body
+        request_payload = app.request.json_body
         return {'hello': name}
 
 HTTP Methods
@@ -59,7 +59,7 @@ define the methods, by default, every single HTTP method will be allowed.
 
     @app.route('/events', methods=['POST', 'PUT'])
     def create_event_view():
-        create_event(app.current_request.json_body)
+        create_event(app.request.json_body)
         return {'result': 'complete'}
 
 

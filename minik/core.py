@@ -70,7 +70,7 @@ class Minik:
         """
 
         request = MinikRequest(event, context)
-        self.current_request = request
+        self.request = request
 
         route = self._routes.get(request.resource)
 
