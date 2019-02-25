@@ -201,9 +201,9 @@ Contributing
 ************
 
 For guidance on setting up a development environment and how to make a
-contribution to Juniper, see the `contributing guidelines`_.
+contribution to Minik, see the `contributing guidelines`_.
 
-.. _contributing guidelines: https://github.com/eabglobal/juniper/blob/master/CONTRIBUTING.rst
+.. _contributing guidelines: https://github.com/eabglobal/minik/blob/master/CONTRIBUTING.rst
 
 Links
 *****
