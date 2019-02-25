@@ -3,9 +3,8 @@ Minik: Serverless Web Framework
 
 .. image:: assets/minik.png
 
-Time to move on from our ASGI based frameworks. Using AWS lambda functions
-and API Gateway, minik will serve as the framework that facilitates development
-in the serverless space.
+Using AWS lambda functions and API Gateway, minik will serve as the framework
+that facilitates development in the serverless space.
 
 Installing
 **********
@@ -100,6 +99,8 @@ Things to be aware of when working using minik:
   in AWS! There's no excuse not to. Use `sam package` and `sam deploy` for deployment
   purposes.
 
+.. _Juniper: https://github.com/eabglobal/juniper
+.. _SAM: https://aws.amazon.com/serverless/sam/
 
 Contributing
 ************

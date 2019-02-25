@@ -27,6 +27,11 @@ docs: clean-pyc install-dev
 release:
 	python scripts/make-release.py
 
+test-release:
+	python3 setup.py sdist bdist_wheel
+	twine check dist/*
+	python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
