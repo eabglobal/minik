@@ -142,3 +142,14 @@ all dependencies are installed.
 - ``make test`` runs the basic test suite with ``pytest``
 - ``make cov`` runs the basic test suite with ``coverage``
 - ``make docs`` builds the HTML documentation
+
+push to pypi
+~~~~~~~~~~~~
+
+Before pushing any changes to the pypi please take a look at the steps defined in
+`this <https://packaging.python.org/tutorials/packaging-projects/>`_ documentation.
+
+    >>> python3 setup.py sdist bdist_wheel
+    >>> twine check dist/*
+    >>> python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+    >>> twine upload dist/*

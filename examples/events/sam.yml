@@ -1,0 +1,57 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: API Gateway with Lambda Token Authorizer
+Resources:
+
+  EventsAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      EndpointConfiguration: REGIONAL
+      StageName: Prod
+      Auth:
+        DefaultAuthorizer: MyLambdaRequestAuthorizer
+        Authorizers:
+          MyLambdaRequestAuthorizer:
+            FunctionPayloadType: TOKEN
+            FunctionArn: !GetAtt MyAuthFunction.Arn
+            Identity:
+              Headers:
+              - Authorization
+              ReauthorizeEvery: 300
+
+  EventsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # This function uses the python 3.6 runtime.
+      Runtime: python3.6
+
+      # This is the Lambda function's handler.
+      Handler: lambda_handler.app
+
+      # The location of the Lambda function code.
+      CodeUri: ./dist/events.zip
+      Events:
+        PostEvents:
+          Type: Api
+          Properties:
+            RestApiId: !Ref EventsAPI
+            Path: /events
+            Method: post
+        GetEvents:
+          Type: Api
+          Properties:
+            RestApiId: !Ref EventsAPI
+            Path: /events/{zip_code}
+            Method: get
+
+  MyAuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./dist/auth.zip
+      Handler: authorizer.handler
+      Runtime: nodejs8.10
+
+Outputs:
+  ApiURL:
+    Description: "API URL"
+    Value: !Sub 'https://${EventsAPI}.execute-api.${AWS::Region}.amazonaws.com/Prod/'

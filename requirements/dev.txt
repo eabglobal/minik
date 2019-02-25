@@ -5,3 +5,7 @@ pytest-mock==1.10.0
 pytest-pythonpath==0.7.2
 pytest-cov==2.5.1
 flake8==3.5.0
+aws-sam-cli==0.11.0
+awscli==1.16.110
+Sphinx==1.8.4
+juniper

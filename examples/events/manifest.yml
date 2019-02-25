@@ -1,0 +1,9 @@
+functions:
+  events:
+    requirements: ./requirements.txt
+    include:
+    - ./lambda_function/lambda_handler.py
+
+  auth:
+    include:
+    - ./auth_lambda/authorizer.js
