@@ -3,7 +3,7 @@
 Minik Changelog
 ===============
 
-Version 0.1.5
+Version 0.1.7
 -------------
 
 Released on February 25th, 2019, codename Yunus

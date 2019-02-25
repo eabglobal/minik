@@ -25,7 +25,9 @@ docs: clean-pyc install-dev
 	$(MAKE) -C docs html
 
 release:
-	python scripts/make-release.py
+	python3 setup.py sdist bdist_wheel
+	twine check dist/*
+	twine upload dist/*
 
 test-release:
 	python3 setup.py sdist bdist_wheel
