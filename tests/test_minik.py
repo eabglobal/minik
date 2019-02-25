@@ -34,7 +34,7 @@ def sample_view(first, second):
 
 @sample_app.route('/bad_request')
 def bad_request_view():
-    raise BadRequestError(msg='Not good mah friend. Something terrible has happened!')
+    raise BadRequestError('Not good mah friend. Something terrible has happened!')
 
 
 @sample_app.route('/echo')

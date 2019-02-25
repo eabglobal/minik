@@ -51,8 +51,7 @@ def get_events_list2():
 ])
 def test_route_defined_for_post_put(create_router_event, http_method, expected_message):
     """
-    Using the activity_post_put view definition, validate that the view gets
-    correctly executed for the two methods it has in its definition.
+    For a given path, minik can execute different routes based on the HTTP method.
     """
 
     event = create_router_event('/events/{zip_code}',
@@ -67,8 +66,8 @@ def test_route_defined_for_post_put(create_router_event, http_method, expected_m
 
 def test_route_defined_for_duplicate_views(create_router_event):
     """
-    Using the activity_post_put view definition, validate that the view gets
-    correctly executed for the two methods it has in its definition.
+    This is an invalid definition in which the user of minik is trying to associate
+    two different views for the same (path, method) pair.
     """
 
     event = create_router_event('/event_list',
