@@ -1,0 +1,80 @@
+# -*- coding: utf-8 -*-
+"""
+    test_minik.py
+    :copyright: © 2019 by the EAB Tech team.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+        http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+"""
+
+import json
+import pytest
+from unittest.mock import MagicMock
+from minik.core import Minik
+from minik.status_codes import codes
+
+
+sample_app = Minik()
+context = MagicMock()
+
+
+@sample_app.route("/events/{zip_code}", methods=['GET'])
+def get_events(zip_code):
+    return {'message': 'get handler'}
+
+
+@sample_app.route("/events/{zip_code}", methods=['POST'])
+def post_event(zip_code):
+    return {'message': 'post handler'}
+
+
+@sample_app.route("/event_list", methods=['GET'])
+def get_events_list1():
+    return {'message': 'duplicate 1'}
+
+
+@sample_app.route("/event_list", methods=['GET'])
+def get_events_list2():
+    return {'message': 'duplicate 2'}
+
+
+@pytest.mark.parametrize("http_method, expected_message", [
+    ('GET', 'get handler'),
+    ('POST', 'post handler')
+])
+def test_route_defined_for_post_put(create_router_event, http_method, expected_message):
+    """
+    Using the activity_post_put view definition, validate that the view gets
+    correctly executed for the two methods it has in its definition.
+    """
+
+    event = create_router_event('/events/{zip_code}',
+                                method=http_method,
+                                pathParameters={'zip_code': 20902},
+                                body={'type': 'cycle'})
+
+    response = sample_app(event, context)
+
+    assert json.loads(response['body'])['message'] == expected_message
+
+
+def test_route_defined_for_duplicate_views(create_router_event):
+    """
+    Using the activity_post_put view definition, validate that the view gets
+    correctly executed for the two methods it has in its definition.
+    """
+
+    event = create_router_event('/event_list',
+                                method='GET',
+                                body={'type': 'cycle'})
+
+    response = sample_app(event, context)
+
+    assert response['statusCode'] == codes.not_allowed

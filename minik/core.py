@@ -17,7 +17,7 @@
 
 import json
 import traceback
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from minik.constants import CONFIG_ERROR_MSG
 from minik.status_codes import codes
 
@@ -42,7 +42,7 @@ class Minik:
     """
 
     def __init__(self):
-        self._routes = {}
+        self._routes = defaultdict(list)
 
     def route(self, path, **kwargs):
         """
@@ -52,7 +52,7 @@ class Minik:
         def _register_view(view_func):
 
             methods = kwargs.get('methods', [])
-            self._routes[path] = SimpleRoute(view_func, methods)
+            self._routes[path].append(SimpleRoute(view_func, methods))
 
             return view_func
 
@@ -72,23 +72,30 @@ class Minik:
         request = MinikRequest(event, context)
         self.request = request
 
-        route = self._routes.get(request.resource)
+        routes = self._routes.get(request.resource)
 
-        if not route:
+        if not routes:
 
             return JsonResponse(
                 {'error_message': 'The requested URL was not found on the server.'},
                 status_code=codes.not_found
             ).to_dict()
 
-        if route.methods and request.method not in route.methods:
+        target_route = [route for route in routes if not route.methods or (request.method in route.methods)]
 
+        if not target_route:
             return JsonResponse(
                 {'error_message': 'Method is not allowed.'},
                 status_code=codes.method_not_allowed
             ).to_dict()
 
-        response = self._execute_view(route.view, request)
+        if len(target_route) > 1:
+            return JsonResponse(
+                {'error_message': f'Found multiple views for the "{request.method}" method.'},
+                status_code=codes.not_allowed
+            ).to_dict()
+
+        response = self._execute_view(target_route[0].view, request)
 
         return response.to_dict()
 
