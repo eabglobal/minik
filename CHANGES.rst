@@ -12,6 +12,7 @@ Released on February 25th, 2019, codename Yunus
 - Initial version of the project's documentation (minik/issues/9).
 - Implemented feature that allows definition a view for a given (path, http_method)
   pair (minik/issues/11).
+- Updating readme to be less verbose
 
 
 Version 0.1.4
