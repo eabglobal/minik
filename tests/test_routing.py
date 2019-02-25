@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    test_minik.py
+    test_routing.py
     :copyright: © 2019 by the EAB Tech team.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,7 @@ context = MagicMock()
 
 @sample_app.route('/activity_no_method')
 def no_method_view():
-    return {'method': sample_app.current_request.method.lower()}
+    return {'method': sample_app.request.method.lower()}
 
 
 @sample_app.route('/activity', methods=['POST'])
@@ -42,7 +42,7 @@ def get_view(activity_id):
 
 @sample_app.route('/activity_post_put', methods=['POST', 'PUT'])
 def post_put_view():
-    return {'method': sample_app.current_request.method.lower()}
+    return {'method': sample_app.request.method.lower()}
 
 
 @pytest.mark.parametrize("http_method", ['POST', 'PUT', 'PATCH', 'DELETE'])

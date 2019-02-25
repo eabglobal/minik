@@ -3,6 +3,17 @@
 Minik Changelog
 ===============
 
+Version 0.1.5
+-------------
+
+Released on February 25th, 2019, codename Yunus
+
+- Minor updates to the pypi definition
+- Initial version of the project's documentation (minik/issues/9).
+- Implemented feature that allows definition a view for a given (path, http_method)
+  pair (minik/issues/11).
+
+
 Version 0.1.4
 -------------
 
@@ -10,7 +21,7 @@ Released on February 8th, 2019, codename Gran Fondo II
 
 - Initial implementation to support method definition in the route (minik/issues/7)
 - Included the http codes from the requests library. This is a convenience mapping
- between different http status codes and their names.
+  between different http status codes and their names.
 - Updated the examples in the READ me to reflect the new functionality.
 
 

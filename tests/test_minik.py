@@ -34,17 +34,17 @@ def sample_view(first, second):
 
 @sample_app.route('/bad_request')
 def bad_request_view():
-    raise BadRequestError(msg='Not good mah friend. Something terrible has happened!')
+    raise BadRequestError('Not good mah friend. Something terrible has happened!')
 
 
 @sample_app.route('/echo')
 def echo_view():
-    return sample_app.current_request.json_body
+    return sample_app.request.json_body
 
 
 @sample_app.route('/aws_context')
 def aws_ctx_view():
-    ctx = sample_app.current_request.aws_context
+    ctx = sample_app.request.aws_context
     return {
         'aws_request_id': ctx.aws_request_id,
         'log_group_name': ctx.log_group_name,
@@ -155,7 +155,7 @@ def test_bad_request_correctly_handled(create_router_event):
 
 def test_json_body_in_view(create_router_event):
     """
-    Test that a given view has access to the current_request.json_body. The current
+    Test that a given view has access to the request.json_body. The current
     request contains the data of the requests payload.
     """
 
