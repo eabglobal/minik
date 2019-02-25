@@ -17,7 +17,7 @@
 
 import json
 import traceback
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from minik.constants import CONFIG_ERROR_MSG
 from minik.status_codes import codes
 
@@ -42,7 +42,7 @@ class Minik:
     """
 
     def __init__(self):
-        self._routes = {}
+        self._routes = defaultdict(list)
 
     def route(self, path, **kwargs):
         """
@@ -52,7 +52,7 @@ class Minik:
         def _register_view(view_func):
 
             methods = kwargs.get('methods', [])
-            self._routes[path] = SimpleRoute(view_func, methods)
+            self._routes[path].append(SimpleRoute(view_func, methods))
 
             return view_func
 
@@ -70,25 +70,19 @@ class Minik:
         """
 
         request = MinikRequest(event, context)
-        self.current_request = request
+        self.request = request
 
-        route = self._routes.get(request.resource)
+        try:
 
-        if not route:
+            route = self._find_route(request)
+            response = self._execute_view(route.view, request)
 
-            return JsonResponse(
-                {'error_message': 'The requested URL was not found on the server.'},
-                status_code=codes.not_found
-            ).to_dict()
-
-        if route.methods and request.method not in route.methods:
-
-            return JsonResponse(
-                {'error_message': 'Method is not allowed.'},
-                status_code=codes.method_not_allowed
-            ).to_dict()
-
-        response = self._execute_view(route.view, request)
+        except MinikViewError as pe:
+            response = JsonResponse({'error_message': str(pe)}, status_code=pe.status_code)
+        except Exception as te:
+            tracer = ''.join(traceback.format_exc())
+            # self.logger.error(tracer)
+            response = JsonResponse({'error_message': str(te), 'trace': tracer}, status_code=500)
 
         return response.to_dict()
 
@@ -98,16 +92,41 @@ class Minik:
         argumetns and return a JsonResponse.
         """
 
-        try:
-            if request.uri_params:
-                return JsonResponse(view(**request.uri_params))
-            return JsonResponse(view())
-        except MinikViewError as pe:
-            return JsonResponse({'error_message': str(pe)}, status_code=pe.STATUS_CODE)
-        except Exception as te:
-            tracer = ''.join(traceback.format_exc())
-            # self.logger.error(tracer)
-            return JsonResponse({'error_message': str(te), 'trace': tracer}, status_code=500)
+        if request.uri_params:
+            return JsonResponse(view(**request.uri_params))
+
+        return JsonResponse(view())
+
+    def _find_route(self, request):
+        """
+        Given the paramters of the request, lookup the associated view. The lookup
+        process follows a set of steps. If the view is not found an exception is
+        raised with the appropriate status code and error message.
+        """
+
+        routes = self._routes.get(request.resource)
+
+        if not routes:
+            raise MinikViewError(
+                'The requested URL was not found on the server.',
+                status_code=codes.not_found
+            )
+
+        target_route = [route for route in routes if not route.methods or (request.method in route.methods)]
+
+        if not target_route:
+            raise MinikViewError(
+                'Method is not allowed.',
+                status_code=codes.method_not_allowed
+            )
+
+        if len(target_route) > 1:
+            raise MinikViewError(
+                f'Found multiple views for the "{request.method}" method.',
+                status_code=codes.not_allowed
+            )
+
+        return target_route[0]
 
 
 class MinikRequest:
@@ -179,8 +198,9 @@ class MinikError(Exception):
 class MinikViewError(MinikError):
     STATUS_CODE = 500
 
-    def __init__(self, msg=''):
-        super().__init__(self.__class__.__name__ + ': %s' % msg)
+    def __init__(self, error_message, *args, **kwargs):
+        super().__init__(self.__class__.__name__ + ': %s' % error_message)
+        self.status_code = kwargs.get('status_code', self.STATUS_CODE)
 
 
 class BadRequestError(MinikViewError):
@@ -188,5 +208,5 @@ class BadRequestError(MinikViewError):
 
 
 class ConfigurationError(MinikError):
-    def __init__(self, msg=''):
-        super().__init__(self.__class__.__name__ + ': %s' % msg)
+    def __init__(self, error_message, *args, **kwargs):
+        super().__init__(self.__class__.__name__ + ': %s' % error_message)
