@@ -17,7 +17,7 @@ Setup
     >>> pip install minik
 
 After installing minik, you can write your lambda function handler using a familiar
-interface. Your `lambda_function.py` should look like:
+interface. Your `lambda_handler.py` should look like:
 
 .. code:: python
 
@@ -40,11 +40,20 @@ interface. Your `lambda_function.py` should look like:
 
         return {'id': 100}
 
+This API definition creates an instance of Minik and stores that instance in a
+variable called app. With the app, you can then decorate your views in a Flask
+like fashion.
+
+If you were to put that snippet in the AWS Lambda console, you would have to
+set the `entrypoint` to be the `lambda_handler.app`. However, for the above
+definition to work as expected you *must* include minik as one of your dependencies.
+Minik must be included in the .zip artifact you upload to the lambda function.
+
 SAM template
 ************
 
 With the lambda function handler in place, the `SAM` template for our function
-would looke like:
+would looks like:
 
 .. code-block:: yaml
 
@@ -84,13 +93,14 @@ would looke like:
                         Path: /events/{zip_code}
                         Method: POST
 
-The very first line is the one that differentiates this template from a regular
-cloud formation definition. Specifically for using `minik`, the Handler field
-defines a file called `app.py` with a variable called app. Just as defined the
-lambda function.
+
+The first line makes this cloudformation template a SAM template. In the definition
+of the lambda function, the `Handler` field points to the Minik app as defined in
+the `lambda_function:lambda_handler.py`. This configuration means that Minik will be
+the handler of the (event, context) you receive from the API gateway.
 
 The Events section of the template defines the API Gateway endpoints. The entries
-in this sections are what link an API endpoint to a lambda function. In this case
+in this section are what link an API endpoint to a lambda function. In this case
 the template defines two endpoints linked to the same function.
 
 Packaging
@@ -98,7 +108,7 @@ Packaging
 Our SAM template refers to the CodeUri: ./dist/events.zip, this is the artifact
 that will be deployed to AWS and it must contain the code dependencies as well
 as the lambda function definition. The AWS documentation describes the steps that
-a developer can take in order to create that artifact `here <https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html>`_
+a developer can take in order to create that artifact `here <https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html>`_.
 
 We recomend a tool called `Juniper`_ as a way to generate the .zip artifact. With
 Juniper you have to create a manifest file that defines your packaging structure.
@@ -116,12 +126,12 @@ In this example that file would look like this:
     >>> juni build
 
 After running the juni build command, by default juniper creates a zip artifact
-in the dist directory. The zip file will contain the dependencies of the project
-which in this case, the only dependecy we have is `minik`.
+in the dist directory. The zip file will contain the dependencies of the
+project. In this case the only dependency we have is minik.
 
 Deployments
 ***********
-To deploy our function to AWS, make sure you have the the `SAM cli`_ installed. Using
+To deploy our function to AWS, make sure you have the `SAM cli`_ installed. Using
 SAM, we have two commands at our disposal, one for packaging and one for deployment.
 
 .. code:: python
@@ -151,7 +161,7 @@ Conclusion
 **********
 The previous sections outlined the entire workflow a developer must follow in order
 to build APIs using AWS resources. The process outlined above gives the developer
-the flexibility to structure the project however he/she desires, also, the developer
+the flexibility to structure the project however he/she desires. Also, the developer
 has full ownership of the packaging and deployment processes.
 
 Minik is a bridge between the API Gateway and the lambda function. The bridge gives
