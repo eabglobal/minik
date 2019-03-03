@@ -124,7 +124,7 @@ needs that encouraged us to build minik:
 
 The features of this library should be absolutely driven by a very specific
 business need. So far, the minimal approach has been sufficient for our team to
-write and expose and API using AWS services.
+write and expose an API using AWS services.
 
 Just the framework
 ******************
