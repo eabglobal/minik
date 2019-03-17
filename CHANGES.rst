@@ -6,7 +6,7 @@ Minik Changelog
 Version 0.2.0
 -------------
 
-Released on March 2nd, 2019, codename Yunus I
+Released on March 17nd, 2019, codename Yunus I
 
 - First version of documentation is done!
 
