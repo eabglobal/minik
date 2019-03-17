@@ -1,0 +1,17 @@
+AUTHORS
+CHANGES.rst
+LICENSE
+MANIFEST.in
+Makefile
+README.rst
+setup.cfg
+setup.py
+minik/__init__.py
+minik/constants.py
+minik/core.py
+minik/status_codes.py
+minik/structures.py
+minik.egg-info/PKG-INFO
+minik.egg-info/SOURCES.txt
+minik.egg-info/dependency_links.txt
+minik.egg-info/top_level.txt
