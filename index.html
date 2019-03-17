@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Welcome to minik’s documentation! &#8212; minik  documentation</title>
+    <title>Welcome to minik’s documentation &#8212; minik  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -34,26 +34,27 @@
           <div class="body" role="main">
             
   <div class="section" id="welcome-to-minik-s-documentation">
-<h1>Welcome to minik’s documentation!<a class="headerlink" href="#welcome-to-minik-s-documentation" title="Permalink to this headline">¶</a></h1>
+<h1>Welcome to minik’s documentation<a class="headerlink" href="#welcome-to-minik-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://circleci.com/gh/eabglobal/minik/tree/master"><img alt="circle" src="https://circleci.com/gh/eabglobal/minik/tree/master.svg?style=shield" /></a> <a class="reference external" href="https://pypi.org/project/minik/"><img alt="pypi version" src="https://img.shields.io/pypi/v/minik.svg" /></a> <a class="reference external" href="https://github.com/eabglobal/minik/blob/master/LICENSE"><img alt="apache license" src="https://img.shields.io/github/license/eabglobal/minik.svg" /></a></p>
 <p>Minik is a python microframework used to write clean APIs in the serverless domain.</p>
 <p>As a developer working in AWS, if you would like to have full control of your development
 process while having access to a familiar interface, minik is the framework for you.
-To build your first API using minik, <a class="reference external" href="https://github.com/awslabs/serverless-application-model">SAM</a> and <a class="reference external" href="https://github.com/eabglobal/juniper">Juniper</a> go to the <a class="reference internal" href="quickstart.html"><span class="doc">Getting started</span></a>.</p>
+To build your first API using minik, SAM and Juniper go to <a class="reference internal" href="quickstart.html"><span class="doc">Getting started</span></a>.</p>
 <div class="section" id="familiar-interface">
 <h2>Familiar interface<a class="headerlink" href="#familiar-interface" title="Permalink to this headline">¶</a></h2>
 <div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">minik.core</span> <span class="k">import</span> <span class="n">Minik</span>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Minik</span><span class="p">()</span>
 
-<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Hello&quot;</span><span class="p">:</span> <span class="s2">&quot;World!&quot;</span><span class="p">}</span>
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/test/</span><span class="si">{proxy}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">proxy</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Hello&quot;</span><span class="p">:</span> <span class="n">proxy</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="minik-in">
 <h2>Minik in λ<a class="headerlink" href="#minik-in" title="Permalink to this headline">¶</a></h2>
 <p>When working with a lambda function as the handler of a request from the API gateway.
-If the endpoint is configured to use the passthrough lambda integration, your function
+If the endpoint is configured to use the pass-through lambda integration, your function
 will have to be defined as follows:</p>
 <div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
     <span class="c1"># Business logic! Get values out of the event object.</span>
@@ -117,8 +118,8 @@ Using the above object and endpoint as an example, our lambda function would ins
 </pre></div>
 </div>
 <p>Just like with any other lambda function you are responsible for provisioning the
-API Gateway and of associating the lambda function with the gateway endpoint. Minik
-is just the framework that allows you to write your api in a straight forward fashion.</p>
+API Gateway and for associating the lambda function with the gateway endpoint. Minik
+is just the framework that allows you to write your api in a straight-forward fashion.</p>
 </div>
 <div class="section" id="motivation">
 <h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
@@ -126,30 +127,31 @@ is just the framework that allows you to write your api in a straight forward fa
 and streamline web development in the serverless space. These were the business
 needs that encouraged us to build minik:</p>
 <ul class="simple">
-<li>As a developer I need to have the ability to write an API using a syntax I’m
-familiar with (flask like) in the AWS ecosystem.</li>
-<li>As a developer I want to decide how to build and deploy my lambda functions. I do
-not want my framework to dictate these processes for me. I want to own them!</li>
-<li>As a developer when installing my framework, I only want to get the framework.
-I don’t want to any aditional tooling, any aditional process based workflows.</li>
+<li>I need to have the ability to write an API using a syntax I’m familiar with
+(flask like) in the AWS ecosystem.</li>
+<li>I want to decide how to build and deploy my lambda functions. I do not want
+my framework to dictate these processes for me. I want to own them!</li>
+<li>When installing my framework, I want to get only the framework. I don’t want
+to any additional tooling or any additional process-based workflows..</li>
 <li>When using the microframework I am aware that I am responsible for the configuration
-required to associate my lambda function to its enpoints.</li>
+required to associate my lambda function to its endpoints.</li>
 </ul>
 <p>The features of this library should be absolutely driven by a very specific
 business need. So far, the minimal approach has been sufficient for our team to
-write and expose and API using AWS services.</p>
+write and expose an API using AWS services.</p>
 </div>
 <div class="section" id="just-the-framework">
 <h2>Just the framework<a class="headerlink" href="#just-the-framework" title="Permalink to this headline">¶</a></h2>
-<p>Things to be aware of when working using minik:</p>
+<p>Things to be aware of when working with minik:</p>
 <ul class="simple">
-<li>When used in your lambda function, you’re responsible of including the source
+<li>When used in your lambda function, you’re responsible for including the source
 code of minik in your .zip artifact. For packaging purposes we recommend using
 <a class="reference external" href="https://github.com/eabglobal/juniper">Juniper</a>.</li>
-<li>Unlike other frameworks like <cite>Flask</cite> or <cite>Django</cite> where using the decorator is
-sufficient to define the routes of the web app. In minik, you’re responsible for
-linking a lambda function to a the API gateway. We recommend using a <a class="reference external" href="https://github.com/awslabs/serverless-application-model">SAM</a> template.</li>
-<li>There is not local development server! For testing purposes, deploy the lambda
+<li>Unlike other frameworks like Flask or Django where using the decorator is
+sufficient to define the routes of the web app, in minik, you’re responsible
+for linking a lambda function to the API gateway. We recommend using a
+<a class="reference external" href="https://github.com/awslabs/serverless-application-model">SAM</a> template.</li>
+<li>There is no local development server! For testing purposes, deploy the lambda
 in AWS! There’s no excuse not to. Use <cite>sam package</cite> and <cite>sam deploy</cite> for deployment
 purposes.</li>
 </ul>
@@ -178,29 +180,20 @@ purposes.</li>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="#">minik</a></h1>
+        <div class="sphinxsidebarwrapper">  <h1 class="logo"><a href="#">minik</a></h1>
 
+  <p>
+    <iframe src="https://ghbtns.com/github-btn.html?user=eabglobal&repo=minik&type=watch&size=large"
+      allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+  </p>
 
-
-
-
-
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">1. Getting started</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="quickstart.html" title="next chapter">1. Getting started</a></li>
-  </ul></li>
-</ul>
-</div>
+  <h3>Useful Links</h3>
+  <ul>
+    <li><a href="https://github.com/eabglobal/minik">Minik @ GitHub</a></li>
+    <li><a href="https://pypi.org/project/minik/">Minik @ PyPI</a></li>
+    <li><a href="https://github.com/eabglobal/minik/issues">Issue Tracker</a></li>
+    <li><a href="https://github.com/eabglobal/minik/blob/master/CHANGES.rst">Release History</a></li>
+  </ul>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
@@ -213,14 +206,6 @@ purposes.</li>
     </div>
 </div>
 <script type="text/javascript">$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
         </div>
       </div>
       <div class="clearer"></div>
