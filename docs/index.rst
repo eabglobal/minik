@@ -3,14 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to minik's documentation!
+Welcome to minik's documentation
 =================================
+
+|circle| |pypi version| |apache license|
 
 Minik is a python microframework used to write clean APIs in the serverless domain.
 
 As a developer working in AWS, if you would like to have full control of your development
 process while having access to a familiar interface, minik is the framework for you.
-To build your first API using minik, `SAM`_ and `Juniper`_ go to the :doc:`quickstart`.
+To build your first API using minik, SAM and Juniper go to :doc:`quickstart`.
 
 Familiar interface
 ******************
@@ -20,15 +22,15 @@ Familiar interface
     from minik.core import Minik
     app = Minik()
 
-    @app.route("/")
-    def hello():
-        return {"Hello": "World!"}
+    @app.route("/test/{proxy}")
+    def hello(proxy):
+        return {"Hello": proxy}
 
 Minik in λ
 **********
 
 When working with a lambda function as the handler of a request from the API gateway.
-If the endpoint is configured to use the passthrough lambda integration, your function
+If the endpoint is configured to use the pass-through lambda integration, your function
 will have to be defined as follows:
 
 .. code:: python
@@ -100,8 +102,8 @@ Using the above object and endpoint as an example, our lambda function would ins
 
 
 Just like with any other lambda function you are responsible for provisioning the
-API Gateway and of associating the lambda function with the gateway endpoint. Minik
-is just the framework that allows you to write your api in a straight forward fashion.
+API Gateway and for associating the lambda function with the gateway endpoint. Minik
+is just the framework that allows you to write your api in a straight-forward fashion.
 
 Motivation
 **********
@@ -110,34 +112,35 @@ The team behind this framework is adopting a very minimal set of features to enh
 and streamline web development in the serverless space. These were the business
 needs that encouraged us to build minik:
 
-- As a developer I need to have the ability to write an API using a syntax I'm
-  familiar with (flask like) in the AWS ecosystem.
-- As a developer I want to decide how to build and deploy my lambda functions. I do
-  not want my framework to dictate these processes for me. I want to own them!
-- As a developer when installing my framework, I only want to get the framework.
-  I don't want to any aditional tooling, any aditional process based workflows.
+- I need to have the ability to write an API using a syntax I'm familiar with
+  (flask like) in the AWS ecosystem.
+- I want to decide how to build and deploy my lambda functions. I do not want
+  my framework to dictate these processes for me. I want to own them!
+- When installing my framework, I want to get only the framework. I don’t want
+  to any additional tooling or any additional process-based workflows..
 - When using the microframework I am aware that I am responsible for the configuration
-  required to associate my lambda function to its enpoints.
+  required to associate my lambda function to its endpoints.
 
 
 The features of this library should be absolutely driven by a very specific
 business need. So far, the minimal approach has been sufficient for our team to
-write and expose and API using AWS services.
+write and expose an API using AWS services.
 
 Just the framework
 ******************
 
-Things to be aware of when working using minik:
+Things to be aware of when working with minik:
 
-- When used in your lambda function, you're responsible of including the source
+- When used in your lambda function, you're responsible for including the source
   code of minik in your .zip artifact. For packaging purposes we recommend using
   `Juniper`_.
-- Unlike other frameworks like `Flask` or `Django` where using the decorator is
-  sufficient to define the routes of the web app. In minik, you're responsible for
-  linking a lambda function to a the API gateway. We recommend using a `SAM`_ template.
-- There is not local development server! For testing purposes, deploy the lambda
-  in AWS! There's no excuse not to. Use `sam package` and `sam deploy` for deployment
-  purposes.
+- Unlike other frameworks like Flask or Django where using the decorator is
+  sufficient to define the routes of the web app, in minik, you’re responsible
+  for linking a lambda function to the API gateway. We recommend using a
+  `SAM`_ template.
+- Minik does not include a local development server! For testing purposes, you can
+  either deploy your lambda to AWS using `sam package` and `sam deploy`. For local
+  deployment purposes you can use `sam local`.
 
 
 .. _SAM: https://github.com/awslabs/serverless-application-model
@@ -145,6 +148,14 @@ Things to be aware of when working using minik:
 .. _Serverless: https://serverless.com/
 .. _Juniper: https://github.com/eabglobal/juniper
 
+.. |circle| image:: https://circleci.com/gh/eabglobal/minik/tree/master.svg?style=shield
+    :target: https://circleci.com/gh/eabglobal/minik/tree/master
+
+.. |pypi version| image:: https://img.shields.io/pypi/v/minik.svg
+    :target: https://pypi.org/project/minik/
+
+.. |apache license| image:: https://img.shields.io/github/license/eabglobal/minik.svg
+    :target: https://github.com/eabglobal/minik/blob/master/LICENSE
 
 Contents:
 =========

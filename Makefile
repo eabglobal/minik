@@ -24,6 +24,17 @@ tox: test-all
 docs: clean-pyc install-dev
 	$(MAKE) -C docs html
 
+gh-pages:
+	git checkout gh-pages
+	rm -rf _images _sources _static
+	git checkout master docs examples assets
+	$(MAKE) -C docs html
+	mv -fv docs/_build/html/* ./
+	rm -rf docs examples assets
+	git add -A
+	git commit -m "Generated gh-pages" && git push origin gh-pages; git checkout master
+
+
 release:
 	python3 setup.py sdist bdist_wheel
 	twine check dist/*

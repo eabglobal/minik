@@ -3,6 +3,8 @@ Minik: Serverless Web Framework
 
 .. image:: assets/minik.png
 
+|circle| |pypi version| |apache license|
+
 Using AWS lambda functions and API Gateway, minik will serve as the framework
 that facilitates development in the serverless space.
 
@@ -81,7 +83,7 @@ needs that encouraged us to build minik:
 
 The features of this library should be absolutely driven by a very specific
 business need. So far, the minimal approach has been sufficient for our team to
-write and expose and API using AWS services.
+write and expose an API using AWS services.
 
 
 Just the framework
@@ -124,3 +126,12 @@ Links
   * Linux, Mac: https://circleci.com/gh/eabglobal/minik
 
 .. _Apache Software License: https://github.com/eabglobal/minik/blob/master/LICENSE
+
+.. |circle| image:: https://circleci.com/gh/eabglobal/minik/tree/master.svg?style=shield
+    :target: https://circleci.com/gh/eabglobal/minik/tree/master
+
+.. |pypi version| image:: https://img.shields.io/pypi/v/minik.svg
+    :target: https://pypi.org/project/minik/
+
+.. |apache license| image:: https://img.shields.io/github/license/eabglobal/minik.svg
+    :target: https://github.com/eabglobal/minik/blob/master/LICENSE

@@ -3,6 +3,16 @@
 Minik Changelog
 ===============
 
+Version 0.2.0
+-------------
+
+Released on March 17nd, 2019, codename Yunus I
+
+- First version of documentation is done!
+
+- Added badges to the README and Documentation
+
+
 Version 0.1.7
 -------------
 
