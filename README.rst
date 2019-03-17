@@ -97,9 +97,9 @@ Things to be aware of when working using minik:
 - Unlike other frameworks like `Flask` or `Django` where using the decorator is
   sufficient to define the routes of the web app. In minik, you're responsible for
   linking a lambda function to a the API gateway. We recommend using a `SAM`_ template.
-- There is not local development server! For testing purposes, deploy the lambda
-  in AWS! There's no excuse not to. Use `sam package` and `sam deploy` for deployment
-  purposes.
+- Minik does not include a local development server! For testing purposes, you can
+  either deploy your lambda to AWS using `sam package` and `sam deploy`. For local
+  deployment purposes you can use `sam local`.
 
 .. _Juniper: https://github.com/eabglobal/juniper
 .. _SAM: https://aws.amazon.com/serverless/sam/
