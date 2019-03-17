@@ -1,0 +1,6 @@
+{
+  "tests/test_advance_routing.py::test_route_defined_for_post_put[http_method0]": true,
+  "tests/test_advance_routing.py::test_route_defined_for_post_put[http_method1]": true,
+  "tests/test_routing.py::test_400_not_found[DELETE]": true,
+  "tests/test_routing.py::test_400_not_found[GET]": true
+}

@@ -1,0 +1,15 @@
+actionid: python
+msg: installpkg
+cmdargs: '/Users/pdiazvargas/source/eab/minik/.tox/python/bin/python -m pip install --exists-action w /Users/pdiazvargas/source/eab/minik/.tox/.tmp/package/1/minik-0.1.zip'
+
+Processing ./.tox/.tmp/package/1/minik-0.1.zip
+Building wheels for collected packages: minik
+  Building wheel for minik (setup.py): started
+  Building wheel for minik (setup.py): finished with status 'done'
+  Stored in directory: /Users/pdiazvargas/Library/Caches/pip/wheels/69/66/a0/fcf691f5976cd82166518c1907b193f5e9cc99b04a2a5b5283
+Successfully built minik
+Installing collected packages: minik
+  Found existing installation: minik 0.1
+    Not uninstalling minik at /Users/pdiazvargas/source/eab/minik, outside environment /Users/pdiazvargas/source/eab/minik/.tox/python
+    Can't uninstall 'minik'. No files were found to uninstall.
+Successfully installed minik-0.1
