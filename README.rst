@@ -55,7 +55,7 @@ define the methods, by default, every single HTTP method will be allowed.
 
     @app.route('/events/{location}')
     def events_view(location):
-        # This route will be invoked for GET, POST, PUT, DELETE... Any request.
+        # This route will be invoked for GET, POST, PUT, DELETE...
         return {'data': ['granfondo MD', 'Silver Spring Century']}
 
     @app.route('/events', methods=['POST', 'PUT'])
@@ -71,15 +71,14 @@ The team behind this framework is adopting a very minimal set of features to enh
 and streamline web development in the serverless space. These were the business
 needs that encouraged us to build minik:
 
-- As a developer I need to have the ability to write an API using a syntax I'm
-  familiar with (flask like) in the AWS ecosystem.
-- As a developer I want to decide how to build and deploy my lambda functions. I do
-  not want my framework to dictate these processes for me. I want to own them!
-- As a developer when installing my framework, I only want to get the framework.
-  I don't want to any aditional tooling, any aditional process based workflows.
-- When using the microframework I am aware that I am responsible for the configuration
-  required to associate my lambda function to its enpoints.
-
+- I need to have the ability to write an API using a syntax I'm familiar with
+  (flask like) in the AWS ecosystem.
+- I want to decide how to build and deploy my lambda functions. I do not want
+  my framework to dictate these processes for me. I want to own them!
+- When installing my framework, I want to get only the framework. I don’t want
+  to any additional tooling or any additional process-based workflows..
+- When using the microframework I am responsible for the configuration
+  required to associate my lambda function to its endpoints.
 
 The features of this library should be absolutely driven by a very specific
 business need. So far, the minimal approach has been sufficient for our team to
