@@ -100,8 +100,16 @@ Things to be aware of when working using minik:
   either deploy your lambda to AWS using `sam package` and `sam deploy`. For local
   deployment purposes you can use `sam local`.
 
-.. _Juniper: https://github.com/eabglobal/juniper
-.. _SAM: https://aws.amazon.com/serverless/sam/
+
+Quickstart
+**********
+Minik is just one of the pieces that you need to build serverless APIs. If you
+are curious to learn more about best practices and how to get started with this
+microframework, checkout out `getting started <https://eabglobal.github.io/minik/quickstart.html>`_
+guide.
+
+The quickstart uses a very simple example, which is included in this codebase, as
+a way to highlight the benefits of the framework.
 
 Contributing
 ************
@@ -110,7 +118,8 @@ For guidance on setting up a development environment and how to make a
 contribution to Minik, see the `contributing guidelines`_.
 
 .. _contributing guidelines: https://github.com/eabglobal/minik/blob/master/CONTRIBUTING.rst
-
+.. _Juniper: https://github.com/eabglobal/juniper
+.. _SAM: https://aws.amazon.com/serverless/sam/
 
 Links
 *****
