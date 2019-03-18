@@ -1,5 +1,0 @@
-actionid: python
-msg: envreport
-cmdargs: '/Users/pdiazvargas/source/eab/minik/.tox/python/bin/python -m pip freeze'
-
-minik==0.1

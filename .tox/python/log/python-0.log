@@ -1,9 +1,0 @@
-actionid: python
-msg: getenv
-cmdargs: '/Users/pdiazvargas/source/eab/minik/venv3/bin/python -m virtualenv --python /Users/pdiazvargas/source/eab/minik/venv3/bin/python python'
-
-Already using interpreter /Users/pdiazvargas/source/eab/minik/venv3/bin/python
-Using base prefix '/Users/pdiazvargas/.pyenv/versions/3.6.5'
-New python executable in /Users/pdiazvargas/source/eab/minik/.tox/python/bin/python
-Installing setuptools, pip, wheel...
-done.
