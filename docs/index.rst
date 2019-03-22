@@ -118,7 +118,7 @@ needs that encouraged us to build minik:
   my framework to dictate these processes for me. I want to own them!
 - When installing my framework, I want to get only the framework. I don’t want
   to any additional tooling or any additional process-based workflows..
-- When using the microframework I am aware that I am responsible for the configuration
+- When using the microframework I am responsible for the configuration
   required to associate my lambda function to its endpoints.
 
 

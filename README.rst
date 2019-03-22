@@ -55,7 +55,7 @@ define the methods, by default, every single HTTP method will be allowed.
 
     @app.route('/events/{location}')
     def events_view(location):
-        # This route will be invoked for GET, POST, PUT, DELETE... Any request.
+        # This route will be invoked for GET, POST, PUT, DELETE...
         return {'data': ['granfondo MD', 'Silver Spring Century']}
 
     @app.route('/events', methods=['POST', 'PUT'])
@@ -71,15 +71,14 @@ The team behind this framework is adopting a very minimal set of features to enh
 and streamline web development in the serverless space. These were the business
 needs that encouraged us to build minik:
 
-- As a developer I need to have the ability to write an API using a syntax I'm
-  familiar with (flask like) in the AWS ecosystem.
-- As a developer I want to decide how to build and deploy my lambda functions. I do
-  not want my framework to dictate these processes for me. I want to own them!
-- As a developer when installing my framework, I only want to get the framework.
-  I don't want to any aditional tooling, any aditional process based workflows.
-- When using the microframework I am aware that I am responsible for the configuration
-  required to associate my lambda function to its enpoints.
-
+- I need to have the ability to write an API using a syntax I'm familiar with
+  (flask like) in the AWS ecosystem.
+- I want to decide how to build and deploy my lambda functions. I do not want
+  my framework to dictate these processes for me. I want to own them!
+- When installing my framework, I want to get only the framework. I don’t want
+  to any additional tooling or any additional process-based workflows..
+- When using the microframework I am responsible for the configuration
+  required to associate my lambda function to its endpoints.
 
 The features of this library should be absolutely driven by a very specific
 business need. So far, the minimal approach has been sufficient for our team to
@@ -101,8 +100,16 @@ Things to be aware of when working using minik:
   either deploy your lambda to AWS using `sam package` and `sam deploy`. For local
   deployment purposes you can use `sam local`.
 
-.. _Juniper: https://github.com/eabglobal/juniper
-.. _SAM: https://aws.amazon.com/serverless/sam/
+
+Quickstart
+**********
+Minik is just one of the pieces that you need to build serverless APIs. If you
+are curious to learn more about best practices and how to get started with this
+microframework, checkout out `getting started <https://eabglobal.github.io/minik/quickstart.html>`_
+guide.
+
+The quickstart uses a very simple example, which is included in this codebase, as
+a way to highlight the benefits of the framework.
 
 Contributing
 ************
@@ -111,7 +118,8 @@ For guidance on setting up a development environment and how to make a
 contribution to Minik, see the `contributing guidelines`_.
 
 .. _contributing guidelines: https://github.com/eabglobal/minik/blob/master/CONTRIBUTING.rst
-
+.. _Juniper: https://github.com/eabglobal/juniper
+.. _SAM: https://aws.amazon.com/serverless/sam/
 
 Links
 *****
