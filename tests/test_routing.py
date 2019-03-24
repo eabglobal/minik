@@ -18,8 +18,6 @@ import json
 import pytest
 from unittest.mock import MagicMock
 from minik.core import Minik
-from minik.exceptions import MinikViewError
-from minik.validators import ReValidator
 from minik.status_codes import codes
 
 

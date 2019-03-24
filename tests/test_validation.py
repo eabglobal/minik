@@ -59,7 +59,7 @@ def test_regex_based_routing_invalid_match(create_router_event):
                                 pathParameters={'username': '$$$'})
 
     try:
-        response = sample_app(event, context)
+        sample_app(event, context)
     except MinikViewError as mve:
         assert mve.status_code == codes.not_found
 
@@ -94,6 +94,6 @@ def test_complex_regex_based_routing_invalid_match(create_router_event, year, mo
                                 pathParameters={'year': year, 'month': month})
 
     try:
-        response = sample_app(event, context)
+        sample_app(event, context)
     except MinikViewError as mve:
         assert mve.status_code == codes.not_found
