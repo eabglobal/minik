@@ -20,7 +20,7 @@ from unittest.mock import MagicMock
 
 from minik.status_codes import codes
 from minik.constants import CONFIG_ERROR_MSG
-from minik.core import Minik, BadRequestError, ConfigurationError, JsonResponse
+from minik.core import Minik, JsonResponse, BadRequestError, ConfigurationError
 
 
 sample_app = Minik()
@@ -115,21 +115,6 @@ def test_sample_view_with_undefined_headers(create_router_event):
     response = sample_app(event, context)
 
     assert response['statusCode'] == codes.ok
-
-
-def test_sample_view_with_missing_path_params(create_router_event):
-    """
-    Test the case in which the route requires two pathParameters but only one
-    is passed in.
-    """
-
-    event = create_router_event('/findme/{first}/{second}',
-                                pathParameters={'first': 'adventure'},
-                                body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
-
-    response = sample_app(event, context)
-
-    assert response['statusCode'] == codes.server_error
 
 
 def test_sample_view_route_does_not_match(create_router_event):
