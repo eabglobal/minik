@@ -19,11 +19,11 @@ import json
 import traceback
 from collections import namedtuple, defaultdict
 from minik.constants import CONFIG_ERROR_MSG
-from minik.validators import NopValidator
+from minik.fields import update_uri_parameters
 from minik.exceptions import MinikError, MinikViewError
 from minik.status_codes import codes
 
-SimpleRoute = namedtuple('SimpleRoute', ['view', 'methods', 'validator'])
+SimpleRoute = namedtuple('SimpleRoute', ['view', 'methods'])
 
 
 class Minik:
@@ -54,8 +54,7 @@ class Minik:
         def _register_view(view_func):
 
             methods = kwargs.get('methods', [])
-            validator = kwargs.get('validator', NopValidator())
-            self._routes[path].append(SimpleRoute(view_func, methods, validator))
+            self._routes[path].append(SimpleRoute(view_func, methods))
 
             return view_func
 
@@ -79,7 +78,7 @@ class Minik:
 
             route = self._find_route(request)
 
-            route.validator.validate(route, request)
+            update_uri_parameters(route, request)
             response = self._execute_view(route.view, request)
 
         except MinikViewError as pe:
