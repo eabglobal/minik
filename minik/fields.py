@@ -1,9 +1,36 @@
 import re
+import inspect
+from abc import ABC, abstractmethod
+
 from minik.exceptions import MinikViewError
 from minik.status_codes import codes
 
 
-class RePath:
+class BaseRouteField(ABC):
+
+    def __call__(self, value):
+        """
+        The method called to perform a given validation. If the validation is
+        successful, the route field returned unchanged. If the validation fails,
+        a ValueError is raised.
+
+        :param value: The value to match against the pattern.
+        """
+        if self.validate(value):
+            return value
+
+        raise ValueError(f"invalid literal for {self.__class__.__name__}(): '{value}'")
+
+    @abstractmethod
+    def validate(self, value):
+        """
+        Business logic that must be implemented by a consumer to determine if the
+        given route value is valid or not.
+        """
+        pass
+
+
+class ReStr(BaseRouteField):
     """
     Regex based router field. This base class will use the pattern field of a
     subclass as a way to validate a given value. If the value matches the pattern
@@ -12,25 +39,35 @@ class RePath:
     def __init__(self, pattern):
         self._pattern = re.compile(pattern)
 
-    def __call__(self, value):
+    def validate(self, value):
         """
-        Validate that the given value matches the pattern. If value does not match
-        raise a ValueError.
+        Validate that the given value matches the regex pattern.
 
         :param value: The value to match against the pattern.
         """
-        if self._pattern.match(value):
-            return value
-
-        raise ValueError(f"invalid literal for {self.__class__.__name__}(): '{value}'")
+        return self._pattern.match(value)
 
 
 CUSTOM_FIELD_BY_TYPE = {
-    str: RePath(r'^(\w+)$')
+    str: ReStr(r'^(\w+)$')
 }
 
 
 def update_uri_parameters(route, request):
+    """
+    Based on the function annotations of the route's view, validate a given route
+    parameter and update the value of the requests's uri. If a route is defined as
+
+    def my_view(product_id: int):
+        return {'id': product_id}
+
+    This function will validate that the given value in the url is an integer and
+    it will update the string value of the request.uri_parameters to be the int
+    representation of the value.
+
+    :param route: The minik route object, it should have a valid view.
+    :param request: The instance of the minik request.
+    """
 
     values_by_name = request.uri_params
 
@@ -42,3 +79,24 @@ def update_uri_parameters(route, request):
 
     except ValueError as ve:
         raise MinikViewError(str(ve), status_code=codes.not_found)
+
+
+def cache_custom_route_fields(route):
+    """
+    For class based view annotations, create an instance of the class and store
+    the instance in a cache. This instance will be used by a consumer to validate
+    a route paramter.
+
+    If the annotated field is an instantiated value, it will NOT be added to the
+    cache.
+
+    :param route: An instance of the minik route; the route should have an
+                  associated view.
+    """
+
+    for field_name, field_type in route.view.__annotations__.items():
+        if field_type in CUSTOM_FIELD_BY_TYPE:
+            continue
+
+        if issubclass(field_type, BaseRouteField) and inspect.isclass(BaseRouteField):
+            CUSTOM_FIELD_BY_TYPE[field_type] = field_type()

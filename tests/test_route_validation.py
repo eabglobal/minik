@@ -21,6 +21,7 @@ from unittest.mock import MagicMock
 
 from minik.core import Minik
 from minik.exceptions import MinikViewError
+from minik.fields import ReStr, BaseRouteField
 from minik.status_codes import codes
 
 
@@ -88,9 +89,7 @@ def test_route_with_int_valid(create_router_event):
 
 
 @pytest.mark.parametrize("year,month", [
-    ('2020', 'INVALID'),
-    ('INVALID', '12'),
-    ('hello', 'world'),
+    ('2020', 'INVALID'), ('INVALID', '12'), ('hello', 'world'),
 ])
 def test_route_with_int_invalid_params(create_router_event, year, month):
 
@@ -135,6 +134,91 @@ def test_uuid_in_route_invalid(create_router_event, product_id):
     event = create_router_event('/product/{product_id}/',
                                 method='GET',
                                 pathParameters={'product_id': product_id})
+
+    response = sample_app(event, context)
+    assert response['statusCode'] == codes.not_found
+
+
+@sample_app.route('/item/{item_id}/', methods=['GET'])
+def get_item(item_id: ReStr(r'([0-9a-f]{8}$)')):
+    assert isinstance(item_id, str)
+    return {'id': item_id}
+
+
+@pytest.mark.parametrize("item_id", [
+    ('00010203'), ('52342512'), ('00102c03')
+])
+def test_custom_re_in_route_valid(create_router_event, item_id):
+    """
+    Validate a uuid based parameter with a valid value.
+    """
+
+    event = create_router_event('/item/{item_id}/',
+                                method='GET',
+                                pathParameters={'item_id': item_id})
+
+    response = sample_app(event, context)
+
+    assert json.loads(response['body'])['id'] == item_id
+
+
+@pytest.mark.parametrize("item_id", [
+    ('04052523209'), ('060809'), ('#0010203'), ('00102i03')
+])
+def test_custom_re_in_route_invalid(create_router_event, item_id):
+    """
+    Validate the uiid based view with invalid values.
+    """
+
+    event = create_router_event('/item/{item_id}/',
+                                method='GET',
+                                pathParameters={'item_id': item_id})
+
+    response = sample_app(event, context)
+    assert response['statusCode'] == codes.not_found
+
+
+class RouteTracker(BaseRouteField):
+
+    def validate(self, value):
+        return value in ('fitbit', 'nikeplus', 'vivosmart',)
+
+
+@sample_app.route('/tracker/{name}/', methods=['GET'])
+def get_tracker_info(name: RouteTracker):
+    assert isinstance(name, str)
+    return {'name': name}
+
+
+@pytest.mark.parametrize("tracker_name", [
+    ('fitbit'), ('nikeplus'), ('vivosmart')
+])
+def test_custom_field_in_route_valid(create_router_event, tracker_name):
+    """
+    Validate that a route with a custom field definition works when valid values
+    are provided.
+    """
+
+    event = create_router_event('/tracker/{name}/',
+                                method='GET',
+                                pathParameters={'name': tracker_name})
+
+    response = sample_app(event, context)
+
+    assert json.loads(response['body'])['name'] == tracker_name
+
+
+@pytest.mark.parametrize("tracker_name", [
+    ('not there'), ('other')
+])
+def test_custom_field_in_route_invalid(create_router_event, tracker_name):
+    """
+    Custom route field with invalid values.
+    """
+
+    event = create_router_event('/tracker/{name}/',
+                                method='GET',
+                                pathParameters={'name': tracker_name})
 
     response = sample_app(event, context)
     assert response['statusCode'] == codes.not_found

@@ -19,7 +19,7 @@ import json
 import traceback
 from collections import namedtuple, defaultdict
 from minik.constants import CONFIG_ERROR_MSG
-from minik.fields import update_uri_parameters
+from minik.fields import (update_uri_parameters, cache_custom_route_fields)
 from minik.exceptions import MinikError, MinikViewError
 from minik.status_codes import codes
 
@@ -54,7 +54,9 @@ class Minik:
         def _register_view(view_func):
 
             methods = kwargs.get('methods', [])
-            self._routes[path].append(SimpleRoute(view_func, methods))
+            new_route = SimpleRoute(view_func, methods)
+            self._routes[path].append(new_route)
+            cache_custom_route_fields(new_route)
 
             return view_func
 
