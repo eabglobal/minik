@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-import re
 import json
 import traceback
 from collections import namedtuple, defaultdict

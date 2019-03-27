@@ -20,7 +20,6 @@ import uuid
 from unittest.mock import MagicMock
 
 from minik.core import Minik
-from minik.exceptions import MinikViewError
 from minik.fields import ReStr, BaseRouteField
 from minik.status_codes import codes
 
