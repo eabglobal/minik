@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to minik's documentation
-=================================
+Minik - serverless web framework
+================================
 
 |circle| |pypi version| |apache license|
 
@@ -25,6 +25,93 @@ Familiar interface
     @app.route("/test/{proxy}")
     def hello(proxy):
         return {"Hello": proxy}
+
+
+Route Validation
+****************
+Using the `function annotations`_, you can specify the type of value you are expecting
+in your route. The added advantage is that minik will convert your parameter to the
+appropriate type. For instance:
+
+.. code:: python
+
+    @app.route('/articles/{author}/{year}/')
+    def get_articles_view(author: str, year: int):
+        assert isinstance(author, str) and isinstance(year, int)
+        return {'author_name': author, 'year': year}
+
+If you need to specify a regular expression:
+
+.. code-block:: python
+
+    from minik.fields import ReStr
+
+    @app.route('/item/{item_id}/', methods=['GET'])
+    def get_item(item_id: ReStr(r'([0-9a-f]{8}$)')):
+        assert isinstance(item_id, str)
+        return {'id': item_id}
+
+As a bonus! You can extend our validation framework and write your own route fields.
+
+.. code-block:: python
+
+    from minik.fields import BaseRouteField
+
+    class RouteTracker(BaseRouteField):
+
+        def validate(self, value):
+            return value in ('fitbit', 'nikeplus', 'vivosmart',)
+
+
+    @sample_app.route('/tracker/{name}/', methods=['GET'])
+    def get_tracker_info(name: RouteTracker):
+        assert isinstance(name, str)
+        return {'name': name}
+
+In the example above, your view will only be executed when the name paramter passed in
+matches one of the trackers specified in the validator. All you need to do is implement the
+validation logic. To learn more checkout out `features`_ page.
+
+.. _`function annotations`: https://www.python.org/dev/peps/pep-3107/
+.. _`features`: https://eabglobal.github.io/minik/features.html
+
+Motivation
+**********
+
+The team behind this framework is adopting a very minimal set of features to enhance
+and streamline web development in the serverless space. These were the business
+needs that encouraged us to build minik:
+
+- I need to have the ability to write an API using a syntax I'm familiar with
+  (flask like) in the AWS ecosystem.
+- I want to decide how to build and deploy my lambda functions. I do not want
+  my framework to dictate these processes for me. I want to own them!
+- When installing my framework, I want to get only the framework. I don’t want
+  to any additional tooling or any additional process-based workflows..
+- When using the microframework I am responsible for the configuration
+  required to associate my lambda function to its endpoints.
+
+
+The features of this library should be absolutely driven by a very specific
+business need. So far, the minimal approach has been sufficient for our team to
+write and expose an API using AWS services.
+
+Just the framework
+******************
+
+Things to be aware of when working with minik:
+
+- When used in your lambda function, you're responsible for including the source
+  code of minik in your .zip artifact. For packaging purposes we recommend using
+  `Juniper`_.
+- Unlike other frameworks like Flask or Django where using the decorator is
+  sufficient to define the routes of the web app, in minik, you’re responsible
+  for linking a lambda function to the API gateway. We recommend using a
+  `SAM`_ template.
+- Minik does not include a local development server! For testing purposes, you can
+  either deploy your lambda to AWS using `sam package` and `sam deploy`. For local
+  deployment purposes you can use `sam local`.
+
 
 Minik in λ
 **********
@@ -105,43 +192,6 @@ Just like with any other lambda function you are responsible for provisioning th
 API Gateway and for associating the lambda function with the gateway endpoint. Minik
 is just the framework that allows you to write your api in a straight-forward fashion.
 
-Motivation
-**********
-
-The team behind this framework is adopting a very minimal set of features to enhance
-and streamline web development in the serverless space. These were the business
-needs that encouraged us to build minik:
-
-- I need to have the ability to write an API using a syntax I'm familiar with
-  (flask like) in the AWS ecosystem.
-- I want to decide how to build and deploy my lambda functions. I do not want
-  my framework to dictate these processes for me. I want to own them!
-- When installing my framework, I want to get only the framework. I don’t want
-  to any additional tooling or any additional process-based workflows..
-- When using the microframework I am responsible for the configuration
-  required to associate my lambda function to its endpoints.
-
-
-The features of this library should be absolutely driven by a very specific
-business need. So far, the minimal approach has been sufficient for our team to
-write and expose an API using AWS services.
-
-Just the framework
-******************
-
-Things to be aware of when working with minik:
-
-- When used in your lambda function, you're responsible for including the source
-  code of minik in your .zip artifact. For packaging purposes we recommend using
-  `Juniper`_.
-- Unlike other frameworks like Flask or Django where using the decorator is
-  sufficient to define the routes of the web app, in minik, you’re responsible
-  for linking a lambda function to the API gateway. We recommend using a
-  `SAM`_ template.
-- Minik does not include a local development server! For testing purposes, you can
-  either deploy your lambda to AWS using `sam package` and `sam deploy`. For local
-  deployment purposes you can use `sam local`.
-
 
 .. _SAM: https://github.com/awslabs/serverless-application-model
 .. _Chalice: https://github.com/aws/chalice
@@ -166,3 +216,4 @@ Contents:
     :glob:
 
     quickstart.rst
+    features.rst
