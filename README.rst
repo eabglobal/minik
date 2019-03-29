@@ -43,7 +43,6 @@ function should look like:
 
 HTTP Methods
 ************
-
 With minik you can also specify the HTTP methods for a given view. If you don't
 define the methods, by default, every single HTTP method will be allowed.
 
@@ -62,6 +61,26 @@ define the methods, by default, every single HTTP method will be allowed.
     def create_event_view():
         create_event(app.request.json_body)
         return {'result': 'complete'}
+
+
+Route Parameter Validation
+**************************
+Minik uses `function annotations`_ to validate the value of a route. If the type
+of an expected parameter is not valid, minik will respond with a 404 not found
+status code.
+
+.. code:: python
+
+    @app.route('/articles/{author}/{year}/')
+    def get_articles_view(author: str, year: int):
+        assert isinstance(author, str) and isinstance(year, int)
+        return {'author_name': author, 'year': year}
+
+
+To learn more checkout out our _`features` page.
+
+.. _`function annotations`: https://www.python.org/dev/peps/pep-3107/
+.. _`features`: https://eabglobal.github.io/minik/features
 
 
 Motivation

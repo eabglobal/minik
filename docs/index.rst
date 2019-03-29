@@ -26,6 +26,26 @@ Familiar interface
     def hello(proxy):
         return {"Hello": proxy}
 
+HTTP Methods
+************
+With minik you can also specify the HTTP methods for a given view. If you don't
+define the methods, by default, every single HTTP method will be allowed.
+
+.. code-block:: python
+
+    from minik.core import Minik
+
+    app = Minik()
+
+    @app.route('/events/{location}')
+    def events_view(location):
+        # This route will be invoked for GET, POST, PUT, DELETE...
+        return {'data': ['granfondo MD', 'Silver Spring Century']}
+
+    @app.route('/events', methods=['POST', 'PUT'])
+    def create_event_view():
+        create_event(app.request.json_body)
+        return {'result': 'complete'}
 
 Route Validation
 ****************
@@ -77,7 +97,6 @@ validation logic. To learn more checkout out `features`_ page.
 
 Motivation
 **********
-
 The team behind this framework is adopting a very minimal set of features to enhance
 and streamline web development in the serverless space. These were the business
 needs that encouraged us to build minik:
@@ -98,7 +117,6 @@ write and expose an API using AWS services.
 
 Just the framework
 ******************
-
 Things to be aware of when working with minik:
 
 - When used in your lambda function, you're responsible for including the source
@@ -115,7 +133,6 @@ Things to be aware of when working with minik:
 
 Minik in λ
 **********
-
 When working with a lambda function as the handler of a request from the API gateway.
 If the endpoint is configured to use the pass-through lambda integration, your function
 will have to be defined as follows:
