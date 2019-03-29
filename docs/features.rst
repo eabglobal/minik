@@ -25,16 +25,6 @@ to convert a given value to a uuid.UUID. If it succeeds, the converted value wil
 passed in as the view paramter. If the validation does not succeed, the view will
 not be called and the response will be a 404, not found.
 
-..
-
-    GET http://localhost:8000/tenant/qwerty   => 404 Not found
-    POST http://localhost:8000/tenant/qwerty  => 404 Not found
-
-    # Valid requests
-    GET http://localhost:8000/tenant/785fb390-51c0-11e9-8647-d663bd873d93
-    POST http://localhost:8000/tenant/785fb390-51c0-11e9-8647-d663bd873d93
-
-
 Regex Based Routes
 ******************
 Minik comes with a built in mechanism that allows a developer to specify a regular
