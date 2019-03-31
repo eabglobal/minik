@@ -29,7 +29,7 @@ Familiar interface
 HTTP Methods
 ************
 With minik you can also specify the HTTP methods for a given view. If you don't
-define the methods, by default, every single HTTP method will be allowed.
+define the methods, every single HTTP method will be allowed by default.
 
 .. code-block:: python
 
@@ -71,8 +71,7 @@ If you need to specify a regular expression:
         assert isinstance(item_id, str)
         return {'id': item_id}
 
-As a bonus! You can extend our validation framework and write your own route fields.
-
+You can extend our validation framework and write your own classes for route fields!
 .. code-block:: python
 
     from minik.fields import BaseRouteField
@@ -83,14 +82,14 @@ As a bonus! You can extend our validation framework and write your own route fie
             return value in ('fitbit', 'nikeplus', 'vivosmart',)
 
 
-    @sample_app.route('/tracker/{name}/', methods=['GET'])
+    @app.route('/tracker/{name}/', methods=['GET'])
     def get_tracker_info(name: RouteTracker):
         assert isinstance(name, str)
         return {'name': name}
 
 In the example above, your view will only be executed when the name paramter passed in
 matches one of the trackers specified in the validator. All you need to do is implement the
-validation logic. To learn more checkout out `features`_ page.
+validation logic. To learn more checkout out the `features`_ page.
 
 .. _`function annotations`: https://www.python.org/dev/peps/pep-3107/
 .. _`features`: https://eabglobal.github.io/minik/features.html
@@ -105,8 +104,8 @@ needs that encouraged us to build minik:
   (flask like) in the AWS ecosystem.
 - I want to decide how to build and deploy my lambda functions. I do not want
   my framework to dictate these processes for me. I want to own them!
-- When installing my framework, I want to get only the framework. I don’t want
-  to any additional tooling or any additional process-based workflows..
+- When installing a web framework, I want to get only the framework. I don’t
+  want any additional tooling or any additional process-based workflows.
 - When using the microframework I am responsible for the configuration
   required to associate my lambda function to its endpoints.
 
@@ -122,7 +121,7 @@ Things to be aware of when working with minik:
 - When used in your lambda function, you're responsible for including the source
   code of minik in your .zip artifact. For packaging purposes we recommend using
   `Juniper`_.
-- Unlike other frameworks like Flask or Django where using the decorator is
+- Unlike other frameworks like Flask or Django, where using the decorator is
   sufficient to define the routes of the web app, in minik, you’re responsible
   for linking a lambda function to the API gateway. We recommend using a
   `SAM`_ template.

@@ -25,14 +25,14 @@ def test_cache_custom_route_fields_for_class_based_annotation():
     assert isinstance(CUSTOM_FIELD_BY_TYPE[BikesRF], BikesRF)
     expected_id = id(CUSTOM_FIELD_BY_TYPE[BikesRF])
 
-    # Calling the cache a second time, should NOT instantiate a new class.
+    # Calling the cache a second time should NOT instantiate a new class.
     cache_custom_route_fields(route)
     assert id(CUSTOM_FIELD_BY_TYPE[BikesRF]) == expected_id
 
 
 def test_cache_custom_route_fields_for_instance_based_annotation():
     """
-    When the view has an instance based annotation, the cache not be updated.
+    When the view has an instance based annotation, the cache is not updated.
     """
 
     class BikesPre(BaseRouteField):
@@ -50,7 +50,7 @@ def test_cache_custom_route_fields_for_instance_based_annotation():
     orig_len = len(CUSTOM_FIELD_BY_TYPE)
     cache_custom_route_fields(route)
 
-    # Instance based annotations do NOT get cached. These are not cached given that
+    # Instance based annotations do NOT get cached. These are not cached because
     # the instance is already stored in the function annotation.
     assert BikesPre not in CUSTOM_FIELD_BY_TYPE
     assert orig_len == len(CUSTOM_FIELD_BY_TYPE)

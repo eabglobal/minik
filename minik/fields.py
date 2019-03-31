@@ -11,7 +11,7 @@ class BaseRouteField(ABC):
     def __call__(self, value):
         """
         The method called to perform a given validation. If the validation is
-        successful, the route field returned unchanged. If the validation fails,
+        successful, the route field is returned unchanged. If the validation fails,
         a ValueError is raised.
 
         :param value: The value to match against the pattern.
@@ -24,16 +24,18 @@ class BaseRouteField(ABC):
     @abstractmethod
     def validate(self, value):
         """
-        Business logic that must be implemented by a consumer to determine if the
-        given route value is valid or not.
+        Business logic that must be implemented by a consumer to determine if
+        the given route value is valid or not. True=valid, False=invalid.
+
+        :param vaule: The actual value of a route field.
         """
         pass
 
 
 class ReStr(BaseRouteField):
     """
-    Regex based router field. This base class will use the pattern field of a
-    subclass as a way to validate a given value. If the value matches the pattern
+    Regex based router field. This class will use the pattern value of an
+    instance to validate a given value. If the value matches the pattern,
     nothing happens. If it does not, a ValueError is raised.
     """
     def __init__(self, pattern):
@@ -56,7 +58,8 @@ CUSTOM_FIELD_BY_TYPE = {
 def update_uri_parameters(route, request):
     """
     Based on the function annotations of the route's view, validate a given route
-    parameter and update the value of the requests's uri. If a route is defined as
+    parameter and update the value of the requests' uri. For example, a route is
+    defined as follows:
 
     def my_view(product_id: int):
         return {'id': product_id}
@@ -65,7 +68,7 @@ def update_uri_parameters(route, request):
     it will update the string value of the request.uri_parameters to be the int
     representation of the value.
 
-    :param route: The minik route object, it should have a valid view.
+    :param route: The minik route object, which should have a valid view.
     :param request: The instance of the minik request.
     """
 

@@ -44,7 +44,7 @@ function should look like:
 HTTP Methods
 ************
 With minik you can also specify the HTTP methods for a given view. If you don't
-define the methods, by default, every single HTTP method will be allowed.
+define the methods, every single HTTP method will be allowed by default.
 
 .. code-block:: python
 
@@ -77,7 +77,7 @@ status code.
         return {'author_name': author, 'year': year}
 
 
-To learn more checkout out our _`features` page.
+To learn more checkout out the _`features` page.
 
 .. _`function annotations`: https://www.python.org/dev/peps/pep-3107/
 .. _`features`: https://eabglobal.github.io/minik/features
@@ -94,8 +94,8 @@ needs that encouraged us to build minik:
   (flask like) in the AWS ecosystem.
 - I want to decide how to build and deploy my lambda functions. I do not want
   my framework to dictate these processes for me. I want to own them!
-- When installing my framework, I want to get only the framework. I don’t want
-  to any additional tooling or any additional process-based workflows..
+- When installing a web framework, I want to get only the framework. I don’t
+  want any additional tooling or any additional process-based workflows.
 - When using the microframework I am responsible for the configuration
   required to associate my lambda function to its endpoints.
 
@@ -109,16 +109,16 @@ Just the framework
 
 Things to be aware of when working using minik:
 
-- When used in your lambda function, you're responsible of including the source
+- When used in your lambda function, you're responsible for including the source
   code of minik in your .zip artifact. For packaging purposes we recommend using
   `Juniper`_.
-- Unlike other frameworks like `Flask` or `Django` where using the decorator is
-  sufficient to define the routes of the web app. In minik, you're responsible for
-  linking a lambda function to a the API gateway. We recommend using a `SAM`_ template.
+- Unlike other frameworks like Flask or Django, where using the decorator is
+  sufficient to define the routes of the web app, in minik, you’re responsible
+  for linking a lambda function to the API gateway. We recommend using a
+  `SAM`_ template.
 - Minik does not include a local development server! For testing purposes, you can
   either deploy your lambda to AWS using `sam package` and `sam deploy`. For local
   deployment purposes you can use `sam local`.
-
 
 Quickstart
 **********
