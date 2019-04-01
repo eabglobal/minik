@@ -100,9 +100,9 @@ The team behind this framework is adopting a very minimal set of features to enh
 and streamline web development in the serverless space. These were the business
 needs that encouraged us to build minik:
 
-- I need to have the ability to write an API using a syntax I'm familiar with
-  (flask like) in the AWS ecosystem.
-- I want to decide how to build and deploy my lambda functions. I do not want
+- Ability to write an API using a familiar (Flask like) syntax using serverless
+  services.
+- Flexibility on how to build and deploy lambda functions. I do not want
   my framework to dictate these processes for me. I want to own them!
 - When installing a web framework, I want to get only the framework. I don’t
   want any additional tooling or any additional process-based workflows.

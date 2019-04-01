@@ -20,7 +20,6 @@ Only **Python 3.6+** is supported.
 
 Simple Example
 **************
-
 In it's most basic form; quite honestly, it's only form. This is how your lambda
 function should look like:
 
@@ -73,26 +72,25 @@ status code.
 
     @app.route('/articles/{author}/{year}/')
     def get_articles_view(author: str, year: int):
-        assert isinstance(author, str) and isinstance(year, int)
+        # Type conversion: isinstance(author, str) and isinstance(year, int)
         return {'author_name': author, 'year': year}
 
 
-To learn more checkout out the _`features` page.
+To learn more checkout out the `route validation`_ page.
 
 .. _`function annotations`: https://www.python.org/dev/peps/pep-3107/
-.. _`features`: https://eabglobal.github.io/minik/features
+.. _`route validation`: https://eabglobal.github.io/minik/features
 
 
 Motivation
 **********
-
 The team behind this framework is adopting a very minimal set of features to enhance
 and streamline web development in the serverless space. These were the business
 needs that encouraged us to build minik:
 
-- I need to have the ability to write an API using a syntax I'm familiar with
-  (flask like) in the AWS ecosystem.
-- I want to decide how to build and deploy my lambda functions. I do not want
+- Ability to write an API using a familiar (Flask like) syntax using serverless
+  services.
+- Flexibility on how to build and deploy lambda functions. I do not want
   my framework to dictate these processes for me. I want to own them!
 - When installing a web framework, I want to get only the framework. I don’t
   want any additional tooling or any additional process-based workflows.
@@ -106,7 +104,6 @@ write and expose an API using AWS services.
 
 Just the framework
 ******************
-
 Things to be aware of when working using minik:
 
 - When used in your lambda function, you're responsible for including the source

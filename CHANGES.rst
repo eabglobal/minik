@@ -3,6 +3,16 @@
 Minik Changelog
 ===============
 
+Version 0.3.0
+-------------
+
+Released on March 31st, 2019, codename Yunus II
+
+- Implemented route validation feature (issues/13)
+
+- Updated version of the documentation and README
+
+
 Version 0.2.0
 -------------
 
