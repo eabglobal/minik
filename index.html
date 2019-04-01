@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Welcome to minik’s documentation &#8212; minik  documentation</title>
+    <title>Minik - Serverless Web Framework &#8212; minik  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -33,8 +33,8 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-minik-s-documentation">
-<h1>Welcome to minik’s documentation<a class="headerlink" href="#welcome-to-minik-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="minik-serverless-web-framework">
+<h1>Minik - Serverless Web Framework<a class="headerlink" href="#minik-serverless-web-framework" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="https://circleci.com/gh/eabglobal/minik/tree/master"><img alt="circle" src="https://circleci.com/gh/eabglobal/minik/tree/master.svg?style=shield" /></a> <a class="reference external" href="https://pypi.org/project/minik/"><img alt="pypi version" src="https://img.shields.io/pypi/v/minik.svg" /></a> <a class="reference external" href="https://github.com/eabglobal/minik/blob/master/LICENSE"><img alt="apache license" src="https://img.shields.io/github/license/eabglobal/minik.svg" /></a></p>
 <p>Minik is a python microframework used to write clean APIs in the serverless domain.</p>
 <p>As a developer working in AWS, if you would like to have full control of your development
@@ -50,6 +50,102 @@ To build your first API using minik, SAM and Juniper go to <a class="reference i
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;Hello&quot;</span><span class="p">:</span> <span class="n">proxy</span><span class="p">}</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="http-methods">
+<h2>HTTP Methods<a class="headerlink" href="#http-methods" title="Permalink to this headline">¶</a></h2>
+<p>With minik you can also specify the HTTP methods for a given view. If you don’t
+define the methods, every single HTTP method will be allowed by default.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">minik.core</span> <span class="kn">import</span> <span class="n">Minik</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Minik</span><span class="p">()</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/events/{location}&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">events_view</span><span class="p">(</span><span class="n">location</span><span class="p">):</span>
+    <span class="c1"># This route will be invoked for GET, POST, PUT, DELETE...</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;granfondo MD&#39;</span><span class="p">,</span> <span class="s1">&#39;Silver Spring Century&#39;</span><span class="p">]}</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/events&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">create_event_view</span><span class="p">():</span>
+    <span class="n">create_event</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">json_body</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="s1">&#39;complete&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="route-validation">
+<h2>Route Validation<a class="headerlink" href="#route-validation" title="Permalink to this headline">¶</a></h2>
+<p>Using the <a class="reference external" href="https://www.python.org/dev/peps/pep-3107/">function annotations</a>, you can specify the type of value you are expecting
+in your route. The added advantage is that minik will convert your parameter to the
+appropriate type. For instance:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/articles/</span><span class="si">{author}</span><span class="s1">/</span><span class="si">{year}</span><span class="s1">/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_articles_view</span><span class="p">(</span><span class="n">author</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">year</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">author</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;author_name&#39;</span><span class="p">:</span> <span class="n">author</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">:</span> <span class="n">year</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>If you need to specify a regular expression:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">minik.fields</span> <span class="kn">import</span> <span class="n">ReStr</span>
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/item/{item_id}/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_item</span><span class="p">(</span><span class="n">item_id</span><span class="p">:</span> <span class="n">ReStr</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([0-9a-f]{8}$)&#39;</span><span class="p">)):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">item_id</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>You can extend our validation framework and write your own classes for route fields!
+.. code-block:: python</p>
+<blockquote>
+<div><p>from minik.fields import BaseRouteField</p>
+<p>class RouteTracker(BaseRouteField):</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>def validate(self, value):</dt>
+<dd>return value in (‘fitbit’, ‘nikeplus’, ‘vivosmart’,)</dd>
+</dl>
+</div></blockquote>
+<p>&#64;app.route(‘/tracker/{name}/’, methods=[‘GET’])
+def get_tracker_info(name: RouteTracker):</p>
+<blockquote>
+<div>assert isinstance(name, str)
+return {‘name’: name}</div></blockquote>
+</div></blockquote>
+<p>In the example above, your view will only be executed when the name paramter passed in
+matches one of the trackers specified in the validator. All you need to do is implement the
+validation logic. To learn more checkout out the <a class="reference external" href="https://eabglobal.github.io/minik/features.html">features</a> page.</p>
+</div>
+<div class="section" id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
+<p>The team behind this framework is adopting a very minimal set of features to enhance
+and streamline web development in the serverless space. These were the business
+needs that encouraged us to build minik:</p>
+<ul class="simple">
+<li>Ability to write an API using a familiar (Flask like) syntax using serverless
+services.</li>
+<li>Flexibility on how to build and deploy lambda functions. I do not want
+my framework to dictate these processes for me. I want to own them!</li>
+<li>When installing a web framework, I want to get only the framework. I don’t
+want any additional tooling or any additional process-based workflows.</li>
+<li>When using the microframework I am responsible for the configuration
+required to associate my lambda function to its endpoints.</li>
+</ul>
+<p>The features of this library should be absolutely driven by a very specific
+business need. So far, the minimal approach has been sufficient for our team to
+write and expose an API using AWS services.</p>
+</div>
+<div class="section" id="just-the-framework">
+<h2>Just the framework<a class="headerlink" href="#just-the-framework" title="Permalink to this headline">¶</a></h2>
+<p>Things to be aware of when working with minik:</p>
+<ul class="simple">
+<li>When used in your lambda function, you’re responsible for including the source
+code of minik in your .zip artifact. For packaging purposes we recommend using
+<a class="reference external" href="https://github.com/eabglobal/juniper">Juniper</a>.</li>
+<li>Unlike other frameworks like Flask or Django, where using the decorator is
+sufficient to define the routes of the web app, in minik, you’re responsible
+for linking a lambda function to the API gateway. We recommend using a
+<a class="reference external" href="https://github.com/awslabs/serverless-application-model">SAM</a> template.</li>
+<li>Minik does not include a local development server! For testing purposes, you can
+either deploy your lambda to AWS using <cite>sam package</cite> and <cite>sam deploy</cite>. For local
+deployment purposes you can use <cite>sam local</cite>.</li>
+</ul>
 </div>
 <div class="section" id="minik-in">
 <h2>Minik in λ<a class="headerlink" href="#minik-in" title="Permalink to this headline">¶</a></h2>
@@ -121,41 +217,6 @@ Using the above object and endpoint as an example, our lambda function would ins
 API Gateway and for associating the lambda function with the gateway endpoint. Minik
 is just the framework that allows you to write your api in a straight-forward fashion.</p>
 </div>
-<div class="section" id="motivation">
-<h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
-<p>The team behind this framework is adopting a very minimal set of features to enhance
-and streamline web development in the serverless space. These were the business
-needs that encouraged us to build minik:</p>
-<ul class="simple">
-<li>I need to have the ability to write an API using a syntax I’m familiar with
-(flask like) in the AWS ecosystem.</li>
-<li>I want to decide how to build and deploy my lambda functions. I do not want
-my framework to dictate these processes for me. I want to own them!</li>
-<li>When installing my framework, I want to get only the framework. I don’t want
-to any additional tooling or any additional process-based workflows..</li>
-<li>When using the microframework I am aware that I am responsible for the configuration
-required to associate my lambda function to its endpoints.</li>
-</ul>
-<p>The features of this library should be absolutely driven by a very specific
-business need. So far, the minimal approach has been sufficient for our team to
-write and expose an API using AWS services.</p>
-</div>
-<div class="section" id="just-the-framework">
-<h2>Just the framework<a class="headerlink" href="#just-the-framework" title="Permalink to this headline">¶</a></h2>
-<p>Things to be aware of when working with minik:</p>
-<ul class="simple">
-<li>When used in your lambda function, you’re responsible for including the source
-code of minik in your .zip artifact. For packaging purposes we recommend using
-<a class="reference external" href="https://github.com/eabglobal/juniper">Juniper</a>.</li>
-<li>Unlike other frameworks like Flask or Django where using the decorator is
-sufficient to define the routes of the web app, in minik, you’re responsible
-for linking a lambda function to the API gateway. We recommend using a
-<a class="reference external" href="https://github.com/awslabs/serverless-application-model">SAM</a> template.</li>
-<li>Minik does not include a local development server! For testing purposes, you can
-either deploy your lambda to AWS using <cite>sam package</cite> and <cite>sam deploy</cite>. For local
-deployment purposes you can use <cite>sam local</cite>.</li>
-</ul>
-</div>
 </div>
 <div class="section" id="contents">
 <h1>Contents:<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
@@ -168,6 +229,11 @@ deployment purposes you can use <cite>sam local</cite>.</li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#deployments">1.4. Deployments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#conclusion">1.5. Conclusion</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#working-example">1.6. Working example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="features.html">2. Route Validation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="features.html#regex-based-routes">2.1. Regex Based Routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#custom-route-fields">2.2. Custom Route Fields</a></li>
 </ul>
 </li>
 </ul>

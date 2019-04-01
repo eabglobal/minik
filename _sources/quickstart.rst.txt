@@ -25,9 +25,9 @@ interface. Your `lambda_handler.py` should look like:
     app = Minik()
 
     @app.route("/events/{zip_code}", methods=['GET'])
-    def get_events(zip_code):
+    def get_events(zip_code: int):
 
-        if zip_code == '20902':
+        if zip_code == 20902:
             return {'events': ['MD Gran fondo', 'Old Busthead']}
 
         return {'events': ['other events']}

@@ -16,7 +16,8 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Welcome to minik’s documentation" href="index.html" />
+    <link rel="next" title="2. Route Validation" href="features.html" />
+    <link rel="prev" title="Minik - Serverless Web Framework" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -55,9 +56,9 @@ interface. Your <cite>lambda_handler.py</cite> should look like:</p>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Minik</span><span class="p">()</span>
 
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/events/</span><span class="si">{zip_code}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">get_events</span><span class="p">(</span><span class="n">zip_code</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_events</span><span class="p">(</span><span class="n">zip_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 
-    <span class="k">if</span> <span class="n">zip_code</span> <span class="o">==</span> <span class="s1">&#39;20902&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">zip_code</span> <span class="o">==</span> <span class="mi">20902</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;events&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;MD Gran fondo&#39;</span><span class="p">,</span> <span class="s1">&#39;Old Busthead&#39;</span><span class="p">]}</span>
 
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;events&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;other events&#39;</span><span class="p">]}</span>
@@ -232,13 +233,15 @@ in this page. To run the examples:</p>
 <li class="toctree-l2"><a class="reference internal" href="#working-example">1.6. Working example</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="features.html">2. Route Validation</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to minik’s documentation</a></li>
+      <li>Previous: <a href="index.html" title="previous chapter">Minik - Serverless Web Framework</a></li>
+      <li>Next: <a href="features.html" title="next chapter">2. Route Validation</a></li>
   </ul></li>
 </ul>
 </div>
