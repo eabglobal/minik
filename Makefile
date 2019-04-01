@@ -32,7 +32,9 @@ gh-pages:
 	mv -fv docs/_build/html/* ./
 	rm -rf docs examples assets
 	git add -A
-	git commit -m "Generated gh-pages" && git push origin gh-pages; git checkout master
+	git commit -m "Generated gh-pages"
+	git push origin gh-pages
+	git checkout master
 
 
 release:
