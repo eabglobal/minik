@@ -91,23 +91,21 @@ appropriate type. For instance:</p>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="n">item_id</span><span class="p">}</span>
 </pre></div>
 </div>
-<p>You can extend our validation framework and write your own classes for route fields!
-.. code-block:: python</p>
-<blockquote>
-<div><p>from minik.fields import BaseRouteField</p>
-<p>class RouteTracker(BaseRouteField):</p>
-<blockquote>
-<div><dl class="docutils">
-<dt>def validate(self, value):</dt>
-<dd>return value in (‘fitbit’, ‘nikeplus’, ‘vivosmart’,)</dd>
-</dl>
-</div></blockquote>
-<p>&#64;app.route(‘/tracker/{name}/’, methods=[‘GET’])
-def get_tracker_info(name: RouteTracker):</p>
-<blockquote>
-<div>assert isinstance(name, str)
-return {‘name’: name}</div></blockquote>
-</div></blockquote>
+<p>You can extend our validation framework and write your own classes for route fields!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">minik.fields</span> <span class="kn">import</span> <span class="n">BaseRouteField</span>
+
+<span class="k">class</span> <span class="nc">RouteTracker</span><span class="p">(</span><span class="n">BaseRouteField</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;fitbit&#39;</span><span class="p">,</span> <span class="s1">&#39;nikeplus&#39;</span><span class="p">,</span> <span class="s1">&#39;vivosmart&#39;</span><span class="p">,)</span>
+
+
+<span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/tracker/{name}/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">get_tracker_info</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="n">RouteTracker</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+</pre></div>
+</div>
 <p>In the example above, your view will only be executed when the name paramter passed in
 matches one of the trackers specified in the validator. All you need to do is implement the
 validation logic. To learn more checkout out the <a class="reference external" href="https://eabglobal.github.io/minik/features.html">features</a> page.</p>
