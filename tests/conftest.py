@@ -25,11 +25,17 @@ def create_router_event():
     Create an event for the router lambda.
     """
     def create_router_event_inner(uri, method='POST', **kwargs):
+        path_params = kwargs.get('pathParameters', {})
+        path = uri
+        if path_params:
+            path = uri.format(**path_params)
+
         return {
             'requestContext': {
                 'httpMethod': method,
                 'resourcePath': uri,
             },
+            'path': path,
             'resource': uri,
             'headers': kwargs.get('headers', {'content-type': 'application/json'}),
             'pathParameters': kwargs.get('pathParameters', {}),

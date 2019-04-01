@@ -14,11 +14,12 @@
     limitations under the License.
 """
 
-
 import json
 import traceback
 from collections import namedtuple, defaultdict
 from minik.constants import CONFIG_ERROR_MSG
+from minik.fields import (update_uri_parameters, cache_custom_route_fields)
+from minik.exceptions import MinikError, MinikViewError
 from minik.status_codes import codes
 
 SimpleRoute = namedtuple('SimpleRoute', ['view', 'methods'])
@@ -52,7 +53,9 @@ class Minik:
         def _register_view(view_func):
 
             methods = kwargs.get('methods', [])
-            self._routes[path].append(SimpleRoute(view_func, methods))
+            new_route = SimpleRoute(view_func, methods)
+            self._routes[path].append(new_route)
+            cache_custom_route_fields(new_route)
 
             return view_func
 
@@ -75,6 +78,8 @@ class Minik:
         try:
 
             route = self._find_route(request)
+
+            update_uri_parameters(route, request)
             response = self._execute_view(route.view, request)
 
         except MinikViewError as pe:
@@ -145,6 +150,7 @@ class MinikRequest:
         if 'resource' not in event:
             raise ConfigurationError(CONFIG_ERROR_MSG)
 
+        self.path = event['path']
         self.resource = event['resource']
         self.query_params = self._get_with_default(event, 'queryStringParameters')
         self.headers = {k.lower(): v for k, v in headers.items()}
@@ -191,20 +197,8 @@ class JsonResponse:
         }
 
 
-class MinikError(Exception):
-    pass
-
-
-class MinikViewError(MinikError):
-    STATUS_CODE = 500
-
-    def __init__(self, error_message, *args, **kwargs):
-        super().__init__(self.__class__.__name__ + ': %s' % error_message)
-        self.status_code = kwargs.get('status_code', self.STATUS_CODE)
-
-
 class BadRequestError(MinikViewError):
-    STATUS_CODE = 400
+    STATUS_CODE = codes.bad_request
 
 
 class ConfigurationError(MinikError):

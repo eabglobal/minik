@@ -3,9 +3,10 @@ app = Minik()
 
 
 @app.route("/events/{zip_code}", methods=['GET'])
-def get_events(zip_code):
+def get_events(zip_code: int):
 
-    if zip_code == '20902':
+    print(f'{type(zip_code)} - {zip_code}')
+    if zip_code == 20902:
         return {'events': ['MD Gran fondo', 'Old Busthead']}
 
     return {'events': ['other events']}

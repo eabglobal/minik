@@ -20,7 +20,6 @@ Only **Python 3.6+** is supported.
 
 Simple Example
 **************
-
 In it's most basic form; quite honestly, it's only form. This is how your lambda
 function should look like:
 
@@ -43,9 +42,8 @@ function should look like:
 
 HTTP Methods
 ************
-
 With minik you can also specify the HTTP methods for a given view. If you don't
-define the methods, by default, every single HTTP method will be allowed.
+define the methods, every single HTTP method will be allowed by default.
 
 .. code-block:: python
 
@@ -64,19 +62,38 @@ define the methods, by default, every single HTTP method will be allowed.
         return {'result': 'complete'}
 
 
+Route Parameter Validation
+**************************
+Minik uses `function annotations`_ to validate the value of a route. If the type
+of an expected parameter is not valid, minik will respond with a 404 not found
+status code.
+
+.. code:: python
+
+    @app.route('/articles/{author}/{year}/')
+    def get_articles_view(author: str, year: int):
+        # Type conversion: isinstance(author, str) and isinstance(year, int)
+        return {'author_name': author, 'year': year}
+
+
+To learn more checkout out the `route validation`_ page.
+
+.. _`function annotations`: https://www.python.org/dev/peps/pep-3107/
+.. _`route validation`: https://eabglobal.github.io/minik/features
+
+
 Motivation
 **********
-
 The team behind this framework is adopting a very minimal set of features to enhance
 and streamline web development in the serverless space. These were the business
 needs that encouraged us to build minik:
 
-- I need to have the ability to write an API using a syntax I'm familiar with
-  (flask like) in the AWS ecosystem.
-- I want to decide how to build and deploy my lambda functions. I do not want
+- Ability to write an API using a familiar (Flask like) syntax using serverless
+  services.
+- Flexibility on how to build and deploy lambda functions. I do not want
   my framework to dictate these processes for me. I want to own them!
-- When installing my framework, I want to get only the framework. I don’t want
-  to any additional tooling or any additional process-based workflows..
+- When installing a web framework, I want to get only the framework. I don’t
+  want any additional tooling or any additional process-based workflows.
 - When using the microframework I am responsible for the configuration
   required to associate my lambda function to its endpoints.
 
@@ -87,19 +104,18 @@ write and expose an API using AWS services.
 
 Just the framework
 ******************
-
 Things to be aware of when working using minik:
 
-- When used in your lambda function, you're responsible of including the source
+- When used in your lambda function, you're responsible for including the source
   code of minik in your .zip artifact. For packaging purposes we recommend using
   `Juniper`_.
-- Unlike other frameworks like `Flask` or `Django` where using the decorator is
-  sufficient to define the routes of the web app. In minik, you're responsible for
-  linking a lambda function to a the API gateway. We recommend using a `SAM`_ template.
+- Unlike other frameworks like Flask or Django, where using the decorator is
+  sufficient to define the routes of the web app, in minik, you’re responsible
+  for linking a lambda function to the API gateway. We recommend using a
+  `SAM`_ template.
 - Minik does not include a local development server! For testing purposes, you can
   either deploy your lambda to AWS using `sam package` and `sam deploy`. For local
   deployment purposes you can use `sam local`.
-
 
 Quickstart
 **********
