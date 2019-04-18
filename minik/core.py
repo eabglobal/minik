@@ -42,12 +42,26 @@ class Minik:
 
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
         self._routes = defaultdict(list)
+
+    def get(self, path, **kwargs):
+        return self.route(path, methods=['GET'], **kwargs)
+
+    def post(self, path, **kwargs):
+        return self.route(path, methods=['POST'], **kwargs)
+
+    def put(self, path, **kwargs):
+        return self.route(path, methods=['PUT'], **kwargs)
+
+    def delete(self, path, **kwargs):
+        return self.route(path, methods=['DELETE'], **kwargs)
 
     def route(self, path, **kwargs):
         """
         The decorator function used to associate a given route with a view function.
+
+        :param path: The endpoint associated with a given view.
         """
 
         def _register_view(view_func):
@@ -86,7 +100,7 @@ class Minik:
             response = JsonResponse({'error_message': str(pe)}, status_code=pe.status_code)
         except Exception as te:
             tracer = ''.join(traceback.format_exc())
-            # self.logger.error(tracer)
+            print(tracer)
             response = JsonResponse({'error_message': str(te), 'trace': tracer}, status_code=500)
 
         return response.to_dict()
