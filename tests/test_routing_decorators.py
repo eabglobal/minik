@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    test_routing.py
+    test_routing_decorators.py
     :copyright: © 2019 by the EAB Tech team.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,6 @@ import json
 import pytest
 from unittest.mock import MagicMock
 from minik.core import Minik
-from minik.status_codes import codes
 
 
 sample_app = Minik()

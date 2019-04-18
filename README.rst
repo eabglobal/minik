@@ -30,7 +30,7 @@ function should look like:
     app = Minik()
 
     @app.route('/hello/{name}')
-    def hello_view(name):
+    def hello_view(name: str):
 
         if name == 'FINDME':
             # Returns a 400 status code with the message as the body.
@@ -52,7 +52,7 @@ define the methods, every single HTTP method will be allowed by default.
     app = Minik()
 
     @app.route('/events/{location}')
-    def events_view(location):
+    def events_view(location: str):
         # This route will be invoked for GET, POST, PUT, DELETE...
         return {'data': ['granfondo MD', 'Silver Spring Century']}
 
@@ -61,6 +61,23 @@ define the methods, every single HTTP method will be allowed by default.
         create_event(app.request.json_body)
         return {'result': 'complete'}
 
+The microframework also includes a set of convenient decorator methods for the
+case in which a view is associated with a single HTTP method.
+
+.. code-block:: python
+
+    from minik.core import Minik
+
+    app = Minik()
+
+    @app.get('/events/{location}')
+    def get_view(location: str):
+        return {'data': ['granfondo MD', 'Silver Spring Century']}
+
+    @app.post('/events')
+    def post_view():
+        create_event(app.request.json_body)
+        return {'result': 'complete'}
 
 Route Parameter Validation
 **************************
