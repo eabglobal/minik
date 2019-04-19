@@ -3,6 +3,7 @@ functions:
     requirements: ./requirements.txt
     include:
     - ./lambda_function/lambda_handler.py
+    - ../../minik
 
   auth:
     include:

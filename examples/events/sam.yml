@@ -8,16 +8,6 @@ Resources:
     Properties:
       EndpointConfiguration: REGIONAL
       StageName: Prod
-      Auth:
-        DefaultAuthorizer: MyLambdaRequestAuthorizer
-        Authorizers:
-          MyLambdaRequestAuthorizer:
-            FunctionPayloadType: TOKEN
-            FunctionArn: !GetAtt MyAuthFunction.Arn
-            Identity:
-              Headers:
-              - Authorization
-              ReauthorizeEvery: 300
 
   EventsFunction:
     Type: AWS::Serverless::Function
@@ -31,13 +21,19 @@ Resources:
       # The location of the Lambda function code.
       CodeUri: ./dist/events.zip
       Events:
+        GetEvents:
+          Type: Api
+          Properties:
+            RestApiId: !Ref EventsAPI
+            Path: /events
+            Method: get
         PostEvents:
           Type: Api
           Properties:
             RestApiId: !Ref EventsAPI
             Path: /events
             Method: post
-        GetEvents:
+        GetEvent:
           Type: Api
           Properties:
             RestApiId: !Ref EventsAPI

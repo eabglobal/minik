@@ -16,7 +16,7 @@ package:
 	    --output-template-file ./dist/$(SAM_OUTPUT) \
 	    --profile $(AWS_PROFILE)
 
-deploy:
+deploy: package
 	sam deploy \
 	    --template-file ./dist/$(SAM_OUTPUT) \
 	    --stack-name $(STACK_NAME) \
