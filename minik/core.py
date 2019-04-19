@@ -17,6 +17,7 @@
 import traceback
 from collections import namedtuple, defaultdict
 from minik.fields import (update_uri_parameters, cache_custom_route_fields)
+from minik.constants import DEFAULT_500_ERROR
 from minik.exceptions import MinikViewError
 from minik.models import Response, JsonResponse
 from minik.builders import APIGatewayRequestBuilder
