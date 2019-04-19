@@ -17,9 +17,10 @@
 import json
 import traceback
 from collections import namedtuple, defaultdict
-from minik.constants import CONFIG_ERROR_MSG
 from minik.fields import (update_uri_parameters, cache_custom_route_fields)
 from minik.exceptions import MinikError, MinikViewError
+from minik.models import Response, JsonResponse
+from minik.builders import APIGatewayRequestBuilder
 from minik.status_codes import codes
 
 SimpleRoute = namedtuple('SimpleRoute', ['view', 'methods'])
@@ -44,6 +45,7 @@ class Minik:
 
     def __init__(self, **kwargs):
         self._routes = defaultdict(list)
+        self._request_builder = APIGatewayRequestBuilder()
 
     def get(self, path, **kwargs):
         return self.route(path, methods=['GET'], **kwargs)
@@ -86,7 +88,7 @@ class Minik:
         :param context: The aws context included in every lambda function execution
         """
 
-        request = MinikRequest(event, context)
+        request = self._request_builder.build(event, context)
         self.request = request
 
         try:
@@ -97,11 +99,17 @@ class Minik:
             response = self._execute_view(route.view, request)
 
         except MinikViewError as pe:
-            response = JsonResponse({'error_message': str(pe)}, status_code=pe.status_code)
+            response = JsonResponse(
+                status_code=pe.status_code,
+                headers={},
+                body={'error_message': str(pe)})
         except Exception as te:
             tracer = ''.join(traceback.format_exc())
             print(tracer)
-            response = JsonResponse({'error_message': str(te), 'trace': tracer}, status_code=500)
+            response = JsonResponse(
+                status_code=500,
+                headers={},
+                body={'error_message': str(te), 'trace': tracer})
 
         return response.to_dict()
 
@@ -112,9 +120,9 @@ class Minik:
         """
 
         if request.uri_params:
-            return JsonResponse(view(**request.uri_params))
+            return JsonResponse(headers={}, body=view(**request.uri_params))
 
-        return JsonResponse(view())
+        return JsonResponse(headers={}, body=view())
 
     def _find_route(self, request):
         """
@@ -148,73 +156,5 @@ class Minik:
         return target_route[0]
 
 
-class MinikRequest:
-    """
-    Simple wrapper of the data object received from API Gateway. This object will
-    parse a given API gateway event and it will transform it into a more user
-    friendly object to operate on. The idea is that a view does not need to be
-    concerned with the inner representation of the APIGateway's event as long as
-    it has access to the underlaying data values in the event.
-    """
-
-    def __init__(self, event, context):
-
-        headers = self._get_with_default(event, 'headers')
-
-        if 'resource' not in event:
-            raise ConfigurationError(CONFIG_ERROR_MSG)
-
-        self.path = event['path']
-        self.resource = event['resource']
-        self.query_params = self._get_with_default(event, 'queryStringParameters')
-        self.headers = {k.lower(): v for k, v in headers.items()}
-        self.uri_params = event['pathParameters']
-        self.method = event['requestContext']['httpMethod']
-        self._body = event['body']
-        # The parsed JSON from the body. This value should
-        # only be set if the Content-Type header is application/json,
-        # which is the default content type.
-        self._json_body = None
-        self.aws_context = context
-
-    def _get_with_default(self, event, param_name, default={}):
-        return event.get(param_name, {}) or default
-
-    @property
-    def json_body(self):
-        """
-        Lazy loading/parsing of the json payload.
-        """
-        if self.headers.get('content-type', '').startswith('application/json'):
-            if self._json_body is None:
-                self._json_body = json.loads(self._body)
-            return self._json_body
-
-
-class JsonResponse:
-    """
-    A very simple wrapper that defines a valid JsonResponse the APIGateway understands.
-    The object encapsulates the headers, status code and body of a response.
-    """
-
-    def __init__(self, body, headers=None, status_code=200):
-        self.body = body
-        self.headers = headers or {}
-        self.status_code = status_code
-
-    def to_dict(self, binary_types=None):
-
-        return {
-            'headers': self.headers,
-            'statusCode': self.status_code,
-            'body': json.dumps(self.body)
-        }
-
-
 class BadRequestError(MinikViewError):
     STATUS_CODE = codes.bad_request
-
-
-class ConfigurationError(MinikError):
-    def __init__(self, error_message, *args, **kwargs):
-        super().__init__(self.__class__.__name__ + ': %s' % error_message)
