@@ -47,6 +47,9 @@ class Minik:
         self._routes = defaultdict(list)
         self._request_builder = APIGatewayRequestBuilder()
 
+    def set_request_builder(self, builder_instance):
+        self._request_builder = builder_instance
+
     def get(self, path, **kwargs):
         return self.route(path, methods=['GET'], **kwargs)
 
