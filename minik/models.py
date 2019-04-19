@@ -42,9 +42,9 @@ class MinikRequest:
 class Response:
     __slots__ = ['body', 'headers', 'status_code']
 
-    def __init__(self, body, headers, status_code=codes.ok):
+    def __init__(self, body, headers=None, status_code=codes.ok):
         self.body = body
-        self.headers = headers
+        self.headers = headers or {}
         self.status_code = status_code
 
     def to_dict(self, binary_types=None):

@@ -101,14 +101,12 @@ class Minik:
         except MinikViewError as pe:
             response = JsonResponse(
                 status_code=pe.status_code,
-                headers={},
                 body={'error_message': str(pe)})
         except Exception as te:
             tracer = ''.join(traceback.format_exc())
             print(tracer)
             response = JsonResponse(
                 status_code=500,
-                headers={},
                 body={'error_message': str(te), 'trace': tracer})
 
         return response.to_dict()
@@ -119,10 +117,12 @@ class Minik:
         argumetns and return a JsonResponse.
         """
 
-        if request.uri_params:
-            return JsonResponse(headers={}, body=view(**request.uri_params))
+        response = view(**request.uri_params) if request.uri_params else view()
 
-        return JsonResponse(headers={}, body=view())
+        if isinstance(response, Response):
+            return response
+
+        return JsonResponse(body=response)
 
     def _find_route(self, request):
         """
