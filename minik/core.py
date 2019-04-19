@@ -43,6 +43,7 @@ class Minik:
     """
 
     def __init__(self, **kwargs):
+        self._in_debug = kwargs.get('debug', False)
         self._routes = defaultdict(list)
         self._request_builder = APIGatewayRequestBuilder()
 
@@ -96,7 +97,6 @@ class Minik:
         try:
 
             route = self._find_route(request)
-
             update_uri_parameters(route, request)
             response = self._execute_view(route.view, request)
 
@@ -106,10 +106,13 @@ class Minik:
                 body={'error_message': str(pe)})
         except Exception as te:
             tracer = ''.join(traceback.format_exc())
-            print(tracer)
+
+            body = {'error_message': str(te), 'trace': tracer}
+            print(body)
+
             response = JsonResponse(
                 status_code=500,
-                body={'error_message': str(te), 'trace': tracer})
+                body=body if self._in_debug else DEFAULT_500_ERROR)
 
         return response.to_dict()
 

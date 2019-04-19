@@ -11,7 +11,7 @@ class MinikRequest:
     it has access to the underlaying data values in the event.
     """
     __slots__ = ['path', 'resource', 'query_params', 'headers', 'uri_params',
-                 'method', '_body', '_json_body', 'aws_context']
+                 'method', 'body', '_json_body', 'aws_context']
 
     def __init__(self, path, resource, query_params, headers, uri_params, method, body, context):
 
@@ -21,7 +21,7 @@ class MinikRequest:
         self.headers = headers
         self.uri_params = uri_params
         self.method = method
-        self._body = body
+        self.body = body
         self.aws_context = context
         # The parsed JSON from the body. This value should
         # only be set if the Content-Type header is application/json,
@@ -35,7 +35,7 @@ class MinikRequest:
         """
         if self.headers.get('content-type', '').startswith('application/json'):
             if self._json_body is None:
-                self._json_body = json.loads(self._body)
+                self._json_body = json.loads(self.body)
             return self._json_body
 
 
