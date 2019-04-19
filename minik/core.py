@@ -14,11 +14,10 @@
     limitations under the License.
 """
 
-import json
 import traceback
 from collections import namedtuple, defaultdict
 from minik.fields import (update_uri_parameters, cache_custom_route_fields)
-from minik.exceptions import MinikError, MinikViewError
+from minik.exceptions import MinikViewError
 from minik.models import Response, JsonResponse
 from minik.builders import APIGatewayRequestBuilder
 from minik.status_codes import codes

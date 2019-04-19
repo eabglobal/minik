@@ -21,7 +21,6 @@ from unittest.mock import MagicMock
 from minik.status_codes import codes
 from minik.constants import CONFIG_ERROR_MSG
 from minik.core import Minik, BadRequestError
-from minik.models import JsonResponse
 from minik.exceptions import ConfigurationError
 
 

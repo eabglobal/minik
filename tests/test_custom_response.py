@@ -15,7 +15,6 @@
 """
 
 import json
-import pytest
 from unittest.mock import MagicMock
 from minik.core import Minik
 from minik.models import Response
