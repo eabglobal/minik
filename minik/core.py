@@ -48,7 +48,7 @@ class Minik:
 
         self._request_builder = kwargs.get('request_builder', APIGatewayRequestBuilder())
         self._error_middleware = kwargs.get('server_error_middleware', ServerErrorMiddleware())
-        self._exception_middleware = kwargs.get('exception_middleware', ExceptionMiddleware)
+        self._exception_middleware = kwargs.get('exception_middleware', ExceptionMiddleware())
 
         self._routes = defaultdict(list)
         self._middleware = [

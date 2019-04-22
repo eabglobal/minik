@@ -3,6 +3,17 @@
 Minik Changelog
 ===============
 
+Version 0.4.0
+-------------
+
+Released on April 22nd, 2019, codename Yunus III
+
+- Large refactoring effort to make minik more flexible (issues/29)
+
+- Using middleware to build a request. This feature will enable the Framework
+  to be used not only to route API requests but possibly request from other sources.
+
+
 Version 0.3.0
 -------------
 
