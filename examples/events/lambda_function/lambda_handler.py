@@ -1,5 +1,5 @@
 from minik.core import Minik
-from minik.models import Response
+
 app = Minik()
 
 
