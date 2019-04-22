@@ -27,18 +27,15 @@ context = MagicMock()
 
 @sample_app.get("/events/{zip_code}")
 def get_events(zip_code: int):
-    return Response(
-        headers={'Content-Type': 'text/html'},
-        body='hello')
+    sample_app.response.headers = {'Content-Type': 'text/html'}
+    return 'hello'
 
 
 @sample_app.post("/events/{zip_code}")
 def post_event(zip_code: int):
-    return Response(
-        status_code=codes.partial,
-        headers={'Content-Type': 'application/json'},
-        body=json.dumps({'findme': True, 'zip': zip_code})
-    )
+    sample_app.response.status_code = codes.partial
+    sample_app.response.headers = {'Content-Type': 'application/json'}
+    return {'findme': True, 'zip': zip_code}
 
 
 def test_get_custom_response(create_router_event):
@@ -47,12 +44,11 @@ def test_get_custom_response(create_router_event):
                                 method='GET',
                                 pathParameters={'zip_code': 20902})
 
-    expected = get_events(20902)
     response = sample_app(event, context)
 
-    assert response['body'] == expected.body
-    assert response['headers'] == expected.headers
-    assert response['statusCode'] == expected.status_code
+    assert response['body'] == 'hello'
+    assert response['headers'] == {'Content-Type': 'text/html'}
+    assert response['statusCode'] == codes.ok
 
 
 def test_post_custom_response(create_router_event):
@@ -61,9 +57,8 @@ def test_post_custom_response(create_router_event):
                                 method='POST',
                                 pathParameters={'zip_code': 20902})
 
-    expected = post_event(20902)
     response = sample_app(event, context)
 
-    assert response['body'] == expected.body
-    assert response['headers'] == expected.headers
-    assert response['statusCode'] == expected.status_code
+    assert response['body'] == json.dumps({'findme': True, 'zip': 20902})
+    assert response['headers'] == {'Content-Type': 'application/json'}
+    assert response['statusCode'] == codes.partial

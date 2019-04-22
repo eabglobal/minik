@@ -1,42 +1,33 @@
 from minik.core import Minik
 from minik.status_codes import codes
-from minik.models import Response, JsonResponse
+from minik.models import Response
 
 
 app = Minik()
 
 
-app.add_middleware(
-    CorsMiddleware,
-)
-
-
 @app.get("/beers")
 def get_beers():
 
-    # return Response(
-    #     headers={
-    #         "Content-Type": "text/html; charset=utf-8",
-    #         "Access-Control-Allow-Origin": "*",
-    #         "Access-Control-Allow-Methods": "GET",
-    #         "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date",
-    #         "Authorization": "X-Api-Key,X-Amz-Security-Token"
-    #     },
-    #     body='there are two events'
-    # )
-    return {'data': beer_list}
+    app.response.headers = {
+        "Content-Type": "text/html; charset=utf-8",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date",
+        "Authorization": "X-Api-Key,X-Amz-Security-Token"
+    }
+
+    return ', '.join(beer_list)
 
 
 @app.get("/beers/{name}")
 def get_beer(name: str):
 
     if name not in beer_list:
-        return JsonResponse(status_code=codes.not_found, body={'error': 'Beer not found'})
+        app.response.status_code = codes.not_found
+        return {'error': 'Beer not found'}
 
-    return JsonResponse(
-        status_code=codes.ok,
-        headers=cors_headers,
-        body=beer_list[name])
+    return {'data': beer_list[name]}
 
 
 beer_list = {

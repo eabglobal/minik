@@ -17,10 +17,11 @@
 import traceback
 from collections import namedtuple, defaultdict
 from minik.fields import (update_uri_parameters, cache_custom_route_fields)
-from minik.constants import DEFAULT_500_ERROR
+
 from minik.exceptions import MinikViewError
-from minik.models import Response, JsonResponse
+from minik.models import Response
 from minik.builders import APIGatewayRequestBuilder
+from minik.middleware import ServerErrorMiddleware, ExceptionMiddleware, ContentTypeMiddleware
 from minik.status_codes import codes
 
 SimpleRoute = namedtuple('SimpleRoute', ['view', 'methods'])
@@ -44,12 +45,23 @@ class Minik:
     """
 
     def __init__(self, **kwargs):
-        self._in_debug = kwargs.get('debug', False)
-        self._routes = defaultdict(list)
-        self._request_builder = APIGatewayRequestBuilder()
+        self._debug = kwargs.get('debug', False)
 
-    def set_request_builder(self, builder_instance):
-        self._request_builder = builder_instance
+        self._request_builder = kwargs.get('request_builder', APIGatewayRequestBuilder())
+        self._error_middleware = kwargs.get('server_error_middleware', ServerErrorMiddleware())
+        self._exception_middleware = kwargs.get('exception_middleware', ExceptionMiddleware)
+
+        self._routes = defaultdict(list)
+        self._middleware = [
+            ContentTypeMiddleware()
+        ]
+
+    @property
+    def in_debug(self):
+        return self._debug
+
+    def add_middleware(self, middleware_instance):
+        self._middleware.append(middleware_instance)
 
     def get(self, path, **kwargs):
         return self.route(path, methods=['GET'], **kwargs)
@@ -94,41 +106,34 @@ class Minik:
 
         request = self._request_builder.build(event, context)
         self.request = request
+        self.response = Response(
+            status_code=codes.ok,
+            headers={'Content-Type': 'application/json'}
+        )
 
         try:
 
             route = self._find_route(request)
             update_uri_parameters(route, request)
-            response = self._execute_view(route.view, request)
+            self._execute_view(route.view)
 
-        except MinikViewError as pe:
-            response = JsonResponse(
-                status_code=pe.status_code,
-                body={'error_message': str(pe)})
-        except Exception as te:
-            tracer = ''.join(traceback.format_exc())
+        except MinikViewError as mve:
+            self._error_middleware(self, mve)
+        except Exception as e:
+            self._exception_middleware(self, e)
 
-            body = {'error_message': str(te), 'trace': tracer}
-            print(body)
+        for middleware in self._middleware:
+            middleware(self)
 
-            response = JsonResponse(
-                status_code=500,
-                body=body if self._in_debug else DEFAULT_500_ERROR)
+        return self.response.to_dict()
 
-        return response.to_dict()
-
-    def _execute_view(self, view, request):
+    def _execute_view(self, view):
         """
         Given a view function, execute the view with the given uri_parameters as
-        argumetns and return a JsonResponse.
+        argumetns and return a.
         """
 
-        response = view(**request.uri_params) if request.uri_params else view()
-
-        if isinstance(response, Response):
-            return response
-
-        return JsonResponse(body=response)
+        self.response.body = view(**self.request.uri_params) if self.request.uri_params else view()
 
     def _find_route(self, request):
         """

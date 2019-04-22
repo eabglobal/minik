@@ -42,29 +42,21 @@ class MinikRequest:
 class Response:
     __slots__ = ['body', 'headers', 'status_code']
 
-    def __init__(self, body, headers=None, status_code=codes.ok):
+    def __init__(self, body='', headers=None, status_code=codes.ok):
         self.body = body
         self.headers = headers or {}
         self.status_code = status_code
+
+    @property
+    def content_type(self):
+        return {
+            key.lower(): value
+            for key, value in self.headers.items()
+        }.get('content-type')
 
     def to_dict(self, binary_types=None):
         return {
             'headers': self.headers,
             'statusCode': self.status_code,
             'body': self.body
-        }
-
-
-class JsonResponse(Response):
-    """
-    A very simple wrapper that defines a valid JsonResponse the APIGateway understands.
-    The object encapsulates the headers, status code and body of a response.
-    """
-
-    def to_dict(self, binary_types=None):
-
-        return {
-            'headers': self.headers,
-            'statusCode': self.status_code,
-            'body': json.dumps(self.body)
         }
