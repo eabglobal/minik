@@ -217,7 +217,7 @@ Using the above object and endpoint as an example, our lambda function would ins
 
     @app.route("/test/{action}")
     def hello(action):
-        name = app.current_request.query_params.get('name')
+        name = app.request.query_params.get('name')
 
         # With the values defined in the object above this will return.
         # {'hello': 'me'}

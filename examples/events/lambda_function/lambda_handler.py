@@ -6,16 +6,7 @@ app = Minik()
 @app.get("/events")
 def get_as_text():
 
-    return Response(
-        headers={
-            "Content-Type": "text/html; charset=utf-8",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET",
-            "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date",
-            "Authorization": "X-Api-Key,X-Amz-Security-Token"
-        },
-        body='there are two events'
-    )
+    return {"data": [{'zip_code': 20902}, {'zip_code': 73071}]}
 
 
 @app.get("/events/{zip_code}")
@@ -31,7 +22,7 @@ def get_events(zip_code: int):
 @app.post("/events")
 def post_event():
 
-    event_name = app.current_request.json_body.get('name')
+    event_name = app.request.json_body.get('name')
     # Save this event somewhere
 
     return {'id': 100, 'name': event_name}
