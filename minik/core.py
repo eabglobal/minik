@@ -14,7 +14,6 @@
     limitations under the License.
 """
 
-import traceback
 from collections import namedtuple, defaultdict
 from minik.fields import (update_uri_parameters, cache_custom_route_fields)
 

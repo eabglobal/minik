@@ -1,6 +1,5 @@
 from minik.core import Minik
 from minik.status_codes import codes
-from minik.models import Response
 
 
 app = Minik()
