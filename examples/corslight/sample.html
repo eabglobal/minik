@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>My First Heading</h1>
+        <p>My first paragraph.</p>
+    </body>
+    <script>
+        function init() {
+            console.log('fetching');
+            fetch('https://ok8df968yk.execute-api.us-east-1.amazonaws.com/api/beers')
+                .then(function(response) {
+                    console.log(response);
+                });
+        }
+        init();
+        </script>
+</html>
