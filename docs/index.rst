@@ -114,6 +114,49 @@ validation logic. To learn more checkout out the `features`_ page.
 .. _`function annotations`: https://www.python.org/dev/peps/pep-3107/
 .. _`features`: https://eabglobal.github.io/minik/features.html
 
+
+Custom Headers
+**************
+To update the values of the HTTP response, minik exposes a response object at
+the app level. By default minik will create a Response instance with a status code
+of 200 and a set of default headers. The headers include a default content-type
+value of `application/json`.
+
+For instance, to set the CORS headers in a view and change the content type, a
+view would look like:
+
+.. code:: python
+
+    app = Minik()
+
+    @app.get('/articles/{author}/{year}/')
+    def get_articles_view(author: str, year: int):
+        app.response.headers = {
+            "Content-Type": "Content-Type": "text/html; charset=utf-8",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET",
+            "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date",
+            "Authorization": "X-Api-Key,X-Amz-Security-Token"
+        }
+
+        return f"A very short article by {author}"
+
+
+Debug Mode
+**********
+For unhandled exceptions, minik will respond with a 500 status code and
+a generic error message. To get more details from the response including the stack
+trace and information about the exception, run the app in debug mode.
+
+By default the debug mode is set to False.
+
+.. code:: python
+
+    app = Minik(debug=True)
+
+Initializing the app in debug mode will relay the stack trace back to the consumer.
+
+
 Motivation
 **********
 The team behind this framework is adopting a very minimal set of features to enhance
