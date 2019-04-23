@@ -16,20 +16,20 @@ def get_beers():
         "Authorization": "X-Api-Key,X-Amz-Security-Token"
     }
 
-    return ', '.join(beer_list)
+    return ', '.join(beers_by_name)
 
 
 @app.get("/beers/{name}")
 def get_beer(name: str):
 
-    if name not in beer_list:
+    if name not in beers_by_name:
         app.response.status_code = codes.not_found
         return {'error': 'Beer not found'}
 
-    return {'data': beer_list[name]}
+    return {'data': beers_by_name[name]}
 
 
-beer_list = {
+beers_by_name = {
     "Aguila": {'id': '0'},
     "Arnold Palmer Spiked Half & Half": {'id': '1'},
     "Barmen": {'id': '2'},
