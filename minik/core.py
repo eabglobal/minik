@@ -128,8 +128,9 @@ class Minik:
 
     def _execute_view(self, view):
         """
-        Given a view function, execute the view with the given uri_parameters as
-        argumetns and return a.
+        Given a view function, execute the view and update the body of the current
+        response.
+        :param view: The function to execute.
         """
 
         self.response.body = view(**self.request.uri_params) if self.request.uri_params else view()
