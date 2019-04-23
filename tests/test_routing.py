@@ -165,7 +165,7 @@ def delete_view():
 
 
 @pytest.mark.parametrize("http_method", ['POST', 'GET', 'PUT', 'DELETE'])
-def test_routing_for_http_get(create_router_event, http_method):
+def test_routing_for_decorated_views(create_router_event, http_method):
     """
     Validate that a view defined for a GET request is correctly evaluated when
     the route + method match the signature.
