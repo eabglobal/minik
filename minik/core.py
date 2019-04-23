@@ -14,13 +14,14 @@
     limitations under the License.
 """
 
+from contextlib import contextmanager
 from collections import namedtuple, defaultdict
-from minik.fields import (update_uri_parameters, cache_custom_route_fields)
 
 from minik.exceptions import MinikViewError
 from minik.models import Response
 from minik.builders import APIGatewayRequestBuilder
-from minik.middleware import ServerErrorMiddleware, ExceptionMiddleware, ContentTypeMiddleware
+from minik.fields import (update_uri_parameters, cache_custom_route_fields)
+from minik.middleware import (ServerErrorMiddleware, ExceptionMiddleware, ContentTypeMiddleware)
 from minik.status_codes import codes
 
 SimpleRoute = namedtuple('SimpleRoute', ['view', 'methods'])
@@ -110,19 +111,18 @@ class Minik:
             headers={'Content-Type': 'application/json'}
         )
 
-        try:
-
+        with error_handling(self):
             route = self._find_route(request)
             update_uri_parameters(route, request)
             self._execute_view(route.view)
 
-        except MinikViewError as mve:
-            self._error_middleware(self, mve)
-        except Exception as e:
-            self._exception_middleware(self, e)
-
-        for middleware in self._middleware:
-            middleware(self)
+        # After executing the view run all the middlewares in sequence. If a middleware
+        # fails, handle the exception and move on. This code needs to run after the
+        # execution of the views in its own contenxt given that we do want to run this
+        # even if the view itself raised an exception.
+        with error_handling(self):
+            for middleware in self._middleware:
+                middleware(self)
 
         return self.response.to_dict()
 
@@ -164,6 +164,24 @@ class Minik:
             )
 
         return target_route[0]
+
+
+@contextmanager
+def error_handling(minik_app):
+    """
+    Context manager used to handle both server side errors and unhandled exceptions.
+    Both cases will be delegated to the appropriate middleware of the minik app
+    instance.
+
+    :param minik_app: The instance of the minik app framework.
+    """
+
+    try:
+        yield
+    except MinikViewError as mve:
+        minik_app._error_middleware(minik_app, mve)
+    except Exception as e:
+        minik_app._exception_middleware(minik_app, e)
 
 
 class BadRequestError(MinikViewError):

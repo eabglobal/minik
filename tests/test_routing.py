@@ -21,7 +21,7 @@ from minik.core import Minik
 from minik.status_codes import codes
 
 
-sample_app = Minik()
+sample_app = Minik(debug=True)
 context = MagicMock()
 
 
@@ -142,3 +142,57 @@ def test_routing_for_http_get(create_router_event):
     expected_response = get_view(activity_id)
 
     assert response['body'] == json.dumps(expected_response)
+
+
+@sample_app.post('/pacific_resource')
+def post_me():
+    return {'action': sample_app.request.method}
+
+
+@sample_app.get('/pacific_resource')
+def get_me():
+    return {'action': sample_app.request.method}
+
+
+@sample_app.put('/pacific_resource')
+def put_me():
+    return {'action': sample_app.request.method}
+
+
+@sample_app.delete('/pacific_resource')
+def delete_view():
+    return {'action': sample_app.request.method}
+
+
+@pytest.mark.parametrize("http_method", ['POST', 'GET', 'PUT', 'DELETE'])
+def test_routing_for_http_get(create_router_event, http_method):
+    """
+    Validate that a view defined for a GET request is correctly evaluated when
+    the route + method match the signature.
+    """
+
+    event = create_router_event('/pacific_resource', method=http_method)
+
+    response = sample_app(event, context)
+
+    assert json.loads(response['body'])['action'] == http_method
+
+
+def test_debug_mode_relays_response(create_router_event):
+    """
+    Make sure that if the minik app is in debug mode, the exception trace and
+    error message are sent back to the consumer.
+    """
+
+    app_in_debug = Minik(debug=True)
+
+    @app_in_debug.get('/failme')
+    def fail():
+        return {'data': app_in_debug.response.field_not_in_response}
+
+    event = create_router_event('/failme', method='GET')
+    response = app_in_debug(event, context)
+
+    body = json.loads(response['body'])
+    assert body['trace']
+    assert body['error_message']

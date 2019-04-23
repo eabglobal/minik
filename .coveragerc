@@ -10,4 +10,5 @@ omit =
     *venv*
     */constants.py
     */setup.py
+    */structures.py
     */__init__.py
