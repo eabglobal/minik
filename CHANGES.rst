@@ -3,6 +3,22 @@
 Minik Changelog
 ===============
 
+Version 0.4.0
+-------------
+
+Released on April 22nd, 2019, codename Yunus III
+
+- Large refactoring effort to make minik more flexible (issues/29)
+  - Using middleware to build a request for a given event
+  - Using middleware to handle server errors
+  - Using middleware to handle exceptions
+
+- Exposing the response object to the view to enable custom headers and
+  content-types (issues/10)
+
+- Adding debug mode to control whether an exception trace should be sent to
+  a consumer (issues/24)
+
 Version 0.3.0
 -------------
 

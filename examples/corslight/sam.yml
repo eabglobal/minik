@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Testing API gateway cors capabilities with minik
+
+Globals:
+
+  Api:
+    # enable CORS; to make more specific, change the origin wildcard
+    # to a particular domain name, e.g. "'www.example.com'"
+    Cors:
+      AllowMethods: "'*'"
+      AllowHeaders: "'*'"
+      AllowOrigin: "'*'"
+
+
+Resources:
+
+  CorslightApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      EndpointConfiguration: REGIONAL
+      StageName: api
+
+  APIHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      # This function uses the python 3.6 runtime.
+      Runtime: python3.6
+
+      # This is the Lambda function's handler.
+      Handler: lambda_handler.app
+
+      # The location of the Lambda function code.
+      CodeUri: ./dist/api.zip
+      Events:
+        GetBeers:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CorslightApi
+            Path: /beers
+            Method: get
+        GetBeer:
+          Type: Api
+          Properties:
+            RestApiId: !Ref CorslightApi
+            Path: /beers/{name}
+            Method: get
+
+Outputs:
+  ApiURL:
+    Description: "API URL"
+    Value: !Sub 'https://${CorslightApi}.execute-api.${AWS::Region}.amazonaws.com/api/'

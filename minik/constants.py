@@ -7,3 +7,4 @@
 
 
 CONFIG_ERROR_MSG = 'Unable to respond. Please make sure lambda function has "Use Lambda Proxy integration" enabled.'
+DEFAULT_500_ERROR = {'error_message': 'Internal server error.'}

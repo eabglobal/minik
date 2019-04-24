@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    </head>
+    <body>
+        <h2>GET api/beers</h2>
+        <p id="get_beers_body"></p>
+    </body>
+    <script>
+        function init() {
+            console.log('fetching');
+            fetch('https://ok8df968yk.execute-api.us-east-1.amazonaws.com/api/beers')
+                .then(response => response.text())
+                .then(text_body => {
+                    console.log(text_body);
+                    document.getElementById('get_beers_body').innerHTML = text_body;
+                });
+
+            fetch('https://ok8df968yk.execute-api.us-east-1.amazonaws.com/api/beers/Aguila')
+                .then(response => response.json())
+                .catch(error => console.error('Error:', error))
+                .then(response => console.log('Success:', JSON.stringify(response)));
+        }
+        init();
+        </script>
+</html>

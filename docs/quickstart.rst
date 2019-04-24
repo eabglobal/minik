@@ -35,7 +35,7 @@ interface. Your `lambda_handler.py` should look like:
     @app.route("/events", methods=['POST'])
     def post_event():
 
-        event_name = app.current_request.json_body.get('name')
+        event_name = app.request.json_body.get('name')
         # Save this event somewhere
 
         return {'id': 100}
