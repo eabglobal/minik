@@ -1,0 +1,191 @@
+Metadata-Version: 2.1
+Name: serverlessrepo
+Version: 0.1.5
+Summary: A Python library with convenience helpers for working with the AWS Serverless Application Repository.
+Home-page: https://github.com/awslabs/aws-serverlessrepo-python
+Author: Amazon Web Services
+Author-email: aws-sam-developer@amazon.com
+License: Apache 2.0
+Keywords: AWS Serverless Application Repository
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Environment :: Other Environment
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Topic :: Internet
+Classifier: Topic :: Software Development :: Build Tools
+Classifier: Topic :: Utilities
+Requires-Python: >=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*
+Description-Content-Type: text/markdown
+Requires-Dist: pyyaml (~=3.12)
+Requires-Dist: boto3 (>=1.9.56,~=1.9)
+Requires-Dist: six (~=1.11.0)
+Provides-Extra: dev
+Requires-Dist: pytest ; extra == 'dev'
+Requires-Dist: pytest-cov ; extra == 'dev'
+Requires-Dist: pylint ; extra == 'dev'
+Requires-Dist: mock ; extra == 'dev'
+Requires-Dist: flake8 ; extra == 'dev'
+Requires-Dist: flake8-docstrings ; extra == 'dev'
+
+
+# AWS Serverless Application Repository - Python
+
+A Python library with convenience helpers for working with the [AWS Serverless Application Repository](https://aws.amazon.com/serverless/serverlessrepo/).
+
+## Installation
+
+Simply use pip to install the library:
+
+```text
+pip install serverlessrepo
+```
+
+## Basic Usage
+
+The serverlessrepo module provides a simple interface for publishing applications and managing application permissions. To get started, import the serverlessrepo module:
+
+```python
+import serverlessrepo
+```
+
+### Publish Applications
+
+#### publish_application(template, sar_client=None)
+
+Given an [AWS Serverless Application Model (SAM)](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md) template, it publishes a new application using the specified metadata in AWS Serverless Application Repository. If the application already exists, it updates metadata of the application and publishes a new version if specified in the template.
+
+For example:
+
+```python
+import boto3
+import yaml
+from serverlessrepo import publish_application
+
+sar_client = boto3.client('serverlessrepo', region_name='us-east-1')
+
+with open('template.yaml', 'r') as f:
+    template = f.read()
+    # if sar_client is not provided, we will initiate the client using region inferred from aws configurations
+    output = publish_application(template, sar_client)
+
+    # Alternatively, pass parsed template as a dictionary
+    template_dict = yaml.loads(template)
+    output = publish_application(template_dict, sar_client)
+```
+
+The output of `publish_application` has the following structure:
+
+```text
+{
+    'application_id': 'arn:aws:serverlessrepo:us-east-1:123456789012:applications/test-app',
+    'actions': ['CREATE_APPLICATION'],
+    'details': {
+        'Author': 'user1',
+        'Description': 'hello',
+        'Name': 'hello-world',
+        'SemanticVersion': '0.0.1',
+        'SourceCodeUrl': 'https://github.com/hello'}
+    }
+}
+```
+
+There are three possible values for the `actions` field:
+
+* `['CREATE_APPLICATION']` - Created a new application.
+* `['UPDATE_APPLICATION']` - Updated metadata of an existing application.
+* `['UPDATE_APPLICATION', 'CREATE_APPLICATION_VERSION']` - Updated metadata of an existing application and created a new version, only applicable if a new SemanticVersion is provided in the input template.
+
+`details` has different meaning based on the `actions` taken:
+
+* If a new application is created, it shows metadata values used to create the application.
+* If application is updated, it shows updated metadata values.
+* If application is updated and new version is created, it shows updated metadata values as well as the new version number.
+
+#### update_application_metadata(template, application_id, sar_client=None)
+
+Parses the application metadata from the SAM template and only updates the metadata.
+
+For example:
+
+```python
+import boto3
+import yaml
+from serverlessrepo import update_application_metadata
+
+sar_client = boto3.client('serverlessrepo', region_name='us-east-1')
+
+with open('template.yaml', 'r') as f:
+    template = f.read()
+    application_id = 'arn:aws:serverlessrepo:us-east-1:123456789012:applications/test-app'
+    # if sar_client is not provided, we will initiate the client using region inferred from aws configurations
+    update_application_metadata(template, application_id, sar_client)
+
+    # Alternatively, pass parsed template as a dictionary
+    template_dict = yaml.loads(template)
+    update_application_metadata(template_dict, application_id, sar_client)
+```
+
+### Manage Application Permissions
+
+#### make_application_public(application_id, sar_client=None)
+
+Makes an application public so that it's visible to everyone.
+
+#### make_application_private(application_id, sar_client=None)
+
+Makes an application private so that it's only visible to the owner.
+
+#### share_application_with_accounts(application_id, account_ids, sar_client=None)
+
+Shares the application with specified AWS accounts.
+
+#### Examples
+
+```python
+import boto3
+from serverlessrepo import (
+    make_application_public,
+    make_application_private,
+    share_application_with_accounts
+)
+
+application_id = 'arn:aws:serverlessrepo:us-east-1:123456789012:applications/test-app'
+sar_client = boto3.client('serverlessrepo', region_name='us-east-1')
+
+# Share an application publicly
+make_application_public(application_id, sar_client)
+
+# Make an application private
+make_application_private(application_id, sar_client)
+
+# Share an application with other AWS accounts
+share_application_with_accounts(application_id, ['123456789013', '123456789014'], sar_client)
+```
+
+## Development
+
+* Fork the repository, then clone to your local:
+  * `git clone https://github.com/<username>/aws-serverlessrepo-python.git`
+* Set up the environment: `make init`
+  * It installs [Pipenv](https://github.com/pypa/pipenv) to manage package dependencies. Then it creates a virtualenv and installs dependencies from [Pipfile](./Pipfile) (including dev).
+* Install new packages: `pipenv install [package names]`
+  * Pipenv will automatically update [Pipfile](./Pipfile) and [Pipfile.lock](./Pipfile.lock) for you.
+  * Add new dependencies to [setup.py](./setup.py) install_requires if they are needed for consumers of this library.
+* Verify that everything works: `make build`
+  * You can run `make tests` separately to verify that tests pass.
+  * Check code style with `make flake` and `make lint`.
+* Make code changes, run all verifications again before sending a Pull Request: `make pr`
+
+## License
+
+This library is licensed under the Apache 2.0 License.
+
+

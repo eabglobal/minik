@@ -1,0 +1,14 @@
+version: '3.6'
+
+services:
+{% for lambda_fn in functions %}
+  {{lambda_fn.name}}-lambda:
+    image: {{lambda_fn.image}}
+    environment:
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      {% for volume in lambda_fn.volumes -%}
+        - {{volume}}
+      {% endfor %}
+    command: sh /var/task/bin/package.sh {{lambda_fn.name}}
+{% endfor %}

@@ -1,0 +1,3 @@
+[console_scripts]
+sam = samcli.cli.main:cli
+

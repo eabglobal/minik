@@ -1,0 +1,9 @@
+Juniper is developed and maintained by the EAB Tech team and community
+contributors. It was created by Pedro Diaz. The core maintainers
+are:
+
+- Pedro Diaz (pdiazvargas)
+
+A full list of contributors is available from git with::
+
+    git shortlog -sne

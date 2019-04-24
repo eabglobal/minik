@@ -60,12 +60,28 @@ define the methods, every single HTTP method will be allowed by default.</p>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Minik</span><span class="p">()</span>
 
 <span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/events/{location}&#39;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">events_view</span><span class="p">(</span><span class="n">location</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">events_view</span><span class="p">(</span><span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="c1"># This route will be invoked for GET, POST, PUT, DELETE...</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;granfondo MD&#39;</span><span class="p">,</span> <span class="s1">&#39;Silver Spring Century&#39;</span><span class="p">]}</span>
 
 <span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/events&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">,</span> <span class="s1">&#39;PUT&#39;</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">create_event_view</span><span class="p">():</span>
+    <span class="n">create_event</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">json_body</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="s1">&#39;complete&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The microframework also includes a set of convenient decorator methods for the
+case in which a view is associated with a single HTTP method.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">minik.core</span> <span class="kn">import</span> <span class="n">Minik</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Minik</span><span class="p">()</span>
+
+<span class="nd">@app.get</span><span class="p">(</span><span class="s1">&#39;/events/{location}&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_view</span><span class="p">(</span><span class="n">location</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;granfondo MD&#39;</span><span class="p">,</span> <span class="s1">&#39;Silver Spring Century&#39;</span><span class="p">]}</span>
+
+<span class="nd">@app.post</span><span class="p">(</span><span class="s1">&#39;/events&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">post_view</span><span class="p">():</span>
     <span class="n">create_event</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">json_body</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;result&#39;</span><span class="p">:</span> <span class="s1">&#39;complete&#39;</span><span class="p">}</span>
 </pre></div>
@@ -109,6 +125,41 @@ appropriate type. For instance:</p>
 <p>In the example above, your view will only be executed when the name paramter passed in
 matches one of the trackers specified in the validator. All you need to do is implement the
 validation logic. To learn more checkout out the <a class="reference external" href="https://eabglobal.github.io/minik/features.html">features</a> page.</p>
+</div>
+<div class="section" id="custom-headers">
+<h2>Custom Headers<a class="headerlink" href="#custom-headers" title="Permalink to this headline">¶</a></h2>
+<p>To update the values of the HTTP response, minik exposes a response object at
+the app level. By default minik will create a Response instance with a status code
+of 200 and a set of default headers. The headers include a default content-type
+value of <cite>application/json</cite>.</p>
+<p>For instance, to set the CORS headers in a view and change the content type, a
+view would look like:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Minik</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/articles/</span><span class="si">{author}</span><span class="s1">/</span><span class="si">{year}</span><span class="s1">/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_articles_view</span><span class="p">(</span><span class="n">author</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">year</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/html; charset=utf-8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">:</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Access-Control-Allow-Methods&quot;</span><span class="p">:</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Access-Control-Allow-Headers&quot;</span><span class="p">:</span> <span class="s2">&quot;Content-Type,X-Amz-Date&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="s2">&quot;X-Api-Key,X-Amz-Security-Token&quot;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">f</span><span class="s2">&quot;A very short article by </span><span class="si">{author}</span><span class="s2">&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="debug-mode">
+<h2>Debug Mode<a class="headerlink" href="#debug-mode" title="Permalink to this headline">¶</a></h2>
+<p>For unhandled exceptions, minik will respond with a 500 status code and
+a generic error message. To get more details from the response including the stack
+trace and information about the exception, run the app in debug mode.</p>
+<p>By default the debug mode is set to False.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Minik</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Initializing the app in debug mode will relay the stack trace back to the consumer.</p>
 </div>
 <div class="section" id="motivation">
 <h2>Motivation<a class="headerlink" href="#motivation" title="Permalink to this headline">¶</a></h2>
@@ -204,7 +255,7 @@ Using the above object and endpoint as an example, our lambda function would ins
 
 <span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/test/</span><span class="si">{action}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">current_request</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
 
     <span class="c1"># With the values defined in the object above this will return.</span>
     <span class="c1"># {&#39;hello&#39;: &#39;me&#39;}</span>
