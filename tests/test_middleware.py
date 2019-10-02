@@ -41,7 +41,7 @@ class CustomMiddleware:
         app.response.headers['x-findme'] = self.expected_header_value
 
 
-def test_custom_middleware_updates_response(create_router_event):
+def test_custom_middleware_updates_response(create_api_event):
     """
     Make sure that a custom middleware is executed as part of the workflow of
     handling a request.
@@ -54,14 +54,14 @@ def test_custom_middleware_updates_response(create_router_event):
     def get_event():
         return {'data': 'some event'}
 
-    event = create_router_event('/event', method='GET')
+    event = create_api_event('/event', method='GET')
 
     response = app(event, MagicMock())
 
     assert response['headers']['x-findme'] == CustomMiddleware.expected_header_value
 
 
-def test_custom_middleware_updates_response_view_fails(create_router_event):
+def test_custom_middleware_updates_response_view_fails(create_api_event):
     """
     Make sure that a custom middleware is executed as part of the workflow of
     handling a request.
@@ -74,7 +74,7 @@ def test_custom_middleware_updates_response_view_fails(create_router_event):
     def get_event():
         raise Exception('Something went downhill :(')
 
-    event = create_router_event('/event', method='GET')
+    event = create_api_event('/event', method='GET')
 
     response = app(event, MagicMock())
 

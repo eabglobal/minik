@@ -20,11 +20,11 @@ from pytest import fixture
 
 
 @fixture
-def create_router_event():
+def create_api_event():
     """
     Create an event for the router lambda.
     """
-    def create_router_event_inner(uri, method='POST', **kwargs):
+    def create_api_event_inner(uri, method='POST', **kwargs):
         path_params = kwargs.get('pathParameters', {})
         path = uri
         if path_params:
@@ -45,4 +45,4 @@ def create_router_event():
             'stageVariables': {},
         }
 
-    return create_router_event_inner
+    return create_api_event_inner

@@ -53,9 +53,9 @@ def aws_ctx_view():
     }
 
 
-def test_sample_view_with_path_params(create_router_event):
+def test_sample_view_with_path_params(create_api_event):
 
-    event = create_router_event('/findme/{first}/{second}',
+    event = create_api_event('/findme/{first}/{second}',
                                 pathParameters={'first': 'adventure', 'second': 'chile'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
@@ -66,9 +66,9 @@ def test_sample_view_with_path_params(create_router_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_sample_view_without_query_params(create_router_event):
+def test_sample_view_without_query_params(create_api_event):
 
-    event = create_router_event('/findme/{first}/{second}',
+    event = create_api_event('/findme/{first}/{second}',
                                 pathParameters={'first': 'adventure', 'second': 'chile'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
@@ -80,9 +80,9 @@ def test_sample_view_without_query_params(create_router_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_sample_view_with_undefined_query_params(create_router_event):
+def test_sample_view_with_undefined_query_params(create_api_event):
 
-    event = create_router_event('/findme/{first}/{second}',
+    event = create_api_event('/findme/{first}/{second}',
                                 pathParameters={'first': 'adventure', 'second': 'chile'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
@@ -94,9 +94,9 @@ def test_sample_view_with_undefined_query_params(create_router_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_sample_view_without_headers(create_router_event):
+def test_sample_view_without_headers(create_api_event):
 
-    event = create_router_event('/findme/{first}/{second}',
+    event = create_api_event('/findme/{first}/{second}',
                                 pathParameters={'first': 'adventure', 'second': 'chile'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
@@ -106,9 +106,9 @@ def test_sample_view_without_headers(create_router_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_sample_view_with_undefined_headers(create_router_event):
+def test_sample_view_with_undefined_headers(create_api_event):
 
-    event = create_router_event('/findme/{first}/{second}',
+    event = create_api_event('/findme/{first}/{second}',
                                 pathParameters={'first': 'adventure', 'second': 'chile'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
@@ -118,9 +118,9 @@ def test_sample_view_with_undefined_headers(create_router_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_sample_view_route_does_not_match(create_router_event):
+def test_sample_view_route_does_not_match(create_api_event):
 
-    event = create_router_event('/router/mismatch',
+    event = create_api_event('/router/mismatch',
                                 pathParameters={'first': 'adventure'},
                                 body={'request_id': 'navigate_request_id', 'urls': '', 'term': ''})
 
@@ -129,9 +129,9 @@ def test_sample_view_route_does_not_match(create_router_event):
     assert response['statusCode'] == codes.not_found
 
 
-def test_bad_request_correctly_handled(create_router_event):
+def test_bad_request_correctly_handled(create_api_event):
 
-    event = create_router_event('/bad_request', body={'sample': 'field'})
+    event = create_api_event('/bad_request', body={'sample': 'field'})
 
     response = sample_app(event, context)
 
@@ -139,14 +139,14 @@ def test_bad_request_correctly_handled(create_router_event):
     assert 'Not good mah friend. Something terrible has happened!' in response['body']
 
 
-def test_json_body_in_view(create_router_event):
+def test_json_body_in_view(create_api_event):
     """
     Test that a given view has access to the request.json_body. The current
     request contains the data of the requests payload.
     """
 
     test_body = {'field': 'value', 'expected': [2, 3, 4, 5]}
-    event = create_router_event('/echo', body=test_body)
+    event = create_api_event('/echo', body=test_body)
 
     response = sample_app(event, context)
 
@@ -154,13 +154,13 @@ def test_json_body_in_view(create_router_event):
     assert json.loads(response['body']) == test_body
 
 
-def test_view_without_path_parameters(create_router_event):
+def test_view_without_path_parameters(create_api_event):
     """
     Validate that a view without uri paramters does not crash when invoked.
     """
 
     test_body = {'field': 'value', 'expected': [2, 3, 4, 5]}
-    event = create_router_event('/echo', body=test_body, pathParameters=None)
+    event = create_api_event('/echo', body=test_body, pathParameters=None)
 
     response = sample_app(event, context)
 
@@ -168,7 +168,7 @@ def test_view_without_path_parameters(create_router_event):
     assert json.loads(response['body']) == test_body
 
 
-def test_event_without_resoure_raises_error(create_router_event):
+def test_event_without_resoure_raises_error(create_api_event):
     """
     This is a misconfiguration in the integration between the API gateway and the
     lambda function. If the uri is None, that means that the event is not being
@@ -176,7 +176,7 @@ def test_event_without_resoure_raises_error(create_router_event):
     """
 
     test_body = {'field': 'value', 'expected': [2, 3, 4, 5]}
-    event = create_router_event('/echo', body=test_body)
+    event = create_api_event('/echo', body=test_body)
     del event['resource']
 
     try:
@@ -185,7 +185,7 @@ def test_event_without_resoure_raises_error(create_router_event):
         assert CONFIG_ERROR_MSG in str(ce)
 
 
-def test_correctly_pass_aws_context_to_request(create_router_event):
+def test_correctly_pass_aws_context_to_request(create_api_event):
     """
     This is a misconfiguration in the integration between the API gateway and the
     lambda function. If the uri is None, that means that the event is not being
@@ -193,7 +193,7 @@ def test_correctly_pass_aws_context_to_request(create_router_event):
     """
 
     test_body = {'field': 'value', 'expected': [2, 3, 4, 5]}
-    event = create_router_event('/aws_context', body=test_body)
+    event = create_api_event('/aws_context', body=test_body)
 
     context.aws_request_id = 'aws_request_id_123'
     context.log_group_name = 'log_group_name_123'

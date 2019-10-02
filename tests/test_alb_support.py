@@ -25,17 +25,17 @@ sample_app = Minik()
 context = MagicMock()
 
 
-@sample_app.route("/events/{zip_code}", methods=['GET'])
+@sample_app.get("/events/{zip_code}")
 def get_events(zip_code):
     return {'message': 'get handler'}
 
 
-@sample_app.route("/events/{zip_code}", methods=['POST'])
+@sample_app.post("/events/{zip_code}")
 def post_event(zip_code):
     return {'message': 'post handler'}
 
 
-@sample_app.route("/event_list", methods=['GET'])
+@sample_app.get("/event_list")
 def get_events_list1():
     return {'message': 'duplicate 1'}
 
