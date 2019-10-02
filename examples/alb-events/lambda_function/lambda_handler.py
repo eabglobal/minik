@@ -26,11 +26,11 @@ def get_event(zip_code: int):
     return {'events': ['other events']}
 
 
-@app.route("/events/{event_id}")
-class EventAPI:
+# @app.route("/events/{event_id}")
+# class EventAPI:
 
-    def on_get(self, request, response, *, event_id: str):
-        return {'id': 12}
+#     def on_get(self, request, response, *, event_id: str):
+#         return {'id': 12}
 
-    def on_post(self, request, response, *, event_id: str):
-        return {'created': True}
+#     def on_post(self, request, response, *, event_id: str):
+#         return {'created': True}

@@ -46,3 +46,25 @@ def create_api_event():
         }
 
     return create_api_event_inner
+
+
+@fixture
+def create_alb_event():
+    """
+    Create an event for the router lambda.
+    """
+    def create_alb_event_inner(path, method='POST', **kwargs):
+
+        return {
+            "requestContext": {
+                "elb": {"targetGroupArn": "arn:aws:some_arn"}
+            },
+            "httpMethod": method,
+            "path": path,
+            "queryStringParameters": kwargs.get('queryParameters', {}),
+            "headers": kwargs.get('headers', {'content-type': 'application/json'}),
+            "body": json.dumps(kwargs.get('body', {})).encode(),
+            "isBase64Encoded": False
+        }
+
+    return create_alb_event_inner

@@ -157,13 +157,13 @@ class Minik:
         if event_type != 'alb_request':
             return
 
-        for path_re, resource in self._compiled_routes.items():
+        for path_re, resource in self._compiled_routes:
             match = path_re.match(request.path)
             if not match:
                 continue
 
             request.resource = resource
-            request.uri_params = dict(match.group_dict())
+            request.uri_params = dict(match.groupdict())
             return
 
     def get_event_type(self, event):

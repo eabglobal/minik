@@ -49,30 +49,29 @@ def get_events_list2():
     ('GET', 'get handler'),
     ('POST', 'post handler')
 ])
-def test_route_defined_for_post_put(create_api_event, http_method, expected_message):
+def test_route_defined_for_post_put(create_alb_event, http_method, expected_message):
     """
     For a given path, minik can execute different routes based on the HTTP method.
     """
 
-    event = create_api_event('/events/{zip_code}',
-                                method=http_method,
-                                pathParameters={'zip_code': 20902},
-                                body={'type': 'cycle'})
+    event = create_alb_event('/events/20902',
+                             method=http_method,
+                             body={'type': 'cycle'})
 
     response = sample_app(event, context)
 
     assert json.loads(response['body'])['message'] == expected_message
 
 
-def test_route_defined_for_duplicate_views(create_api_event):
+def test_route_defined_for_duplicate_views(create_alb_event):
     """
     This is an invalid definition in which the user of minik is trying to associate
     two different views for the same (path, method) pair.
     """
 
-    event = create_api_event('/event_list',
-                                method='GET',
-                                body={'type': 'cycle'})
+    event = create_alb_event('/event_list',
+                             method='GET',
+                             body={'type': 'cycle'})
 
     response = sample_app(event, context)
 
