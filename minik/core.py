@@ -19,12 +19,32 @@ from collections import namedtuple, defaultdict
 
 from minik.exceptions import MinikViewError
 from minik.models import Response
-from minik.builders import APIGatewayRequestBuilder
+from minik.builders import builders_by_type
 from minik.fields import (update_uri_parameters, cache_custom_route_fields)
 from minik.middleware import (ServerErrorMiddleware, ExceptionMiddleware, ContentTypeMiddleware)
 from minik.status_codes import codes
+import re
 
 SimpleRoute = namedtuple('SimpleRoute', ['view', 'methods'])
+
+PARAM_RE = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)(:[a-zA-Z_][a-zA-Z0-9_]*)?}")
+
+
+def compile_path(path):
+    path_re = "^"
+    idx = 0
+
+    for match in PARAM_RE.finditer(path):
+        param_name, convertor_type = match.groups(default="str")
+
+        path_re += path[idx:match.start()]
+        path_re += rf"(?P<{param_name}>[^/]+)"
+
+        idx = match.end()
+
+    path_re += path[idx:] + "$"
+
+    return re.compile(path_re)
 
 
 class Minik:
@@ -47,11 +67,11 @@ class Minik:
     def __init__(self, **kwargs):
         self._debug = kwargs.get('debug', False)
 
-        self._request_builder = kwargs.get('request_builder', APIGatewayRequestBuilder())
         self._error_middleware = kwargs.get('server_error_middleware', ServerErrorMiddleware())
         self._exception_middleware = kwargs.get('exception_middleware', ExceptionMiddleware())
 
         self._routes = defaultdict(list)
+        self._compiled_routes = list()
         self._middleware = [
             ContentTypeMiddleware()
         ]
@@ -86,7 +106,10 @@ class Minik:
 
             methods = kwargs.get('methods', [])
             new_route = SimpleRoute(view_func, methods)
+
             self._routes[path].append(new_route)
+            self._compiled_routes.append((compile_path(path), path))
+
             cache_custom_route_fields(new_route)
 
             return view_func
@@ -104,7 +127,11 @@ class Minik:
         :param context: The aws context included in every lambda function execution
         """
 
-        request = self._request_builder.build(event, context)
+        event_type = self.get_event_type(event)
+        request = builders_by_type.get(event_type).build(event, context)
+
+        self.set_resource_and_route_params(event_type, request)
+
         self.request = request
         self.response = Response(
             status_code=codes.ok,
@@ -125,6 +152,29 @@ class Minik:
                 middleware(self)
 
         return self.response.to_dict()
+
+    def set_resource_and_route_params(self, event_type, request):
+        if event_type != 'alb_request':
+            return
+
+        for path_re, resource in self._compiled_routes.items():
+            match = path_re.match(request.path)
+            if not match:
+                continue
+
+            request.resource = resource
+            request.uri_params = dict(match.group_dict())
+            return
+
+    def get_event_type(self, event):
+        request_ctx = event.get('requestContext', {})
+        if request_ctx.get('elb'):
+            return 'alb_request'
+
+        if request_ctx.get('apiId'):
+            return 'api_request'
+
+        raise MinikViewError('Unsupported event type.')
 
     def _execute_view(self, view):
         """

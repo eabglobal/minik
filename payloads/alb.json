@@ -1,0 +1,29 @@
+{
+    "requestContext": {
+        "elb": {
+            "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:964459292751:targetgroup/miniktg/38434a5782d4e5f6"
+        }
+    },
+    "httpMethod": "POST",
+    "path": "/articles/12",
+    "queryStringParameters": {
+        "start": "142"
+    },
+    "headers": {
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate",
+        "cache-control": "no-cache",
+        "connection": "keep-alive",
+        "content-length": "24",
+        "content-type": "application/json",
+        "host": "minik-pad-1268218956.us-east-1.elb.amazonaws.com",
+        "postman-token": "55688407-6824-4b0c-815c-a886e3d8eabd",
+        "user-agent": "PostmanRuntime/7.16.3",
+        "x-amzn-trace-id": "Root=1-5d94bfa7-d4d46c8c0c1c96b0cd09b474",
+        "x-forwarded-for": "45.62.176.188",
+        "x-forwarded-port": "80",
+        "x-forwarded-proto": "http"
+    },
+    "body": "{\n\t\"sample\": \"payload\"\n}",
+    "isBase64Encoded": false
+}

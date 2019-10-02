@@ -34,6 +34,7 @@ def create_router_event():
             'requestContext': {
                 'httpMethod': method,
                 'resourcePath': uri,
+                'apiId': 'ax2hor23'
             },
             'path': path,
             'resource': uri,

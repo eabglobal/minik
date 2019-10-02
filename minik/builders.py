@@ -8,7 +8,7 @@ class APIGatewayRequestBuilder:
 
     def build(self, event, context):
 
-        headers = self._get_with_default(event, 'headers')
+        headers = event.get('headers') or {}
 
         if 'resource' not in event:
             raise ConfigurationError(CONFIG_ERROR_MSG)
@@ -16,7 +16,7 @@ class APIGatewayRequestBuilder:
         return MinikRequest(
             path=event['path'],
             resource=event['resource'],
-            query_params=self._get_with_default(event, 'queryStringParameters'),
+            query_params=event.get('queryStringParameters', {}),
             headers={k.lower(): v for k, v in headers.items()},
             uri_params=event['pathParameters'],
             method=event['requestContext']['httpMethod'],
@@ -24,5 +24,26 @@ class APIGatewayRequestBuilder:
             context=context
         )
 
-    def _get_with_default(self, event, param_name, default={}):
-        return event.get(param_name, {}) or default
+
+class ALBRequestBuilder:
+
+    def build(self, event, context):
+
+        headers = event.get('headers') or {}
+
+        return MinikRequest(
+            path=event['path'],
+            resource=None,
+            query_params=event.get('queryStringParameters', {}),
+            headers={k.lower(): v for k, v in headers.items()},
+            uri_params=None,
+            method=event['httpMethod'],
+            body=event['body'],
+            context=context
+        )
+
+
+builders_by_type = {
+    'api_request': APIGatewayRequestBuilder(),
+    'alb_request': ALBRequestBuilder()
+}

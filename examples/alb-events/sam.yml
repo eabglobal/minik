@@ -1,0 +1,16 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: API Gateway with Lambda Token Authorizer
+Resources:
+
+  EventsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      # This function uses the python 3.6 runtime.
+      Runtime: python3.6
+
+      # This is the Lambda function's handler.
+      Handler: lambda_handler.app
+
+      # The location of the Lambda function code.
+      CodeUri: ./dist/events.zip
