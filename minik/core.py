@@ -19,7 +19,7 @@ from collections import namedtuple, defaultdict
 
 from minik.exceptions import MinikViewError
 from minik.models import Response
-from minik.builders import builders_by_type
+from minik.builders import build_request
 from minik.fields import (update_uri_parameters, cache_custom_route_fields)
 from minik.middleware import (ServerErrorMiddleware, ExceptionMiddleware, ContentTypeMiddleware)
 from minik.status_codes import codes
@@ -30,6 +30,7 @@ SimpleRoute = namedtuple('SimpleRoute', ['view', 'methods'])
 PARAM_RE = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)(:[a-zA-Z_][a-zA-Z0-9_]*)?}")
 
 
+# ------------------------ router.py -------------------------
 def compile_path(path):
     path_re = "^"
     idx = 0
@@ -45,6 +46,73 @@ def compile_path(path):
     path_re += path[idx:] + "$"
 
     return re.compile(path_re)
+
+
+class SimpleRoute:
+
+    def __init__(self, route, endpoint, **kwargs):
+        self.route = route
+        self.endpoint = endpoint
+        self.methods = kwargs.get('methods')
+
+        cache_custom_route_fields(self.endpoint)
+
+    def evaluate(self, request, **kwargs):
+        update_uri_parameters(self.endpoint, request)
+        return self.endpoint(**request.uri_params)
+
+
+class Router:
+
+    def __init__(self):
+        self._routes = defaultdict(list)
+        self._compiled_route_paths = list()
+
+    def add_route(self, route_path, endpoint, **kwargs):
+
+        route_re = compile_path(route_path)
+        self._routes[route_path].append(SimpleRoute(route_path, endpoint, **kwargs))
+        self._compiled_route_paths.append((route_re, route_path))
+
+    def resolve_path(self, path):
+
+        for path_re, resource in self._compiled_route_paths:
+            match = path_re.match(path)
+            if match:
+                return (resource, dict(match.groupdict()))
+
+        return (None, {})
+
+    def find_route(self, request):
+        """
+        Given the paramters of the request, lookup the associated view. The lookup
+        process follows a set of steps. If the view is not found an exception is
+        raised with the appropriate status code and error message.
+        """
+
+        routes = self._routes.get(request.resource)
+
+        if not routes:
+            raise MinikViewError(
+                'The requested URL was not found on the server.',
+                status_code=codes.not_found
+            )
+
+        target_route = [route for route in routes if not route.methods or (request.method in route.methods)]
+
+        if not target_route:
+            raise MinikViewError(
+                'Method is not allowed.',
+                status_code=codes.method_not_allowed
+            )
+
+        if len(target_route) > 1:
+            raise MinikViewError(
+                f'Found multiple views for the "{request.method}" method.',
+                status_code=codes.not_allowed
+            )
+
+        return target_route[0]
 
 
 class Minik:
@@ -67,6 +135,7 @@ class Minik:
     def __init__(self, **kwargs):
         self._debug = kwargs.get('debug', False)
 
+        self._router = Router()
         self._error_middleware = kwargs.get('server_error_middleware', ServerErrorMiddleware())
         self._exception_middleware = kwargs.get('exception_middleware', ExceptionMiddleware())
 
@@ -103,15 +172,7 @@ class Minik:
         """
 
         def _register_view(view_func):
-
-            methods = kwargs.get('methods', [])
-            new_route = SimpleRoute(view_func, methods)
-
-            self._routes[path].append(new_route)
-            self._compiled_routes.append((compile_path(path), path))
-
-            cache_custom_route_fields(new_route)
-
+            self._router.add_route(path, view_func, **kwargs)
             return view_func
 
         return _register_view
@@ -127,21 +188,15 @@ class Minik:
         :param context: The aws context included in every lambda function execution
         """
 
-        event_type = self.get_event_type(event)
-        request = builders_by_type.get(event_type).build(event, context)
-
-        self.set_resource_and_route_params(event_type, request)
-
-        self.request = request
+        self.request = build_request(event, context, self._router)
         self.response = Response(
             status_code=codes.ok,
             headers={'Content-Type': 'application/json'}
         )
 
         with error_handling(self):
-            route = self._find_route(request)
-            update_uri_parameters(route, request)
-            self._execute_view(route.view)
+            route = self._router.find_route(self.request)
+            self.response.body = route.evaluate(self.request)
 
         # After executing the view run all the middlewares in sequence. If a middleware
         # fails, handle the exception and move on. This code needs to run after the
@@ -152,69 +207,6 @@ class Minik:
                 middleware(self)
 
         return self.response.to_dict()
-
-    def set_resource_and_route_params(self, event_type, request):
-        if event_type != 'alb_request':
-            return
-
-        for path_re, resource in self._compiled_routes:
-            match = path_re.match(request.path)
-            if not match:
-                continue
-
-            request.resource = resource
-            request.uri_params = dict(match.groupdict())
-            return
-
-    def get_event_type(self, event):
-        request_ctx = event.get('requestContext', {})
-        if request_ctx.get('elb'):
-            return 'alb_request'
-
-        if request_ctx.get('apiId'):
-            return 'api_request'
-
-        raise MinikViewError('Unsupported event type.')
-
-    def _execute_view(self, view):
-        """
-        Given a view function, execute the view and update the body of the current
-        response.
-        :param view: The function to execute.
-        """
-
-        self.response.body = view(**self.request.uri_params) if self.request.uri_params else view()
-
-    def _find_route(self, request):
-        """
-        Given the paramters of the request, lookup the associated view. The lookup
-        process follows a set of steps. If the view is not found an exception is
-        raised with the appropriate status code and error message.
-        """
-
-        routes = self._routes.get(request.resource)
-
-        if not routes:
-            raise MinikViewError(
-                'The requested URL was not found on the server.',
-                status_code=codes.not_found
-            )
-
-        target_route = [route for route in routes if not route.methods or (request.method in route.methods)]
-
-        if not target_route:
-            raise MinikViewError(
-                'Method is not allowed.',
-                status_code=codes.method_not_allowed
-            )
-
-        if len(target_route) > 1:
-            raise MinikViewError(
-                f'Found multiple views for the "{request.method}" method.',
-                status_code=codes.not_allowed
-            )
-
-        return target_route[0]
 
 
 @contextmanager

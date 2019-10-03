@@ -10,11 +10,12 @@ class MinikRequest:
     concerned with the inner representation of the APIGateway's event as long as
     it has access to the underlaying data values in the event.
     """
-    __slots__ = ['path', 'resource', 'query_params', 'headers', 'uri_params',
+    __slots__ = ['request_type', 'path', 'resource', 'query_params', 'headers', 'uri_params',
                  'method', 'body', '_json_body', 'aws_context']
 
-    def __init__(self, path, resource, query_params, headers, uri_params, method, body, context):
+    def __init__(self, request_type, path, resource, query_params, headers, uri_params, method, body, context):
 
+        self.request_type = request_type
         self.path = path
         self.resource = resource
         self.query_params = query_params
