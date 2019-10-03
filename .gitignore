@@ -107,3 +107,6 @@ venv.bak/
 # Python3 virtual env
 venv3/
 tvenv/
+
+# VS Code
+.vscode

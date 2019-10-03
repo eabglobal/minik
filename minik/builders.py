@@ -1,7 +1,7 @@
 from minik.constants import CONFIG_ERROR_MSG
 
 from minik.models import MinikRequest
-from minik.exceptions import ConfigurationError
+from minik.exceptions import MinikViewError, ConfigurationError
 
 
 class APIGatewayRequestBuilder:

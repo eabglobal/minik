@@ -15,104 +15,14 @@
 """
 
 from contextlib import contextmanager
-from collections import namedtuple, defaultdict
+from collections import defaultdict
 
 from minik.exceptions import MinikViewError
 from minik.models import Response
 from minik.builders import build_request
-from minik.fields import (update_uri_parameters, cache_custom_route_fields)
+from minik.router import Router
 from minik.middleware import (ServerErrorMiddleware, ExceptionMiddleware, ContentTypeMiddleware)
 from minik.status_codes import codes
-import re
-
-SimpleRoute = namedtuple('SimpleRoute', ['view', 'methods'])
-
-PARAM_RE = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)(:[a-zA-Z_][a-zA-Z0-9_]*)?}")
-
-
-# ------------------------ router.py -------------------------
-def compile_path(path):
-    path_re = "^"
-    idx = 0
-
-    for match in PARAM_RE.finditer(path):
-        param_name, convertor_type = match.groups(default="str")
-
-        path_re += path[idx:match.start()]
-        path_re += rf"(?P<{param_name}>[^/]+)"
-
-        idx = match.end()
-
-    path_re += path[idx:] + "$"
-
-    return re.compile(path_re)
-
-
-class SimpleRoute:
-
-    def __init__(self, route, endpoint, **kwargs):
-        self.route = route
-        self.endpoint = endpoint
-        self.methods = kwargs.get('methods')
-
-        cache_custom_route_fields(self.endpoint)
-
-    def evaluate(self, request, **kwargs):
-        update_uri_parameters(self.endpoint, request)
-        return self.endpoint(**request.uri_params)
-
-
-class Router:
-
-    def __init__(self):
-        self._routes = defaultdict(list)
-        self._compiled_route_paths = list()
-
-    def add_route(self, route_path, endpoint, **kwargs):
-
-        route_re = compile_path(route_path)
-        self._routes[route_path].append(SimpleRoute(route_path, endpoint, **kwargs))
-        self._compiled_route_paths.append((route_re, route_path))
-
-    def resolve_path(self, path):
-
-        for path_re, resource in self._compiled_route_paths:
-            match = path_re.match(path)
-            if match:
-                return (resource, dict(match.groupdict()))
-
-        return (None, {})
-
-    def find_route(self, request):
-        """
-        Given the paramters of the request, lookup the associated view. The lookup
-        process follows a set of steps. If the view is not found an exception is
-        raised with the appropriate status code and error message.
-        """
-
-        routes = self._routes.get(request.resource)
-
-        if not routes:
-            raise MinikViewError(
-                'The requested URL was not found on the server.',
-                status_code=codes.not_found
-            )
-
-        target_route = [route for route in routes if not route.methods or (request.method in route.methods)]
-
-        if not target_route:
-            raise MinikViewError(
-                'Method is not allowed.',
-                status_code=codes.method_not_allowed
-            )
-
-        if len(target_route) > 1:
-            raise MinikViewError(
-                f'Found multiple views for the "{request.method}" method.',
-                status_code=codes.not_allowed
-            )
-
-        return target_route[0]
 
 
 class Minik:
@@ -166,7 +76,11 @@ class Minik:
 
     def route(self, path, **kwargs):
         """
-        The decorator function used to associate a given route with a view function.
+        The decorator function used to associate a given route path to a handler.
+
+        @route('/events/{event_id}')
+        def get_event():
+            pass
 
         :param path: The endpoint associated with a given view.
         """
@@ -179,15 +93,22 @@ class Minik:
 
     def __call__(self, event, context):
         """
-        The core of the microframework. This method convers the given event to
-        a MinikRequest, it looks for the view to execute from the given route, and
-        it returns a well defined response. The response will be used by the API
-        Gateway to communicate back to the caller.
+        The entrypoint of a lambda function. When building a web app with minik,
+        the app instance must be the handler of the lambda function. Minik will
+        be responsible for consuming the raw event and context objects sent by the
+        consumer service.
 
-        :param event: The raw event of the lambda function (straight from API gateway)
+        The workflow of the framework is the following:
+        1) Normalize the given event
+        2) Find the route associated with the request
+        3) Execute the handler associated with the route
+        4) Run any additional middleware classes
+
+        :param event: The raw event of the lambda function (straight from API Gateway/ALB)
         :param context: The aws context included in every lambda function execution
         """
 
+        # Normalize the raw event by type and build a MinikRequest.
         self.request = build_request(event, context, self._router)
         self.response = Response(
             status_code=codes.ok,
