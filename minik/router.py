@@ -26,6 +26,8 @@ PARAM_RE = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)(:[a-zA-Z_][a-zA-Z0-9_]*)?}")
 
 
 def compile_path(path):
+    """
+    """
     path_re = "^"
     idx = 0
 

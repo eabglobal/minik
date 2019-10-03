@@ -15,7 +15,6 @@
 """
 
 from contextlib import contextmanager
-from collections import defaultdict
 
 from minik.exceptions import MinikViewError
 from minik.models import Response
@@ -49,11 +48,7 @@ class Minik:
         self._error_middleware = kwargs.get('server_error_middleware', ServerErrorMiddleware())
         self._exception_middleware = kwargs.get('exception_middleware', ExceptionMiddleware())
 
-        self._routes = defaultdict(list)
-        self._compiled_routes = list()
-        self._middleware = [
-            ContentTypeMiddleware()
-        ]
+        self._middleware = [ContentTypeMiddleware()]
 
     @property
     def in_debug(self):
