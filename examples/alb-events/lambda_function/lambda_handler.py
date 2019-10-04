@@ -21,7 +21,7 @@ def get_events():
     headers = json.dumps(app.request.headers, indent=4)
     req_type = req_type_by_name.get(app.request.request_type)
 
-    return """
+    return f"""
     <html>
         <head>
             <title>Hello from {req_type}</title>
@@ -41,13 +41,3 @@ def get_event(zip_code: int):
         return {'events': ['MD Gran fondo', 'Old Busthead']}
 
     return {'events': ['other events']}
-
-
-# @app.route("/events/{event_id}")
-# class EventAPI:
-
-#     def on_get(self, request, response, *, event_id: str):
-#         return {'id': 12}
-
-#     def on_post(self, request, response, *, event_id: str):
-#         return {'created': True}
