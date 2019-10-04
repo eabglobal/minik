@@ -132,7 +132,7 @@ view would look like:
     @app.get('/articles/{author}/{year}/')
     def get_articles_view(author: str, year: int):
         app.response.headers = {
-            "Content-Type": "Content-Type": "text/html; charset=utf-8",
+            "Content-Type": "text/html; charset=utf-8",
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "GET",
             "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date",

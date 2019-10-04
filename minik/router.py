@@ -27,6 +27,12 @@ PARAM_RE = re.compile("{([a-zA-Z_][a-zA-Z0-9_]*)(:[a-zA-Z_][a-zA-Z0-9_]*)?}")
 
 def compile_path(path):
     """
+    Utility function to convert a path to a regular expression. A path is defined
+    at the route level and it can be defined as having no parameters or multiple
+    parameter. Given a definition like '/articles/{month}/{day}', this function will
+    return the compiled regex equievanet of it as r'/articles/(?<month>[^/]+)/(?<day>[^/]+)'.
+
+    :params path: The path associated with a route.
     """
     path_re = "^"
     idx = 0
@@ -45,7 +51,12 @@ def compile_path(path):
 
 
 class SimpleRoute:
-
+    """
+    A class to store function based views for a given path. A route has two core
+    components, a path and a function. Once the framework receives a request if
+    the path of the request matches the path of the route, this class will know
+    how to evaluate the function.
+    """
     def __init__(self, route, endpoint, **kwargs):
         self.route = route
         self.endpoint = endpoint
@@ -59,18 +70,40 @@ class SimpleRoute:
 
 
 class Router:
+    """
+    A router holds the collection of routes for the web application. Each route
+    has a path and an associated handler. The router knows how to find a route
+    for a given request.
+    """
 
     def __init__(self):
         self._routes = defaultdict(list)
         self._compiled_route_paths = list()
 
     def add_route(self, route_path, endpoint, **kwargs):
+        """
+        Add a new route to the router. The route path is the identifier associated
+        with the given endpoint. The additional set of parameters enhance the definition
+        of the route, for instance a set of valid methods=['GET'].
 
+        :params route_path: The identifier of the route to be added. For instance '/books/{year}'.
+        :params endpoint: The function or handler associated with the route.
+        """
         route_re = compile_path(route_path)
         self._routes[route_path].append(SimpleRoute(route_path, endpoint, **kwargs))
+
+        # Cache the route regular expression to easily lookup the routes for a given
+        # request. For instance a request with '/books/2019' => '/books/{year}'. With
+        # the generic resource the router can lookup the routes.
         self._compiled_route_paths.append((route_re, route_path))
 
     def resolve_path(self, path):
+        """
+        Get the resource and set of path parameters for a given path. If the path
+        does not match any of the defined routes, an empty response will be returned.
+
+        :params path: The path associated with a request.
+        """
 
         for path_re, resource in self._compiled_route_paths:
             match = path_re.match(path)
@@ -82,8 +115,14 @@ class Router:
     def find_route(self, request):
         """
         Given the paramters of the request, lookup the associated view. The lookup
-        process follows a set of steps. If the view is not found an exception is
-        raised with the appropriate status code and error message.
+        process follows a this steps:
+        1. Lookup get the routes for a given resource
+        2. Find the unique route for the method's http request.
+
+        If the view is not found an exception is raised with the appropriate
+        status code and error message.
+
+        :params request: An instance of the MinikRequest.
         """
 
         routes = self._routes.get(request.resource)

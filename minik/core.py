@@ -74,7 +74,7 @@ class Minik:
         The decorator function used to associate a given route path to a handler.
 
         @route('/events/{event_id}')
-        def get_event():
+        def get_event(event_id: str):
             pass
 
         :param path: The endpoint associated with a given view.

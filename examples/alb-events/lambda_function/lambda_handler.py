@@ -1,19 +1,36 @@
+import json
 from minik.core import Minik
 
 app = Minik()
 
+req_type_by_name = {
+    'api_request': 'API Gateway!',
+    'alb_request': 'ALB!'
+}
+
 
 @app.get("/events")
 def get_events():
-    return {"data": [{'zip_code': 20902}, {'zip_code': 73071}]}
+    app.response.headers = {
+        "Content-Type": "text/html; charset=utf-8",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET",
+        "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date",
+        "Authorization": "X-Api-Key,X-Amz-Security-Token"
+    }
+    headers = json.dumps(app.request.headers, indent=4)
+    req_type = req_type_by_name.get(app.request.request_type)
 
-
-@app.post("/events")
-def post_event():
-
-    event_name = app.request.json_body.get('name')
-    # Save this event somewhere
-    return {'id': 100, 'name': event_name}
+    return """
+    <html>
+        <head>
+            <title>Hello from {req_type}</title>
+        </head>
+        <body>
+            <h1>Hello from{req_type}</h1>
+            <h2>{headers}</h2>
+        </body>
+    </html>"""
 
 
 @app.get("/events/{zip_code}")

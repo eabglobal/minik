@@ -5,11 +5,30 @@ from minik.exceptions import MinikViewError, ConfigurationError
 
 
 class APIGatewayRequestBuilder:
+    """
+    This builder knows how to convert an API Gateway event into a MinikRequest instance.
+    The event should be the payload a lambda function receives when it is the target
+    of a gateway endpoint. The payload definition is:
+    https://docs.aws.amazon.com/lambda/latest/dg/with-on-demand-https.html
+    """
 
     def matches(self, event):
+        """
+        A simple function to determine if the given raw event comes from the API
+        Gateway. If it is, then the function evaluates to True, False otherwise.
+
+        :params event: The raw event received from the lambda function.
+        """
         return event.get('requestContext', {}).get('apiId') is not None
 
     def build(self, event, context, router):
+        """
+        Map the raw API Gateway event to a MinikRequest.
+
+        :params event: The raw lambda function event.
+        :params context: The raw lambda function context object.
+        :params router: An instance of the minik router.
+        """
 
         headers = event.get('headers') or {}
 
@@ -30,11 +49,36 @@ class APIGatewayRequestBuilder:
 
 
 class ALBRequestBuilder:
+    """
+    This request builder knows how to convert an ALB event to a MinikRequest instance.
+    The ALB event is the payload a lambda function receives, when it is the target
+    of an application load balancer.
+
+    https://docs.aws.amazon.com/lambda/latest/dg/services-alb.html
+    """
 
     def matches(self, event):
+        """
+        A simple function to determine if the given raw event comes from the AWS
+        Application Load Balancer (ALB). If it is, then the function evaluates
+        to True, False otherwise.
+
+        :params event: The raw event received from the lambda function.
+        """
         return event.get('requestContext', {}).get('elb') is not None
 
     def build(self, event, context, router):
+        """
+        Map the ALB raw request to a MinikRequest instance. As part of the mapping
+        the router will be used to convert the raw request path into a resource.
+        A path, as defined in the event, looks like '/books/2019', the mapping will
+        look up the associated resource '/books/{year}' from the router and correctly
+        build a MinikRequest instance.
+
+        :params event: The raw lambda function event.
+        :params context: The raw lambda function context object.
+        :params router: An instance of the minik router.
+        """
 
         headers = event.get('headers') or {}
         resource, uri_params = router.resolve_path(event['path'])
@@ -59,6 +103,15 @@ REQUEST_BUILDERS = [
 
 
 def build_request(event, context, router):
+    """
+    Build a minik request from the given lambda function event. Given a set of
+    supported builders, the raw event will be mapped based on the event type. If
+    the type of event is not supported, an exception will be raised.
+
+    :params event: The raw event received by the lambda function.
+    :params context: The raw context objects of the lambda function
+    :params router: An instance of the minik router.
+    """
 
     for builder in REQUEST_BUILDERS:
         if builder.matches(event):
