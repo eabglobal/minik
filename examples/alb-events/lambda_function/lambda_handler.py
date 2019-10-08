@@ -1,4 +1,3 @@
-import json
 from minik.core import Minik
 
 app = Minik()

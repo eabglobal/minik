@@ -8,11 +8,11 @@ Version 0.5.0
 
 Released on October 8th, 2019, codename Yeni Ridge
 
-- Large refactoring effort to natively support requests from an ALB (issues/29)
+- Large refactoring effort to natively support requests from an ALB (issues/33)
   - Introducing a new router to keep track of the route/handler pairs
   - Refactoring the requests builders to correctly build a MinikRequest based
     on the event type (api_request, or alb_request)
-  - Adding an example to associate a lambda function to an ALB
+  - Adding an example to associate a lambda function to an ALB (examples/alb-events)
   - Updating documentation.
 
 Version 0.4.0
