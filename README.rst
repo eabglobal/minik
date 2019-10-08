@@ -5,8 +5,9 @@ Minik: Serverless Web Framework
 
 |circle| |pypi version| |apache license|
 
-Using AWS lambda functions and API Gateway, minik will serve as the framework
-that facilitates development in the serverless space.
+A web framework that facilitates the development of serverless applications using
+AWS resources. Minik natively supports request from the API Gateway and the
+Application Load Balancer.
 
 Installing
 **********
@@ -141,6 +142,34 @@ By default the debug mode is set to False.
 Initializing the app in debug mode will relay the stack trace back to the consumer.
 
 
+ALB Support
+***********
+Along with having a native integration with the API Gateway, minik can now be used
+to handle requests coming from an Application Load Balancer (ALB). The definition
+of the web application is identical in both cases. There is no additional code required
+to use minik with an ALB.
+
+If a lambda function is the `target of an ALB`_, minik will parse the raw event,
+find the view associated with the route and execute the view with the correct context.
+
+.. code-block:: python
+
+    from minik.core import Minik
+
+    app = Minik()
+
+    @app.get('/events/{location}')
+    def events_view(location: str):
+        return {'data': ['granfondo MD', 'Silver Spring Century']}
+
+This code block can be used as the body of a lambda function, as long as minik is
+included in the lambda package. Notice that there is nothing specific about the source
+that will eventually invoke this lambda function. This codeblock can be used to
+handle a request either from the API Gateway or from an ALB.
+
+.. _`target of an ALB`: https://aws.amazon.com/blogs/networking-and-content-delivery/lambda-functions-as-targets-for-application-load-balancers/
+
+
 Motivation
 **********
 The team behind this framework is adopting a very minimal set of features to enhance
@@ -168,9 +197,11 @@ Things to be aware of when working using minik:
 - When used in your lambda function, you're responsible for including the source
   code of minik in your .zip artifact. For packaging purposes we recommend using
   `Juniper`_.
+- Minik is service agnostic, as a web framework it natively supports requests
+  from the API Gateway and an Application Load Balancer (ALB).
 - Unlike other frameworks like Flask or Django, where using the decorator is
   sufficient to define the routes of the web app, in minik, you’re responsible
-  for linking a lambda function to the API gateway. We recommend using a
+  for linking a lambda function to the API Gateway. We recommend using a
   `SAM`_ template.
 - Minik does not include a local development server! For testing purposes, you can
   either deploy your lambda to AWS using `sam package` and `sam deploy`. For local

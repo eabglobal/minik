@@ -11,6 +11,16 @@ req_type_by_name = {
 
 @app.get("/events")
 def get_events():
+    """
+    The view handler for the `/events` route, this function will return an html
+    response with a list of events. Each event points to another route to get
+    more information on the event.
+
+    This view will also display the request type based on the service that invoked
+    the lambda function. Minik supports request from API Gateway and Application
+    Load Balancer natively.
+    """
+
     app.response.headers = {
         "Content-Type": "text/html; charset=utf-8",
         "Access-Control-Allow-Origin": "*",
@@ -27,17 +37,25 @@ def get_events():
             <title>Hello from {req_type}</title>
         </head>
         <body>
-            <h1>Hello from{req_type}</h1>
-            <h2>{headers}</h2>
+            <h1>Hello from {req_type}</h1>
+            <a href="/events/20902">Silver Spring Events</a>
+            <a href="/events/32608">Alachua County Events</a>
         </body>
     </html>"""
 
 
 @app.get("/events/{zip_code}")
 def get_event(zip_code: int):
+    """Very simple handler that returns a json response based on the zip code."""
 
-    print(f'{type(zip_code)} - {zip_code}')
     if zip_code == 20902:
         return {'events': ['MD Gran fondo', 'Old Busthead']}
 
     return {'events': ['other events']}
+
+
+@app.post("/events/{zip_code}")
+def get_event(zip_code: int):
+    """ An echo function to return the body and zip of the request."""
+    # Store a new event
+    return {'zip_code': zip_code, 'post_data': app.request.json_body}

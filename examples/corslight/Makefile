@@ -1,25 +1,22 @@
-
-S3_BUCKET=sam-artifacts-dev
-STACK_NAME ?= minik-cors
-SAM_TEMPLATE_BASE=sam
-SAM_TEMPLATE=$(SAM_TEMPLATE_BASE).yml
-SAM_OUTPUT=$(SAM_TEMPLATE_BASE)-new.yml
-
+s3_bucket=temp-${profile}
+stack_name ?= minik-cors
+sam_template_base=sam
+sam_template=$(sam_template_base).yml
+sam_output=$(sam_template_base)-new.yml
 
 build:
 	juni build
 
-package:
+deploy:
 	sam package \
-	    --s3-bucket $(S3_BUCKET) \
-	    --template-file $(SAM_TEMPLATE) \
-	    --output-template-file ./dist/$(SAM_OUTPUT) \
-	    --profile $(AWS_PROFILE)
+	    --s3-bucket $(s3_bucket) \
+	    --template-file $(sam_template) \
+	    --output-template-file ./dist/$(sam_output) \
+	    --profile $(profile)
 
-deploy: package
 	sam deploy \
-	    --template-file ./dist/$(SAM_OUTPUT) \
-	    --stack-name $(STACK_NAME) \
+	    --template-file ./dist/$(sam_output) \
+	    --stack-name $(stack_name) \
 	    --capabilities CAPABILITY_IAM \
 	    --region us-east-1 \
-	    --profile $(AWS_PROFILE)
+	    --profile $(profile)

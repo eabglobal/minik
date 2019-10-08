@@ -272,6 +272,103 @@ API Gateway and for associating the lambda function with the gateway endpoint. M
 is just the framework that allows you to write your api in a straight-forward fashion.
 
 
+Minik with ALB
+**************
+When working with a lambda function as the handler of a request from an Application
+Load Balancer (ALB), a simple hello world application looks like:
+
+.. code:: python
+
+    def lambda_handler(event, context):
+        response = {
+            "statusCode": 200,
+            "statusDescription": "200 OK",
+            "isBase64Encoded": False,
+            "headers": {
+            "Content-Type": "text/html; charset=utf-8"
+            }
+        }
+
+        response['body'] = """<html>
+            <head>
+            <title>Hello World!</title>
+            <style>
+            html, body {
+            margin: 0; padding: 0;
+            font-family: arial; font-weight: 700; font-size: 3em;
+            text-align: center;
+            }
+            </style>
+            </head>
+            <body>
+            <p>Hello World!</p>
+            </body>
+            </html>"""
+        return response
+
+In this scenario, the event your lambda function receives from the ALB looks like this:
+
+.. code:: json
+
+    {
+        'requestContext': {
+            'elb': {
+                'targetGroupArn': 'arn:aws:elasticloadbalancing:us-east-1:XXXXXXXXXXX:targetgroup/sample/6d0ecf831eec9f09'
+            }
+        },
+        'httpMethod': 'GET',
+        'path': '/',
+        'queryStringParameters': {},
+        'headers': {
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'accept-encoding': 'gzip',
+            'accept-language': 'en-US,en;q=0.5',
+            'connection': 'keep-alive',
+            'cookie': ‘name=value',
+            'host': 'lambda-YYYYYYYY.elb.amazonaws.com',
+            'upgrade-insecure-requests': '1',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:60.0) Gecko/20100101 Firefox/60.0',
+            'x-amzn-trace-id': 'Root=1-5bdb40ca-556d8b0c50dc66f0511bf520',
+            'x-forwarded-for': '192.0.2.1,
+            'x-forwarded-port': '80',
+            'x-forwarded-proto': 'http'
+        },
+        'body': '',
+        'isBase64Encoded': False
+    }
+
+Without Minik, every single API endpoint will need to parse the raw object
+as a way to get the data values you care about.
+
+With Minik, you get a clear familiar interface that hides the complexity of dealing
+with the raw representation of the event and context objects. We take care of parsing
+the ALB object for you, so that you can focus on writing your business logic.
+Using the above object and endpoint as an example, our lambda function would instead be:
+
+.. code:: python
+
+    from minik.core import Minik
+    app = Minik()
+
+    @app.route("/test/{action}")
+    def hello(action):
+        name = app.request.query_params.get('name')
+
+        # With the values defined in the object above this will return.
+        # {'hello': 'me'}
+        return {action: name}
+
+
+Just like with any other lambda function you are responsible configuring the lambda
+function as the target of the ALB. Minik is just the framework that facilitates the
+definition of the web application.
+
+Notice that the code to handle a request from the API Gateway is identical to the
+code used in the ALB example. This shows that minik is service agnostic, an web
+application that was associated to an API Gateway definition, can seamlessly be
+used to handle requests from an ALB without changing the code.
+
+
 .. _SAM: https://github.com/awslabs/serverless-application-model
 .. _Chalice: https://github.com/aws/chalice
 .. _Serverless: https://serverless.com/

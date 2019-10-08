@@ -1,5 +1,4 @@
-
-s3_bucket=temp-awseabsgddev
+s3_bucket=temp-${profile}
 stack_name ?= minik-alb
 sam_template_base=sam
 sam_template=$(sam_template_base).yml
