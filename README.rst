@@ -162,10 +162,9 @@ find the view associated with the route and execute the view with the correct co
     def events_view(location: str):
         return {'data': ['granfondo MD', 'Silver Spring Century']}
 
-This code block can be used as the body of a lambda function, as long as minik is
-included in the lambda package. Notice that there is nothing specific about the source
-that will eventually invoke this lambda function. This codeblock can be used to
-handle a request either from the API Gateway or from an ALB.
+Notice that there is nothing specific about the source that will eventually invoke
+this lambda function. This codeblock can be used to handle a request either
+from the API Gateway or from an ALB.
 
 .. _`target of an ALB`: https://aws.amazon.com/blogs/networking-and-content-delivery/lambda-functions-as-targets-for-application-load-balancers/
 
