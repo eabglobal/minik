@@ -28,7 +28,7 @@ def get_events():
         "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date",
         "Authorization": "X-Api-Key,X-Amz-Security-Token"
     }
-    headers = json.dumps(app.request.headers, indent=4)
+
     req_type = req_type_by_name.get(app.request.request_type)
 
     return f"""
@@ -55,7 +55,7 @@ def get_event(zip_code: int):
 
 
 @app.post("/events/{zip_code}")
-def get_event(zip_code: int):
+def post_event(zip_code: int):
     """ An echo function to return the body and zip of the request."""
     # Store a new event
     return {'zip_code': zip_code, 'post_data': app.request.json_body}
