@@ -324,7 +324,7 @@ In this scenario, the event your lambda function receives from the ALB looks lik
             "accept-encoding": "gzip",
             "accept-language": "en-US,en;q=0.5",
             "connection": "keep-alive",
-            "cookie": ‘name=value",
+            "cookie": "name=value",
             "host": "lambda-YYYYYYYY.elb.amazonaws.com",
             "upgrade-insecure-requests": "1",
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:60.0) Gecko/20100101 Firefox/60.0",
