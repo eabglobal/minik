@@ -158,9 +158,26 @@ find the view associated with the route and execute the view with the correct co
 
     app = Minik()
 
-    @app.get('/events/{location}')
-    def events_view(location: str):
-        return {'data': ['granfondo MD', 'Silver Spring Century']}
+    @app.get('/greetings')
+    def get_greetings():
+        app.response.headers = {"Content-Type": "text/html; charset=utf-8"}
+
+        return """
+        <html>
+        <head>
+            <title>Hello World!</title>
+            <style>
+            html, body {
+            margin: 0; padding: 0;
+            font-family: arial; font-weight: 700; font-size: 3em;
+            text-align: center;
+            }
+            </style>
+        </head>
+        <body>
+            <p>Hello World!</p>
+        </body>
+        </html>"""
 
 Notice that there is nothing specific about the source that will eventually invoke
 this lambda function. This codeblock can be used to handle a request either
