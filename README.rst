@@ -169,6 +169,35 @@ from the API Gateway or from an ALB.
 .. _`target of an ALB`: https://aws.amazon.com/blogs/networking-and-content-delivery/lambda-functions-as-targets-for-application-load-balancers/
 
 
+Request Object
+**************
+Any view has access to the **app.request** instance as a way to retrieve the general
+information of a request. The fields of this object include the query parameters,
+the path parameters, headers, payload... Given that different sources might have
+a set of additional fields, minik will store a copy of the original event in the
+**app.request** instance.
+
+For instance, the API Gateway has the concept of stage variables that is missing
+from an event received from the ALB. In this case, the generic app.request instance will
+not have a field called stage_variables. Instead, minik keeps a copy of the original
+event and context objects in the request. In this case a developer can access these
+values using the app.request.aws_event['StageVariables']. Where the aws_event is
+the event minik received as the handler of the lambda function.
+
+.. code-block:: python
+
+    from minik.core import Minik
+
+    app = Minik()
+
+    @app.post('/events')
+    def post_view():
+        # app.request.json_body: The payload of a post request as a JSON object.
+        # app.request.aws_event: The raw event sent by a source to the lambda function.
+        # app.request.aws_context: The context of the lambda function.
+        return {'result': 'complete'}
+
+
 Motivation
 **********
 The team behind this framework is adopting a very minimal set of features to enhance

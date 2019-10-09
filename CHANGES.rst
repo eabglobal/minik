@@ -14,6 +14,8 @@ Released on October 8th, 2019, codename Yeni Ridge
     on the event type (api_request, or alb_request)
   - Adding an example to associate a lambda function to an ALB (examples/alb-events)
   - Updating documentation.
+- Updated the MinikRequest to keep the event received from the lambda function (issues/15).
+
 
 Version 0.4.0
 -------------

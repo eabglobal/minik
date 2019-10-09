@@ -35,14 +35,9 @@ def post_event(zip_code):
     return {'message': 'post handler'}
 
 
-@sample_app.get("/event_list")
-def get_events_list1():
-    return {'message': 'duplicate 1'}
-
-
-@sample_app.route("/event_list", methods=['GET'])
-def get_events_list2():
-    return {'message': 'duplicate 2'}
+@sample_app.route("/echo")
+def echo_handler():
+    return {'req_ctx': sample_app.request.aws_event['requestContext']}
 
 
 @pytest.mark.parametrize("http_method, expected_message", [
@@ -63,16 +58,20 @@ def test_route_defined_for_post_put(create_alb_event, http_method, expected_mess
     assert json.loads(response['body'])['message'] == expected_message
 
 
-def test_route_defined_for_duplicate_views(create_alb_event):
+@pytest.mark.parametrize("http_method", [
+    'GET', 'POST', 'PUT', 'DELETE'
+])
+def test_access_to_source_event(create_alb_event, http_method):
     """
-    This is an invalid definition in which the user of minik is trying to associate
-    two different views for the same (path, method) pair.
+    Validate that a view has access to the raw event minik received independent
+    of the method type.
     """
 
-    event = create_alb_event('/event_list',
-                             method='GET',
+    event = create_alb_event('/echo',
+                             method=http_method,
                              body={'type': 'cycle'})
 
     response = sample_app(event, context)
+    json_response_body = json.loads(response['body'])
 
-    assert response['statusCode'] == codes.not_allowed
+    assert json_response_body['req_ctx'] == event['requestContext']

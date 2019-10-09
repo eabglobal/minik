@@ -1,3 +1,4 @@
+import urllib.parse
 from minik.constants import CONFIG_ERROR_MSG
 
 from minik.models import MinikRequest
@@ -44,7 +45,8 @@ class APIGatewayRequestBuilder:
             uri_params=event['pathParameters'] or {},
             method=event['requestContext']['httpMethod'],
             body=event['body'],
-            context=context
+            context=context,
+            event=event
         )
 
 
@@ -87,13 +89,24 @@ class ALBRequestBuilder:
             request_type='alb_request',
             path=event['path'],
             resource=resource,
-            query_params=event.get('queryStringParameters', {}),
+            query_params=url_decode_params(event.get('queryStringParameters', {})),
             headers={k.lower(): v for k, v in headers.items()},
             uri_params=uri_params,
             method=event['httpMethod'],
             body=event['body'],
-            context=context
+            context=context,
+            event=event
         )
+
+
+def url_decode_params(query_params):
+    """
+    Decode the key value pairs of a set of parameters.
+    """
+    return {
+        urllib.parse.unquote(key): urllib.parse.unquote(value)
+        for key, value in query_params.items()
+    }
 
 
 REQUEST_BUILDERS = [
