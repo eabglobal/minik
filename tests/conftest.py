@@ -20,11 +20,11 @@ from pytest import fixture
 
 
 @fixture
-def create_router_event():
+def create_api_event():
     """
     Create an event for the router lambda.
     """
-    def create_router_event_inner(uri, method='POST', **kwargs):
+    def create_api_event_inner(uri, method='POST', **kwargs):
         path_params = kwargs.get('pathParameters', {})
         path = uri
         if path_params:
@@ -34,6 +34,7 @@ def create_router_event():
             'requestContext': {
                 'httpMethod': method,
                 'resourcePath': uri,
+                'apiId': 'ax2hor23'
             },
             'path': path,
             'resource': uri,
@@ -44,4 +45,26 @@ def create_router_event():
             'stageVariables': {},
         }
 
-    return create_router_event_inner
+    return create_api_event_inner
+
+
+@fixture
+def create_alb_event():
+    """
+    Create an event for the router lambda.
+    """
+    def create_alb_event_inner(path, method='POST', **kwargs):
+
+        return {
+            "requestContext": {
+                "elb": {"targetGroupArn": "arn:aws:some_arn"}
+            },
+            "httpMethod": method,
+            "path": path,
+            "queryStringParameters": kwargs.get('queryParameters', {}),
+            "headers": kwargs.get('headers', {'content-type': 'application/json'}),
+            "body": json.dumps(kwargs.get('body', {})).encode(),
+            "isBase64Encoded": False
+        }
+
+    return create_alb_event_inner

@@ -37,9 +37,9 @@ def post_event(zip_code: int):
     return {'findme': True, 'zip': zip_code}
 
 
-def test_get_custom_response(create_router_event):
+def test_get_custom_response(create_api_event):
 
-    event = create_router_event('/events/{zip_code}',
+    event = create_api_event('/events/{zip_code}',
                                 method='GET',
                                 pathParameters={'zip_code': 20902})
 
@@ -50,9 +50,9 @@ def test_get_custom_response(create_router_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_post_custom_response(create_router_event):
+def test_post_custom_response(create_api_event):
 
-    event = create_router_event('/events/{zip_code}',
+    event = create_api_event('/events/{zip_code}',
                                 method='POST',
                                 pathParameters={'zip_code': 20902})
 

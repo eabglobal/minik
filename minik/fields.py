@@ -55,7 +55,7 @@ CUSTOM_FIELD_BY_TYPE = {
 }
 
 
-def update_uri_parameters(route, request):
+def update_uri_parameters(view_fn, request):
     """
     Based on the function annotations of the route's view, validate a given route
     parameter and update the value of the requests' uri. For example, a route is
@@ -68,7 +68,7 @@ def update_uri_parameters(route, request):
     it will update the string value of the request.uri_parameters to be the int
     representation of the value.
 
-    :param route: The minik route object, which should have a valid view.
+    :param view_fn: The function that will be executed for a given endpoint.
     :param request: The instance of the minik request.
     """
 
@@ -76,7 +76,7 @@ def update_uri_parameters(route, request):
 
     try:
 
-        for field_name, field_type in route.view.__annotations__.items():
+        for field_name, field_type in view_fn.__annotations__.items():
             new_field_type = CUSTOM_FIELD_BY_TYPE.get(field_type, field_type)
             values_by_name[field_name] = new_field_type(values_by_name[field_name])
 
@@ -84,7 +84,7 @@ def update_uri_parameters(route, request):
         raise MinikViewError(str(ve), status_code=codes.not_found)
 
 
-def cache_custom_route_fields(route):
+def cache_custom_route_fields(view):
     """
     For class based view annotations, create an instance of the class and store
     the instance in a cache. This instance will be used by a consumer to validate
@@ -93,11 +93,10 @@ def cache_custom_route_fields(route):
     If the annotated field is an instantiated value, it will NOT be added to the
     cache.
 
-    :param route: An instance of the minik route; the route should have an
-                  associated view.
+    :param view: Any function that contains a set of parameter annotations.
     """
 
-    for field_name, field_type in route.view.__annotations__.items():
+    for field_name, field_type in view.__annotations__.items():
         if field_type in CUSTOM_FIELD_BY_TYPE:
             continue
 

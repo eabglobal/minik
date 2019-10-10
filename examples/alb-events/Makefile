@@ -1,8 +1,9 @@
 s3_bucket=temp-${profile}
-stack_name ?= minik-cors
+stack_name ?= minik-alb
 sam_template_base=sam
 sam_template=$(sam_template_base).yml
 sam_output=$(sam_template_base)-new.yml
+
 
 build:
 	juni build

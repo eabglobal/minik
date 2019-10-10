@@ -17,6 +17,7 @@ setup(
     version=version,
     description='Web framework for the serverless domain',
     long_description=readme,
+    long_description_content_type='text/x-rst',
     url='https://github.com/eabglobal/minik',
     project_urls=OrderedDict((
         ('Code', 'https://github.com/eabglobal/minik'),

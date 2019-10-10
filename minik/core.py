@@ -15,16 +15,13 @@
 """
 
 from contextlib import contextmanager
-from collections import namedtuple, defaultdict
 
 from minik.exceptions import MinikViewError
 from minik.models import Response
-from minik.builders import APIGatewayRequestBuilder
-from minik.fields import (update_uri_parameters, cache_custom_route_fields)
+from minik.builders import build_request
+from minik.router import Router
 from minik.middleware import (ServerErrorMiddleware, ExceptionMiddleware, ContentTypeMiddleware)
 from minik.status_codes import codes
-
-SimpleRoute = namedtuple('SimpleRoute', ['view', 'methods'])
 
 
 class Minik:
@@ -47,14 +44,11 @@ class Minik:
     def __init__(self, **kwargs):
         self._debug = kwargs.get('debug', False)
 
-        self._request_builder = kwargs.get('request_builder', APIGatewayRequestBuilder())
+        self._router = Router()
         self._error_middleware = kwargs.get('server_error_middleware', ServerErrorMiddleware())
         self._exception_middleware = kwargs.get('exception_middleware', ExceptionMiddleware())
 
-        self._routes = defaultdict(list)
-        self._middleware = [
-            ContentTypeMiddleware()
-        ]
+        self._middleware = [ContentTypeMiddleware()]
 
     @property
     def in_debug(self):
@@ -77,44 +71,48 @@ class Minik:
 
     def route(self, path, **kwargs):
         """
-        The decorator function used to associate a given route with a view function.
+        The decorator function used to associate a given route path to a handler.
+
+        @route('/events/{event_id}')
+        def get_event(event_id: str):
+            pass
 
         :param path: The endpoint associated with a given view.
         """
 
         def _register_view(view_func):
-
-            methods = kwargs.get('methods', [])
-            new_route = SimpleRoute(view_func, methods)
-            self._routes[path].append(new_route)
-            cache_custom_route_fields(new_route)
-
+            self._router.add_route(path, view_func, **kwargs)
             return view_func
 
         return _register_view
 
     def __call__(self, event, context):
         """
-        The core of the microframework. This method convers the given event to
-        a MinikRequest, it looks for the view to execute from the given route, and
-        it returns a well defined response. The response will be used by the API
-        Gateway to communicate back to the caller.
+        The entrypoint of a lambda function. When building a web app with minik,
+        the app instance must be the handler of the lambda function. Minik will
+        be responsible for consuming the raw event and context objects sent by the
+        consumer service.
 
-        :param event: The raw event of the lambda function (straight from API gateway)
+        The workflow of the framework is the following:
+        1) Normalize the given event
+        2) Find the route associated with the request
+        3) Execute the handler associated with the route
+        4) Run any additional middleware classes
+
+        :param event: The raw event of the lambda function (straight from API Gateway/ALB)
         :param context: The aws context included in every lambda function execution
         """
 
-        request = self._request_builder.build(event, context)
-        self.request = request
+        # Normalize the raw event by type and build a MinikRequest.
+        self.request = build_request(event, context, self._router)
         self.response = Response(
             status_code=codes.ok,
             headers={'Content-Type': 'application/json'}
         )
 
         with error_handling(self):
-            route = self._find_route(request)
-            update_uri_parameters(route, request)
-            self._execute_view(route.view)
+            route = self._router.find_route(self.request)
+            self.response.body = route.evaluate(self.request)
 
         # After executing the view run all the middlewares in sequence. If a middleware
         # fails, handle the exception and move on. This code needs to run after the
@@ -125,46 +123,6 @@ class Minik:
                 middleware(self)
 
         return self.response.to_dict()
-
-    def _execute_view(self, view):
-        """
-        Given a view function, execute the view and update the body of the current
-        response.
-        :param view: The function to execute.
-        """
-
-        self.response.body = view(**self.request.uri_params) if self.request.uri_params else view()
-
-    def _find_route(self, request):
-        """
-        Given the paramters of the request, lookup the associated view. The lookup
-        process follows a set of steps. If the view is not found an exception is
-        raised with the appropriate status code and error message.
-        """
-
-        routes = self._routes.get(request.resource)
-
-        if not routes:
-            raise MinikViewError(
-                'The requested URL was not found on the server.',
-                status_code=codes.not_found
-            )
-
-        target_route = [route for route in routes if not route.methods or (request.method in route.methods)]
-
-        if not target_route:
-            raise MinikViewError(
-                'Method is not allowed.',
-                status_code=codes.method_not_allowed
-            )
-
-        if len(target_route) > 1:
-            raise MinikViewError(
-                f'Found multiple views for the "{request.method}" method.',
-                status_code=codes.not_allowed
-            )
-
-        return target_route[0]
 
 
 @contextmanager

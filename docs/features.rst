@@ -84,3 +84,16 @@ given name is valid or not.
 Keep in mind that with a valid route, the value of field will be a string!
 
 .. _`function annotations`: https://www.python.org/dev/peps/pep-3107/
+
+
+ALB Native Support
+******************
+A lambda function can be used as the target of an ALB, while using this configuration,
+a web developer needs to route and parse the raw event sent by the ALB to the lambda.
+With minik, a developer can use a familiar interface to define the web application. It
+is the framework's responsibility to correctly parse and route a request.
+
+An application originally configured to receive requests from an API Gateway endpoint
+can be seamlessly used to handle requests from an ALB. No code changes are required
+at all to make the transition. Minik will determine the event type based on the
+raw event it receives and it will handle the request correctly.

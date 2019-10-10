@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    test_advance_routing.py
+    test_alb_support.py
     :copyright: © 2019 by the EAB Tech team.
 
     Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,62 +18,59 @@ import json
 import pytest
 from unittest.mock import MagicMock
 from minik.core import Minik
-from minik.status_codes import codes
 
 
 sample_app = Minik()
 context = MagicMock()
 
 
-@sample_app.route("/events/{zip_code}", methods=['GET'])
+@sample_app.get("/events/{zip_code}")
 def get_events(zip_code):
     return {'message': 'get handler'}
 
 
-@sample_app.route("/events/{zip_code}", methods=['POST'])
+@sample_app.post("/events/{zip_code}")
 def post_event(zip_code):
     return {'message': 'post handler'}
 
 
-@sample_app.route("/event_list", methods=['GET'])
-def get_events_list1():
-    return {'message': 'duplicate 1'}
-
-
-@sample_app.route("/event_list", methods=['GET'])
-def get_events_list2():
-    return {'message': 'duplicate 2'}
+@sample_app.route("/echo")
+def echo_handler():
+    return {'req_ctx': sample_app.request.aws_event['requestContext']}
 
 
 @pytest.mark.parametrize("http_method, expected_message", [
     ('GET', 'get handler'),
     ('POST', 'post handler')
 ])
-def test_route_defined_for_post_put(create_api_event, http_method, expected_message):
+def test_route_defined_for_post_put(create_alb_event, http_method, expected_message):
     """
     For a given path, minik can execute different routes based on the HTTP method.
     """
 
-    event = create_api_event('/events/{zip_code}',
-                                method=http_method,
-                                pathParameters={'zip_code': 20902},
-                                body={'type': 'cycle'})
+    event = create_alb_event('/events/20902',
+                             method=http_method,
+                             body={'type': 'cycle'})
 
     response = sample_app(event, context)
 
     assert json.loads(response['body'])['message'] == expected_message
 
 
-def test_route_defined_for_duplicate_views(create_api_event):
+@pytest.mark.parametrize("http_method", [
+    'GET', 'POST', 'PUT', 'DELETE'
+])
+def test_access_to_source_event(create_alb_event, http_method):
     """
-    This is an invalid definition in which the user of minik is trying to associate
-    two different views for the same (path, method) pair.
+    Validate that a view has access to the raw event minik received independent
+    of the method type.
     """
 
-    event = create_api_event('/event_list',
-                                method='GET',
-                                body={'type': 'cycle'})
+    event = create_alb_event('/echo',
+                             method=http_method,
+                             body={'type': 'cycle'})
 
     response = sample_app(event, context)
+    json_response_body = json.loads(response['body'])
 
-    assert response['statusCode'] == codes.not_allowed
+    assert json_response_body['req_ctx'] == event['requestContext']

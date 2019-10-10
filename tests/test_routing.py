@@ -46,12 +46,12 @@ def post_put_view():
 
 
 @pytest.mark.parametrize("http_method", ['POST', 'PUT', 'PATCH', 'DELETE'])
-def test_routing_no_method(create_router_event, http_method):
+def test_routing_no_method(create_api_event, http_method):
     """
     A route defined without a set of methods will be invoked for ANY HTTP method.
     """
 
-    event = create_router_event('/activity_no_method',
+    event = create_api_event('/activity_no_method',
                                 method=http_method,
                                 body={'type': 'cycle', 'distance': 15})
 
@@ -60,13 +60,13 @@ def test_routing_no_method(create_router_event, http_method):
 
 
 @pytest.mark.parametrize("http_method", ['POST', 'PUT'])
-def test_route_defined_for_post_put(create_router_event, http_method):
+def test_route_defined_for_post_put(create_api_event, http_method):
     """
     Using the activity_post_put view definition, validate that the view gets
     correctly executed for the two methods it has in its definition.
     """
 
-    event = create_router_event('/activity_post_put',
+    event = create_api_event('/activity_post_put',
                                 method=http_method,
                                 body={'type': 'cycle', 'distance': 15})
 
@@ -77,13 +77,13 @@ def test_route_defined_for_post_put(create_router_event, http_method):
 
 
 @pytest.mark.parametrize("http_method", ['GET', 'DELETE'])
-def test_route_defined_for_post_put_not_called(create_router_event, http_method):
+def test_route_defined_for_post_put_not_called(create_api_event, http_method):
     """
     Using the activity_post_put view definition, validate that the view gets
     correctly executed for the two methods it has in its definition.
     """
 
-    event = create_router_event('/activity_post_put',
+    event = create_api_event('/activity_post_put',
                                 method=http_method,
                                 body={'type': 'cycle', 'distance': 15})
 
@@ -94,13 +94,13 @@ def test_route_defined_for_post_put_not_called(create_router_event, http_method)
 
 
 @pytest.mark.parametrize("http_method", ['GET', 'DELETE'])
-def test_not_found_response(create_router_event, http_method):
+def test_not_found_response(create_api_event, http_method):
     """
     Using the activity_post_put view definition, validate that the view gets
     correctly executed for the two methods it has in its definition.
     """
 
-    event = create_router_event('/not_found_route',
+    event = create_api_event('/not_found_route',
                                 method=http_method,
                                 body={'type': 'cycle', 'distance': 15})
 
@@ -110,13 +110,13 @@ def test_not_found_response(create_router_event, http_method):
     assert response['statusCode'] == codes.not_found
 
 
-def test_routing_for_http_post(create_router_event):
+def test_routing_for_http_post(create_api_event):
     """
     Validate that a view defined for a POST request is correctly evaluated when
     the route + method match the signature.
     """
 
-    event = create_router_event('/activity',
+    event = create_api_event('/activity',
                                 method='POST',
                                 body={'type': 'cycle', 'distance': 15})
 
@@ -126,14 +126,14 @@ def test_routing_for_http_post(create_router_event):
     assert response['body'] == json.dumps(expected_response)
 
 
-def test_routing_for_http_get(create_router_event):
+def test_routing_for_http_get(create_api_event):
     """
     Validate that a view defined for a GET request is correctly evaluated when
     the route + method match the signature.
     """
 
     activity_id = 152342
-    event = create_router_event('/activity/{activity_id}',
+    event = create_api_event('/activity/{activity_id}',
                                 method='GET',
                                 pathParameters={'activity_id': activity_id},
                                 body={'type': 'cycle', 'distance': 15})
@@ -165,20 +165,20 @@ def delete_view():
 
 
 @pytest.mark.parametrize("http_method", ['POST', 'GET', 'PUT', 'DELETE'])
-def test_routing_for_decorated_views(create_router_event, http_method):
+def test_routing_for_decorated_views(create_api_event, http_method):
     """
     Validate that a view defined for a GET request is correctly evaluated when
     the route + method match the signature.
     """
 
-    event = create_router_event('/pacific_resource', method=http_method)
+    event = create_api_event('/pacific_resource', method=http_method)
 
     response = sample_app(event, context)
 
     assert json.loads(response['body'])['action'] == http_method
 
 
-def test_debug_mode_relays_response(create_router_event):
+def test_debug_mode_relays_response(create_api_event):
     """
     Make sure that if the minik app is in debug mode, the exception trace and
     error message are sent back to the consumer.
@@ -190,7 +190,7 @@ def test_debug_mode_relays_response(create_router_event):
     def fail():
         return {'data': app_in_debug.response.field_not_in_response}
 
-    event = create_router_event('/failme', method='GET')
+    event = create_api_event('/failme', method='GET')
     response = app_in_debug(event, context)
 
     body = json.loads(response['body'])
