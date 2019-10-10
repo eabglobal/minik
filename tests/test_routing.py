@@ -19,6 +19,7 @@ import pytest
 from unittest.mock import MagicMock
 from minik.core import Minik
 from minik.status_codes import codes
+from minik.utils import create_api_event
 
 
 sample_app = Minik(debug=True)
@@ -46,7 +47,7 @@ def post_put_view():
 
 
 @pytest.mark.parametrize("http_method", ['POST', 'PUT', 'PATCH', 'DELETE'])
-def test_routing_no_method(create_api_event, http_method):
+def test_routing_no_method(http_method):
     """
     A route defined without a set of methods will be invoked for ANY HTTP method.
     """
@@ -60,7 +61,7 @@ def test_routing_no_method(create_api_event, http_method):
 
 
 @pytest.mark.parametrize("http_method", ['POST', 'PUT'])
-def test_route_defined_for_post_put(create_api_event, http_method):
+def test_route_defined_for_post_put(http_method):
     """
     Using the activity_post_put view definition, validate that the view gets
     correctly executed for the two methods it has in its definition.
@@ -77,7 +78,7 @@ def test_route_defined_for_post_put(create_api_event, http_method):
 
 
 @pytest.mark.parametrize("http_method", ['GET', 'DELETE'])
-def test_route_defined_for_post_put_not_called(create_api_event, http_method):
+def test_route_defined_for_post_put_not_called(http_method):
     """
     Using the activity_post_put view definition, validate that the view gets
     correctly executed for the two methods it has in its definition.
@@ -94,7 +95,7 @@ def test_route_defined_for_post_put_not_called(create_api_event, http_method):
 
 
 @pytest.mark.parametrize("http_method", ['GET', 'DELETE'])
-def test_not_found_response(create_api_event, http_method):
+def test_not_found_response(http_method):
     """
     Using the activity_post_put view definition, validate that the view gets
     correctly executed for the two methods it has in its definition.
@@ -110,7 +111,7 @@ def test_not_found_response(create_api_event, http_method):
     assert response['statusCode'] == codes.not_found
 
 
-def test_routing_for_http_post(create_api_event):
+def test_routing_for_http_post():
     """
     Validate that a view defined for a POST request is correctly evaluated when
     the route + method match the signature.
@@ -126,7 +127,7 @@ def test_routing_for_http_post(create_api_event):
     assert response['body'] == json.dumps(expected_response)
 
 
-def test_routing_for_http_get(create_api_event):
+def test_routing_for_http_get():
     """
     Validate that a view defined for a GET request is correctly evaluated when
     the route + method match the signature.
@@ -165,7 +166,7 @@ def delete_view():
 
 
 @pytest.mark.parametrize("http_method", ['POST', 'GET', 'PUT', 'DELETE'])
-def test_routing_for_decorated_views(create_api_event, http_method):
+def test_routing_for_decorated_views(http_method):
     """
     Validate that a view defined for a GET request is correctly evaluated when
     the route + method match the signature.
@@ -178,7 +179,7 @@ def test_routing_for_decorated_views(create_api_event, http_method):
     assert json.loads(response['body'])['action'] == http_method
 
 
-def test_debug_mode_relays_response(create_api_event):
+def test_debug_mode_relays_response():
     """
     Make sure that if the minik app is in debug mode, the exception trace and
     error message are sent back to the consumer.

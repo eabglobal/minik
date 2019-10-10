@@ -18,6 +18,7 @@ import json
 from unittest.mock import MagicMock
 from minik.core import Minik
 from minik.status_codes import codes
+from minik.utils import create_api_event
 
 
 sample_app = Minik()
@@ -37,7 +38,7 @@ def post_event(zip_code: int):
     return {'findme': True, 'zip': zip_code}
 
 
-def test_get_custom_response(create_api_event):
+def test_get_custom_response():
 
     event = create_api_event('/events/{zip_code}',
                                 method='GET',
@@ -50,7 +51,7 @@ def test_get_custom_response(create_api_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_post_custom_response(create_api_event):
+def test_post_custom_response():
 
     event = create_api_event('/events/{zip_code}',
                                 method='POST',

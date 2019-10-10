@@ -34,7 +34,7 @@ class APIGatewayRequestBuilder:
         A simple function to determine if the given raw event comes from the API
         Gateway. If it is, then the function evaluates to True, False otherwise.
 
-        :params event: The raw event received from the lambda function.
+        :param event: The raw event received from the lambda function.
         """
         return event.get('requestContext', {}).get('apiId') is not None
 
@@ -42,9 +42,9 @@ class APIGatewayRequestBuilder:
         """
         Map the raw API Gateway event to a MinikRequest.
 
-        :params event: The raw lambda function event.
-        :params context: The raw lambda function context object.
-        :params router: An instance of the minik router.
+        :param event: The raw lambda function event.
+        :param context: The raw lambda function context object.
+        :param router: An instance of the minik router.
         """
 
         headers = event.get('headers') or {}
@@ -81,7 +81,7 @@ class ALBRequestBuilder:
         Application Load Balancer (ALB). If it is, then the function evaluates
         to True, False otherwise.
 
-        :params event: The raw event received from the lambda function.
+        :param event: The raw event received from the lambda function.
         """
         return event.get('requestContext', {}).get('elb') is not None
 
@@ -93,9 +93,9 @@ class ALBRequestBuilder:
         look up the associated resource '/books/{year}' from the router and correctly
         build a MinikRequest instance.
 
-        :params event: The raw lambda function event.
-        :params context: The raw lambda function context object.
-        :params router: An instance of the minik router.
+        :param event: The raw lambda function event.
+        :param context: The raw lambda function context object.
+        :param router: An instance of the minik router.
         """
 
         headers = event.get('headers') or {}
@@ -137,9 +137,9 @@ def build_request(event, context, router):
     supported builders, the raw event will be mapped based on the event type. If
     the type of event is not supported, an exception will be raised.
 
-    :params event: The raw event received by the lambda function.
-    :params context: The raw context objects of the lambda function
-    :params router: An instance of the minik router.
+    :param event: The raw event received by the lambda function.
+    :param context: The raw context objects of the lambda function
+    :param router: An instance of the minik router.
     """
 
     for builder in REQUEST_BUILDERS:

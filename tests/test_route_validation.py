@@ -22,6 +22,7 @@ from unittest.mock import MagicMock
 from minik.core import Minik
 from minik.fields import ReStr, BaseRouteField
 from minik.status_codes import codes
+from minik.utils import create_api_event
 
 
 sample_app = Minik()
@@ -34,7 +35,7 @@ def get_re_view(username: str):
 
 
 @pytest.mark.parametrize("username", [('busthead'), ('123'), ('pd_az')])
-def test_str_route_validation_valid(create_api_event, username):
+def test_str_route_validation_valid(username):
     """
     The string based route validation will match any valid \w+ regular expression,
     which is used for unicode patterns [a-zA-Z0-9_].
@@ -53,7 +54,7 @@ def test_str_route_validation_valid(create_api_event, username):
 
 
 @pytest.mark.parametrize("username", [('$$$'), ('12#3'), ('hello@gmail')])
-def test_str_route_validation_invalid(create_api_event, username):
+def test_str_route_validation_invalid(username):
     """
     Test string based routing with INVALID paramters. Note that partial matches
     will be rejected. For instance hello@gmail will be rejected given that `@`
@@ -75,7 +76,7 @@ def get_articles_view(year: int, month: int):
     return {'year': year, 'month': month}
 
 
-def test_route_with_int_valid(create_api_event):
+def test_route_with_int_valid():
 
     event = create_api_event('/articles/{year}/{month}/',
                                 method='GET',
@@ -90,7 +91,7 @@ def test_route_with_int_valid(create_api_event):
 @pytest.mark.parametrize("year,month", [
     ('2020', 'INVALID'), ('INVALID', '12'), ('hello', 'world'),
 ])
-def test_route_with_int_invalid_params(create_api_event, year, month):
+def test_route_with_int_invalid_params(year, month):
 
     event = create_api_event('/articles/{year}/{month}/',
                                 method='GET',
@@ -106,7 +107,7 @@ def get_product(product_id: uuid.UUID):
     return {'id': str(product_id)}
 
 
-def test_uuid_in_route_valid(create_api_event):
+def test_uuid_in_route_valid():
     """
     Validate a uuid based parameter with a valid value.
     """
@@ -125,7 +126,7 @@ def test_uuid_in_route_valid(create_api_event):
     ('00010203-0405-0607-0809'),
     ('INVALID'),
 ])
-def test_uuid_in_route_invalid(create_api_event, product_id):
+def test_uuid_in_route_invalid(product_id):
     """
     Validate the uiid based view with invalid values.
     """
@@ -147,7 +148,7 @@ def get_item(item_id: ReStr(r'([0-9a-f]{8}$)')):
 @pytest.mark.parametrize("item_id", [
     ('00010203'), ('52342512'), ('00102c03')
 ])
-def test_custom_re_in_route_valid(create_api_event, item_id):
+def test_custom_re_in_route_valid(item_id):
     """
     Validate a uuid based parameter with a valid value.
     """
@@ -164,7 +165,7 @@ def test_custom_re_in_route_valid(create_api_event, item_id):
 @pytest.mark.parametrize("item_id", [
     ('04052523209'), ('060809'), ('#0010203'), ('00102i03')
 ])
-def test_custom_re_in_route_invalid(create_api_event, item_id):
+def test_custom_re_in_route_invalid(item_id):
     """
     Validate the uiid based view with invalid values.
     """
@@ -192,7 +193,7 @@ def get_tracker_info(name: RouteTracker):
 @pytest.mark.parametrize("tracker_name", [
     ('fitbit'), ('nikeplus'), ('vivosmart')
 ])
-def test_custom_field_in_route_valid(create_api_event, tracker_name):
+def test_custom_field_in_route_valid(tracker_name):
     """
     Validate that a route with a custom field definition works when valid values
     are provided.
@@ -210,7 +211,7 @@ def test_custom_field_in_route_valid(create_api_event, tracker_name):
 @pytest.mark.parametrize("tracker_name", [
     ('not there'), ('other')
 ])
-def test_custom_field_in_route_invalid(create_api_event, tracker_name):
+def test_custom_field_in_route_invalid(tracker_name):
     """
     Custom route field with invalid values.
     """

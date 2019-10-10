@@ -32,7 +32,7 @@ def compile_path(path):
     parameter. Given a definition like '/articles/{month}/{day}', this function will
     return the compiled regex equievanet of it as r'/articles/(?<month>[^/]+)/(?<day>[^/]+)'.
 
-    :params path: The path associated with a route.
+    :param path: The path associated with a route.
     """
     path_re = "^"
     idx = 0
@@ -86,8 +86,8 @@ class Router:
         with the given endpoint. The additional set of parameters enhance the definition
         of the route, for instance a set of valid methods=['GET'].
 
-        :params route_path: The identifier of the route to be added. For instance '/books/{year}'.
-        :params endpoint: The function or handler associated with the route.
+        :param route_path: The identifier of the route to be added. For instance '/books/{year}'.
+        :param endpoint: The function or handler associated with the route.
         """
         route_re = compile_path(route_path)
         self._routes[route_path].append(SimpleRoute(route_path, endpoint, **kwargs))
@@ -102,7 +102,7 @@ class Router:
         Get the resource and set of path parameters for a given path. If the path
         does not match any of the defined routes, an empty response will be returned.
 
-        :params path: The path associated with a request.
+        :param path: The path associated with a request.
         """
 
         for path_re, resource in self._compiled_route_paths:
@@ -122,7 +122,7 @@ class Router:
         If the view is not found an exception is raised with the appropriate
         status code and error message.
 
-        :params request: An instance of the MinikRequest.
+        :param request: An instance of the MinikRequest.
         """
 
         routes = self._routes.get(request.resource)

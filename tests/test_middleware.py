@@ -5,6 +5,7 @@ from unittest.mock import MagicMock
 from minik.core import Minik
 from minik.models import Response
 from minik.middleware import (ContentTypeMiddleware, ServerErrorMiddleware)
+from minik.utils import create_api_event
 
 
 @pytest.mark.parametrize("sample_header", [
@@ -41,7 +42,7 @@ class CustomMiddleware:
         app.response.headers['x-findme'] = self.expected_header_value
 
 
-def test_custom_middleware_updates_response(create_api_event):
+def test_custom_middleware_updates_response():
     """
     Make sure that a custom middleware is executed as part of the workflow of
     handling a request.
@@ -61,7 +62,7 @@ def test_custom_middleware_updates_response(create_api_event):
     assert response['headers']['x-findme'] == CustomMiddleware.expected_header_value
 
 
-def test_custom_middleware_updates_response_view_fails(create_api_event):
+def test_custom_middleware_updates_response_view_fails():
     """
     Make sure that a custom middleware is executed as part of the workflow of
     handling a request.
