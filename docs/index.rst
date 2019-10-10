@@ -329,12 +329,12 @@ In this scenario, the event your lambda function receives from the ALB looks lik
             "upgrade-insecure-requests": "1",
             "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:60.0) Gecko/20100101 Firefox/60.0",
             "x-amzn-trace-id": "Root=1-5bdb40ca-556d8b0c50dc66f0511bf520",
-            "x-forwarded-for": "192.0.2.1,
+            "x-forwarded-for": "192.0.2.1",
             "x-forwarded-port": "80",
             "x-forwarded-proto": "http"
         },
         "body": "",
-        "isBase64Encoded": False
+        "isBase64Encoded": false
     }
 
 Without Minik, every single API endpoint will need to parse the raw object
