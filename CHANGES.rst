@@ -3,6 +3,18 @@
 Minik Changelog
 ===============
 
+Version 0.5.1
+-------------
+
+Released on October 10th, 2019, codename Yeni Ridge
+
+- Exposing the set of utility functions used to build the lambda events (issues/35)
+  - Ability to create a sample API Gateway event
+  - Ability to create a sample ALB event
+  - These are the events a lambda function will receive when invoked by the
+    respective service.
+
+
 Version 0.5.0
 -------------
 
