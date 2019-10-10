@@ -139,7 +139,7 @@ view would look like:</p>
 <span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;/articles/</span><span class="si">{author}</span><span class="s1">/</span><span class="si">{year}</span><span class="s1">/&#39;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_articles_view</span><span class="p">(</span><span class="n">author</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">year</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="n">app</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/html; charset=utf-8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/html; charset=utf-8&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Access-Control-Allow-Origin&quot;</span><span class="p">:</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Access-Control-Allow-Methods&quot;</span><span class="p">:</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Access-Control-Allow-Headers&quot;</span><span class="p">:</span> <span class="s2">&quot;Content-Type,X-Amz-Date&quot;</span><span class="p">,</span>
@@ -266,6 +266,93 @@ Using the above object and endpoint as an example, our lambda function would ins
 API Gateway and for associating the lambda function with the gateway endpoint. Minik
 is just the framework that allows you to write your api in a straight-forward fashion.</p>
 </div>
+<div class="section" id="minik-with-alb">
+<h2>Minik with ALB<a class="headerlink" href="#minik-with-alb" title="Permalink to this headline">¶</a></h2>
+<p>When working with a lambda function as the handler of a request from an Application
+Load Balancer (ALB), a simple hello world application looks like:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;statusCode&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="s2">&quot;statusDescription&quot;</span><span class="p">:</span> <span class="s2">&quot;200 OK&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;isBase64Encoded&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;text/html; charset=utf-8&quot;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">response</span><span class="p">[</span><span class="s1">&#39;body&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;&lt;html&gt;</span>
+<span class="s2">        &lt;head&gt;</span>
+<span class="s2">        &lt;title&gt;Hello World!&lt;/title&gt;</span>
+<span class="s2">        &lt;style&gt;</span>
+<span class="s2">        html, body {</span>
+<span class="s2">        margin: 0; padding: 0;</span>
+<span class="s2">        font-family: arial; font-weight: 700; font-size: 3em;</span>
+<span class="s2">        text-align: center;</span>
+<span class="s2">        }</span>
+<span class="s2">        &lt;/style&gt;</span>
+<span class="s2">        &lt;/head&gt;</span>
+<span class="s2">        &lt;body&gt;</span>
+<span class="s2">        &lt;p&gt;Hello World!&lt;/p&gt;</span>
+<span class="s2">        &lt;/body&gt;</span>
+<span class="s2">        &lt;/html&gt;&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+</div>
+<p>In this scenario, the event your lambda function receives from the ALB looks like this:</p>
+<div class="code json highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;requestContext&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;elb&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;targetGroupArn&quot;</span><span class="p">:</span> <span class="s2">&quot;arn:aws:elasticloadbalancing:us-east-1:XXXXXXXXXXX:targetgroup/sample/6d0ecf831eec9f09&quot;</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;httpMethod&quot;</span><span class="p">:</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;queryStringParameters&quot;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="s2">&quot;headers&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;accept&quot;</span><span class="p">:</span> <span class="s2">&quot;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;accept-encoding&quot;</span><span class="p">:</span> <span class="s2">&quot;gzip&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;accept-language&quot;</span><span class="p">:</span> <span class="s2">&quot;en-US,en;q=0.5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;connection&quot;</span><span class="p">:</span> <span class="s2">&quot;keep-alive&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;name=value&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;lambda-YYYYYYYY.elb.amazonaws.com&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;upgrade-insecure-requests&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;user-agent&quot;</span><span class="p">:</span> <span class="s2">&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:60.0) Gecko/20100101 Firefox/60.0&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x-amzn-trace-id&quot;</span><span class="p">:</span> <span class="s2">&quot;Root=1-5bdb40ca-556d8b0c50dc66f0511bf520&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x-forwarded-for&quot;</span><span class="p">:</span> <span class="s2">&quot;192.0.2.1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x-forwarded-port&quot;</span><span class="p">:</span> <span class="s2">&quot;80&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;x-forwarded-proto&quot;</span><span class="p">:</span> <span class="s2">&quot;http&quot;</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isBase64Encoded&quot;</span><span class="p">:</span> <span class="n">false</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Without Minik, every single API endpoint will need to parse the raw object
+as a way to get the data values you care about.</p>
+<p>With Minik, you get a clear familiar interface that hides the complexity of dealing
+with the raw representation of the event and context objects. We take care of parsing
+the ALB object for you, so that you can focus on writing your business logic.
+Using the above object and endpoint as an example, our lambda function would instead be:</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">minik.core</span> <span class="k">import</span> <span class="n">Minik</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Minik</span><span class="p">()</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">&quot;/test/</span><span class="si">{action}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="n">action</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">app</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">query_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">)</span>
+
+    <span class="c1"># With the values defined in the object above this will return.</span>
+    <span class="c1"># {&#39;hello&#39;: &#39;me&#39;}</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">action</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Just like with any other lambda function you are responsible configuring the lambda
+function as the <a class="reference external" href="https://aws.amazon.com/blogs/networking-and-content-delivery/lambda-functions-as-targets-for-application-load-balancers/">target of the ALB</a>. Minik is just the framework that facilitates the
+definition of the web application.</p>
+<p>Notice that the code to handle a request from the API Gateway is identical to the
+code used in the ALB example. This shows that minik is service agnostic, an web
+application that was associated to an API Gateway definition, can seamlessly be
+used to handle requests from an ALB without changing the code.</p>
+</div>
 </div>
 <div class="section" id="contents">
 <h1>Contents:<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
@@ -283,6 +370,7 @@ is just the framework that allows you to write your api in a straight-forward fa
 <li class="toctree-l1"><a class="reference internal" href="features.html">2. Route Validation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="features.html#regex-based-routes">2.1. Regex Based Routes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="features.html#custom-route-fields">2.2. Custom Route Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="features.html#alb-native-support">2.3. ALB Native Support</a></li>
 </ul>
 </li>
 </ul>

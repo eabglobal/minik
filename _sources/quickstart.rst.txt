@@ -184,8 +184,8 @@ in this page. To run the examples:
 Once you're in this folder, you can use the commands defined in the make file.
 
     >>> make build
-    >>> make package AWS_PROFILE=<your profile>
-    >>> make deploy AWS_PROFILE=<your profile>
+    >>> make package profile=<your profile>
+    >>> make deploy profile=<your profile>
 
 .. _`SAM cli`: https://github.com/awslabs/aws-sam-cli
 .. _`Juniper`: https://github.com/eabglobal/juniper

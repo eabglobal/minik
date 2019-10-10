@@ -107,6 +107,17 @@ principle. Here the RouteTracker’s only responsibility is to determine if a
 given name is valid or not.</p>
 <p>Keep in mind that with a valid route, the value of field will be a string!</p>
 </div>
+<div class="section" id="alb-native-support">
+<h2>2.3. ALB Native Support<a class="headerlink" href="#alb-native-support" title="Permalink to this headline">¶</a></h2>
+<p>A lambda function can be used as the target of an ALB, while using this configuration,
+a web developer needs to route and parse the raw event sent by the ALB to the lambda.
+With minik, a developer can use a familiar interface to define the web application. It
+is the framework’s responsibility to correctly parse and route a request.</p>
+<p>An application originally configured to receive requests from an API Gateway endpoint
+can be seamlessly used to handle requests from an ALB. No code changes are required
+at all to make the transition. Minik will determine the event type based on the
+raw event it receives and it will handle the request correctly.</p>
+</div>
 </div>
 
 
@@ -131,6 +142,7 @@ given name is valid or not.</p>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">2. Route Validation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#regex-based-routes">2.1. Regex Based Routes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#custom-route-fields">2.2. Custom Route Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#alb-native-support">2.3. ALB Native Support</a></li>
 </ul>
 </li>
 </ul>
