@@ -3,6 +3,17 @@
 Minik Changelog
 ===============
 
+Version 0.5.2
+-------------
+
+Released on October 18th, 2019, codename Yeni Ridge.2
+
+- Ignore 'return' from update_uri_parameters (bafio)
+  - When using type annotations, the return type annotation was included in the
+    set of parameters. This is no longer the case.
+  - Thanks to bafio for his contributions.
+
+
 Version 0.5.1
 -------------
 
