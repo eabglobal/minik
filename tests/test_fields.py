@@ -86,3 +86,27 @@ def test_update_uri_parameters_basic_str():
         update_uri_parameters(sample_view, request)
     except MinikViewError as ve:
         assert 'sco!!' in str(ve)
+
+
+def test_update_uri_parameters_return_hint_is_ignored():
+    """
+    With a return type hint, only annotated parameter will be
+    accepted as valid.
+    """
+
+    def sample_view(bike_name: str) -> str:
+        return bike_name
+
+    request = MagicMock(uri_params={'bike_name': '5234'})
+    update_uri_parameters(sample_view, request)
+    assert request.uri_params['bike_name'] == str('5234')
+
+    request = MagicMock(uri_params={'bike_name': 'scott'})
+    update_uri_parameters(sample_view, request)
+    assert request.uri_params['bike_name'] == str('scott')
+
+    try:
+        request = MagicMock(uri_params={'bike_name': 'sco!!'})
+        update_uri_parameters(sample_view, request)
+    except MinikViewError as ve:
+        assert 'sco!!' in str(ve)
