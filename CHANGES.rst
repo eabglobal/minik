@@ -9,6 +9,7 @@ Version 0.5.3
 Released on October 18th, 2019, codename Yeni Ridge.2
 
 - Ignore 'return' from update_uri_parameters (by bafio)
+
   - When using type annotations, the return type annotation was included in the
     set of parameters. This is no longer the case.
   - Thanks to bafio for his contributions.
@@ -20,6 +21,7 @@ Version 0.5.1
 Released on October 10th, 2019, codename Yeni Ridge
 
 - Exposing the set of utility functions used to build the lambda events (issues/35)
+
   - Ability to create a sample API Gateway event
   - Ability to create a sample ALB event
   - These are the events a lambda function will receive when invoked by the
@@ -32,11 +34,13 @@ Version 0.5.0
 Released on October 8th, 2019, codename Yeni Ridge
 
 - Large refactoring effort to natively support requests from an ALB (issues/33)
+
   - Introducing a new router to keep track of the route/handler pairs
   - Refactoring the requests builders to correctly build a MinikRequest based
     on the event type (api_request, or alb_request)
   - Adding an example to associate a lambda function to an ALB (examples/alb-events)
   - Updating documentation.
+
 - Updated the MinikRequest to keep the event received from the lambda function (issues/15).
 
 
