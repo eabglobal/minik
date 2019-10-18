@@ -22,6 +22,7 @@ from minik.status_codes import codes
 from minik.constants import CONFIG_ERROR_MSG
 from minik.core import Minik, BadRequestError
 from minik.exceptions import ConfigurationError
+from minik.utils import create_api_event
 
 
 sample_app = Minik()
@@ -53,7 +54,7 @@ def aws_ctx_view():
     }
 
 
-def test_sample_view_with_path_params(create_api_event):
+def test_sample_view_with_path_params():
 
     event = create_api_event('/findme/{first}/{second}',
                                 pathParameters={'first': 'adventure', 'second': 'chile'},
@@ -66,7 +67,7 @@ def test_sample_view_with_path_params(create_api_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_sample_view_without_query_params(create_api_event):
+def test_sample_view_without_query_params():
 
     event = create_api_event('/findme/{first}/{second}',
                                 pathParameters={'first': 'adventure', 'second': 'chile'},
@@ -80,7 +81,7 @@ def test_sample_view_without_query_params(create_api_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_sample_view_with_undefined_query_params(create_api_event):
+def test_sample_view_with_undefined_query_params():
 
     event = create_api_event('/findme/{first}/{second}',
                                 pathParameters={'first': 'adventure', 'second': 'chile'},
@@ -94,7 +95,7 @@ def test_sample_view_with_undefined_query_params(create_api_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_sample_view_without_headers(create_api_event):
+def test_sample_view_without_headers():
 
     event = create_api_event('/findme/{first}/{second}',
                                 pathParameters={'first': 'adventure', 'second': 'chile'},
@@ -106,7 +107,7 @@ def test_sample_view_without_headers(create_api_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_sample_view_with_undefined_headers(create_api_event):
+def test_sample_view_with_undefined_headers():
 
     event = create_api_event('/findme/{first}/{second}',
                                 pathParameters={'first': 'adventure', 'second': 'chile'},
@@ -118,7 +119,7 @@ def test_sample_view_with_undefined_headers(create_api_event):
     assert response['statusCode'] == codes.ok
 
 
-def test_sample_view_route_does_not_match(create_api_event):
+def test_sample_view_route_does_not_match():
 
     event = create_api_event('/router/mismatch',
                                 pathParameters={'first': 'adventure'},
@@ -129,7 +130,7 @@ def test_sample_view_route_does_not_match(create_api_event):
     assert response['statusCode'] == codes.not_found
 
 
-def test_bad_request_correctly_handled(create_api_event):
+def test_bad_request_correctly_handled():
 
     event = create_api_event('/bad_request', body={'sample': 'field'})
 
@@ -139,7 +140,7 @@ def test_bad_request_correctly_handled(create_api_event):
     assert 'Not good mah friend. Something terrible has happened!' in response['body']
 
 
-def test_json_body_in_view(create_api_event):
+def test_json_body_in_view():
     """
     Test that a given view has access to the request.json_body. The current
     request contains the data of the requests payload.
@@ -154,7 +155,7 @@ def test_json_body_in_view(create_api_event):
     assert json.loads(response['body']) == test_body
 
 
-def test_view_without_path_parameters(create_api_event):
+def test_view_without_path_parameters():
     """
     Validate that a view without uri paramters does not crash when invoked.
     """
@@ -168,7 +169,7 @@ def test_view_without_path_parameters(create_api_event):
     assert json.loads(response['body']) == test_body
 
 
-def test_event_without_resoure_raises_error(create_api_event):
+def test_event_without_resoure_raises_error():
     """
     This is a misconfiguration in the integration between the API gateway and the
     lambda function. If the uri is None, that means that the event is not being
@@ -185,7 +186,7 @@ def test_event_without_resoure_raises_error(create_api_event):
         assert CONFIG_ERROR_MSG in str(ce)
 
 
-def test_correctly_pass_aws_context_to_request(create_api_event):
+def test_correctly_pass_aws_context_to_request():
     """
     This is a misconfiguration in the integration between the API gateway and the
     lambda function. If the uri is None, that means that the event is not being

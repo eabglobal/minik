@@ -17,8 +17,8 @@ class ServerErrorMiddleware:
         Execute the middleware and update the response object based on the values
         of the request.
 
-        :params app: The instance of the minik app.
-        :params error: The instance of the MinikError.
+        :param app: The instance of the minik app.
+        :param error: The instance of the MinikError.
         """
         app.response.status_code = error.status_code
         app.response.body = {'error_message': str(error)}

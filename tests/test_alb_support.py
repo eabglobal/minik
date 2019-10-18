@@ -18,6 +18,7 @@ import json
 import pytest
 from unittest.mock import MagicMock
 from minik.core import Minik
+from minik.utils import create_alb_event
 
 
 sample_app = Minik()
@@ -43,7 +44,7 @@ def echo_handler():
     ('GET', 'get handler'),
     ('POST', 'post handler')
 ])
-def test_route_defined_for_post_put(create_alb_event, http_method, expected_message):
+def test_route_defined_for_post_put(http_method, expected_message):
     """
     For a given path, minik can execute different routes based on the HTTP method.
     """
@@ -60,7 +61,7 @@ def test_route_defined_for_post_put(create_alb_event, http_method, expected_mess
 @pytest.mark.parametrize("http_method", [
     'GET', 'POST', 'PUT', 'DELETE'
 ])
-def test_access_to_source_event(create_alb_event, http_method):
+def test_access_to_source_event(http_method):
     """
     Validate that a view has access to the raw event minik received independent
     of the method type.
