@@ -3,7 +3,7 @@
 Minik Changelog
 ===============
 
-Version 0.5.2
+Version 0.5.3
 -------------
 
 Released on October 18th, 2019, codename Yeni Ridge.2

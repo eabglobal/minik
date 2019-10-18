@@ -77,7 +77,7 @@ def update_uri_parameters(view_fn, request):
     try:
 
         for field_name, field_type in view_fn.__annotations__.items():
-            field_name == 'return':
+            if field_name == 'return':
                 #  Ignore 'return' field_name if type hint exists for view_fn
                 continue
             new_field_type = CUSTOM_FIELD_BY_TYPE.get(field_type, field_type)
