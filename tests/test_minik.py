@@ -44,6 +44,13 @@ def echo_view():
     return sample_app.request.json_body
 
 
+@sample_app.route('/empty_params')
+def empty_query_params():
+    return {
+        'value': sample_app.request.query_params.get('findme')
+    }
+
+
 @sample_app.route('/aws_context')
 def aws_ctx_view():
     ctx = sample_app.request.aws_context
@@ -205,3 +212,17 @@ def test_correctly_pass_aws_context_to_request():
 
     for key in response_body:
         assert response_body[key] == getattr(context, key)
+
+
+def test_empty_query_params():
+    """
+    If there are no query parameters provided, the default value should be {}. The
+    view should not throw an exception.
+    """
+
+    event = create_api_event('/empty_params', queryParameters=None)
+
+    response = sample_app(event, context)
+
+    assert response['statusCode'] == codes.ok
+    assert json.loads(response['body']) == {'value': None}

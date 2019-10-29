@@ -3,10 +3,18 @@
 Minik Changelog
 ===============
 
+Version 0.5.4
+-------------
+
+Released on October 29th, 2019, codename Yeni Ridge.4
+
+- Fixed bug in which getting a query parameter that was not passed in would
+  throw exception (issues/37)
+
 Version 0.5.3
 -------------
 
-Released on October 18th, 2019, codename Yeni Ridge.2
+Released on October 18th, 2019, codename Yeni Ridge.3
 
 - Ignore 'return' from update_uri_parameters (by bafio)
 
