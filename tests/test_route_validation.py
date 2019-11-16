@@ -34,7 +34,7 @@ def get_re_view(username: str):
     return {'user': username}
 
 
-@pytest.mark.parametrize("username", [('busthead'), ('123'), ('pd_az')])
+@pytest.mark.parametrize("username", [('busthead'), ('123'), ('pd_az'), ('hello-world')])
 def test_str_route_validation_valid(username):
     """
     The string based route validation will match any valid \w+ regular expression,

@@ -51,7 +51,7 @@ class ReStr(BaseRouteField):
 
 
 CUSTOM_FIELD_BY_TYPE = {
-    str: ReStr(r'^(\w+)$')
+    str: ReStr(r'^([\w-]+)$')
 }
 
 
