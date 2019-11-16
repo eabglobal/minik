@@ -3,6 +3,15 @@
 Minik Changelog
 ===============
 
+Version 0.5.5
+-------------
+
+Released on Nov 16th, 2019, codename Yeni Ridge.5
+
+- Support hyphens in the route parameters when using the str annotation. Thanks
+  to @bbidhan for his contribution (pr/39)
+
+
 Version 0.5.4
 -------------
 
