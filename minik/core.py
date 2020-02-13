@@ -66,6 +66,9 @@ class Minik:
     def put(self, path, **kwargs):
         return self.route(path, methods=['PUT'], **kwargs)
 
+    def patch(self, path, **kwargs):
+        return self.route(path, methods=['PATCH'], **kwargs)
+
     def delete(self, path, **kwargs):
         return self.route(path, methods=['DELETE'], **kwargs)
 

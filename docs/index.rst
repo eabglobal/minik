@@ -39,7 +39,7 @@ define the methods, every single HTTP method will be allowed by default.
 
     @app.route('/events/{location}')
     def events_view(location: str):
-        # This route will be invoked for GET, POST, PUT, DELETE...
+        # This route will be invoked for GET, POST, PUT, PATCH, DELETE...
         return {'data': ['granfondo MD', 'Silver Spring Century']}
 
     @app.route('/events', methods=['POST', 'PUT'])
