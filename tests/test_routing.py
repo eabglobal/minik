@@ -160,12 +160,17 @@ def put_me():
     return {'action': sample_app.request.method}
 
 
+@sample_app.patch('/pacific_resource')
+def patch_me():
+    return {'action': sample_app.request.method}
+
+
 @sample_app.delete('/pacific_resource')
 def delete_view():
     return {'action': sample_app.request.method}
 
 
-@pytest.mark.parametrize("http_method", ['POST', 'GET', 'PUT', 'DELETE'])
+@pytest.mark.parametrize("http_method", ['POST', 'GET', 'PUT', 'PATCH', 'DELETE'])
 def test_routing_for_decorated_views(http_method):
     """
     Validate that a view defined for a GET request is correctly evaluated when
