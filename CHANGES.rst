@@ -3,7 +3,7 @@
 Minik Changelog
 ===============
 
-Version 0.5.5
+Version 0.5.6
 -------------
 
 Released on Feb 13th, 2020, codename Yeni Yil.1
