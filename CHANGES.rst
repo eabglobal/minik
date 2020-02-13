@@ -6,6 +6,15 @@ Minik Changelog
 Version 0.5.5
 -------------
 
+Released on Feb 13th, 2020, codename Yeni Yil.1
+
+- Update the route handlers to include the patch http method. Thanks to
+  @valinsky for this contribution (pr/41)
+
+
+Version 0.5.5
+-------------
+
 Released on Nov 16th, 2019, codename Yeni Ridge.5
 
 - Support hyphens in the route parameters when using the str annotation. Thanks
