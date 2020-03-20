@@ -219,7 +219,6 @@ def test_empty_query_params():
     If there are no query parameters provided, the default value should be {}. The
     view should not throw an exception.
     """
-
     event = create_api_event('/empty_params', queryParameters=None)
 
     response = sample_app(event, context)
