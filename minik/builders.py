@@ -119,8 +119,15 @@ def url_decode_params(query_params):
     """
     Decode the key value pairs of a set of parameters.
     """
+
+    def _decode_string(key_or_value):
+        """
+        Use unquote_plus first to convert + into spaces. Then use unquote to decode any other encodings.
+        """
+        return urllib.parse.unquote(urllib.parse.unquote_plus(key_or_value))
+
     return {
-        urllib.parse.unquote(key): urllib.parse.unquote(value)
+        _decode_string(key): _decode_string(value)
         for key, value in query_params.items()
     }
 

@@ -3,6 +3,14 @@
 Minik Changelog
 ===============
 
+Version 0.5.7
+-------------
+
+Released on Mar 21, 2020, codename Yeni Yil.II
+
+- Making a fix for query string spaces. Thanks to @andreburto for this contribution (pr/44)
+
+
 Version 0.5.6
 -------------
 
