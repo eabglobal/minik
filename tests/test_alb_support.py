@@ -40,6 +40,11 @@ def echo_handler():
     return {'req_ctx': sample_app.request.aws_event['requestContext']}
 
 
+@sample_app.delete('/delete_me')
+def delete_me():
+    return sample_app.request.query_params
+
+
 @pytest.mark.parametrize("http_method, expected_message", [
     ('GET', 'get handler'),
     ('POST', 'post handler')
@@ -75,3 +80,19 @@ def test_access_to_source_event(http_method):
     json_response_body = json.loads(response['body'])
 
     assert json_response_body['req_ctx'] == event['requestContext']
+
+
+def test_decoding_of_query_params_with_spackes():
+    """
+    Validate that a view has access to the raw event minik received independent
+    of the method type.
+    """
+
+    event = create_alb_event('/delete_me',
+                             method='DELETE',
+                             queryParameters={'type': 'cycle+event'})
+
+    response = sample_app(event, context)
+    json_response_body = json.loads(response['body'])
+
+    assert json_response_body['type'] == "cycle event"
