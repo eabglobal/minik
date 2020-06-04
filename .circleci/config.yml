@@ -5,10 +5,6 @@ jobs:
 
     working_directory: ~/repo
 
-    branches:
-      ignore:
-        - gh-pages
-
     steps:
       - checkout
 
@@ -54,10 +50,6 @@ jobs:
       - image: circleci/python:3.7.1
 
     working_directory: ~/repo
-
-    branches:
-      ignore:
-        - gh-pages
 
     steps:
       - checkout
