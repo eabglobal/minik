@@ -103,5 +103,5 @@ def cache_custom_route_fields(view):
         if field_type in CUSTOM_FIELD_BY_TYPE:
             continue
 
-        if issubclass(field_type, BaseRouteField) and inspect.isclass(BaseRouteField):
+        if inspect.isclass(field_type) and issubclass(field_type, BaseRouteField):
             CUSTOM_FIELD_BY_TYPE[field_type] = field_type()
