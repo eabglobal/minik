@@ -1,16 +1,9 @@
-version: 2
 jobs:
-  build:
+  build36:
     docker:
-      # specify the version you desire here
-      # use `-browsers` prefix for selenium tests, e.g. `3.6.1-browsers`
       - image: circleci/python:3.6.1
 
     working_directory: ~/repo
-
-    branches:
-      ignore:
-        - gh-pages
 
     steps:
       - checkout
@@ -50,3 +43,46 @@ jobs:
       - store_artifacts:
           path: test-reports
           destination: test-reports
+
+  build37:
+    docker:
+      # specify the version you desire here
+      - image: circleci/python:3.7.1
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "requirements/dev.txt" }}
+          # fallback to using the latest cache if no exact match is found
+          - v2-dependencies-
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv37
+            . venv37/bin/activate
+            pip install -r requirements/dev.txt
+
+      - save_cache:
+          paths:
+            - ./venv37
+          key: v2-dependencies-{{ checksum "requirements/dev.txt" }}
+
+      - run:
+          name: run tests
+          command: |
+            . venv37/bin/activate
+            python -m pytest --cov .
+            coverage report --fail-under=90
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build36
+      - build37

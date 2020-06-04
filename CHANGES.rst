@@ -3,6 +3,16 @@
 Minik Changelog
 ===============
 
+
+Version 0.5.8
+-------------
+
+Released on Jun 3, 2020
+
+- Fixing custom route field caching issue that would pass in py3.6 but break in
+  in py3.7+ (pr/45)
+
+
 Version 0.5.7
 -------------
 
