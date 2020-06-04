@@ -1,6 +1,5 @@
-version: 2
 jobs:
-  build:
+  build36:
     docker:
       - image: circleci/python:3.6.1
 
@@ -49,7 +48,7 @@ jobs:
           path: test-reports
           destination: test-reports
 
-  test37:
+  build37:
     docker:
       # specify the version you desire here
       - image: circleci/python:3.7.1
@@ -88,3 +87,10 @@ jobs:
             . venv37/bin/activate
             python -m pytest --cov .
             coverage report --fail-under=90
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build36
+      - build37
