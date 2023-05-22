@@ -1,4 +1,4 @@
-requests==2.20.0
+requests==2.31.0
 coverage==4.5.1
 pytest==3.5.1
 pytest-mock==1.10.0
